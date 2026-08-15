@@ -12,12 +12,14 @@ import OrderDetail from "./pages/OrderDetail";
 import OrderHistory from "./pages/OrderHistory";
 import ProductDetail from "./pages/ProductDetail";
 import Login from "./pages/Login";
+import { STORE_ROUTES } from "./lib/storeRoutes";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
     <Switch>
-      <Route path={"/"} component={Home} />
+      <Route path={STORE_ROUTES.HOME} component={Home} />
+      <Route path={STORE_ROUTES.CART} component={Home} />
       <Route path={"/login"} component={Login} />
       <Route path={"/admin"} component={AdminDashboard} />
       <Route path={"/admin/catalog"} component={AdminCatalog} />

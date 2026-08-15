@@ -36,13 +36,13 @@
 - [x] Confirmar que as consultas administrativas retornam todos os campos editáveis, incluindo imagens, e cobrir esse contrato com testes.
 - [x] Adicionar testes de contrato para produtos, servidores e cupons administrativos, incluindo descrições, imagens e vínculos de destino.
 - [x] Cobrir os fluxos administrativos críticos com testes de autorização e operações de gestão.
-- [ ] Configurar as credenciais do Mercado Pago e executar uma compra de teste com webhook em ambiente público HTTPS.
+- [x] Configurar as credenciais do Mercado Pago e executar uma compra real de validação com webhook em ambiente público HTTPS.
 - [x] Criar a tarefa recorrente de manutenção de comércio após publicar a versão com o endpoint agendado.
 - [x] Adiar a entrega quando o jogador estiver offline e somente confirmar comandos que exigem presença após ele entrar no servidor.
 - [x] Compilar e validar o artefato JAR do módulo minecraft-plugin antes da entrega final.
 - [x] Adicionar testes para webhook: assinatura inválida, evento ignorado, aprovação e reprocessamento idempotente.
 - [x] Adicionar testes da fila para defer offline, retry e conclusão idempotente com repositórios isolados.
-- [ ] Validar de ponta a ponta checkout e webhook em HTTPS público após configurar as credenciais do Mercado Pago.
+- [x] Validar de ponta a ponta checkout, pagamento aprovado e webhook em HTTPS público após configurar as credenciais reais do Mercado Pago.
 - [x] Executar e validar o build de produção da aplicação web.
 - [x] Descontinuado: a implantação final utiliza VPS própria com APP_BASE_URL no domínio playstorcraft.com.br, não o domínio gerenciado temporário.
 - [x] Substituído pela configuração concluída de APP_BASE_URL=https://playstorcraft.com.br na VPS e webhook próprio.
@@ -72,17 +72,18 @@
 - [x] Validar em produção, no celular e desktop, o fluxo completo de cadastro da autenticação própria, sem criar uma conta desnecessária.
 - [x] Validar em produção, no celular, o modo Cadastrar da tela de autenticação, confirmando campos, ação e responsividade.
 - [x] Validar em produção, sem criar conta desnecessária, a submissão de cadastro por conflito de e-mail existente no desktop e no celular.
-- [ ] Validar em produção móvel os estados de carregamento observáveis de carrinho, pedidos e administração.
-- [ ] Provocar e registrar, em sessão isolada, um estado de erro ou nova tentativa real nos fluxos móveis de pedidos ou administração sem afetar usuários reais.
+- [ ] Validar e documentar separadamente, em sessão móvel isolada, os estados de carregamento observáveis de carrinho, histórico/detalhe de pedidos e administração.
+- [ ] Provocar e registrar explicitamente um estado de erro e uma ação de nova tentativa em pelo menos um fluxo móvel de pedidos ou administração, sem afetar usuários reais.
+- [x] Corrigir a rota de carrinho inexistente identificada na validação móvel e cobrir a navegação do carrinho com teste automatizado.
 - [x] Configurar e validar o segredo de assinatura do webhook do Mercado Pago no ambiente da VPS.
-- [ ] Configurar o Access Token de teste do Mercado Pago e executar uma cobrança de validação por PIX ou cartão.
+- [x] Substituído por uma compra real aprovada via PIX com a conta vendedora definitiva e webhook processado.
 - [x] Criar um produto técnico de teste, servidor e jogador de teste para validar o checkout real da PlayStorCraft sem cobrança efetiva.
 - [x] Ajustar o Checkout Pro para usar a URL de sandbox quando o Access Token de teste estiver configurado.
-- [ ] Confirmar a habilitação de PIX na preferência do Mercado Pago e documentar a ativação no ambiente real.
+- [x] Confirmar a habilitação de PIX na preferência do Mercado Pago e documentar a ativação no ambiente real por meio da compra real aprovada via PIX.
 - [x] Impedir a inicialização do OAuth Manus quando a loja estiver executando em modo auto-hospedado.
-- [ ] Validar uma aprovação sandbox vinculada ao pedido técnico sem depender do botão bloqueado no checkout móvel.
-- [ ] Obter credenciais de uma conta vendedora de teste separada para concluir o pagamento sandbox sem credenciais reais.
-- [ ] Obter as credenciais de produção da conta vendedora de teste para validar o Checkout Pro com cartão sandbox.
+- [x] Substituído por aprovação real vinculada ao pedido técnico, sem depender do checkout sandbox móvel bloqueado.
+- [x] Dispensado: a conta vendedora real definitiva foi confirmada pelo titular e já aprovou um pagamento real.
+- [x] Dispensado: a validação de Checkout Pro foi concluída com a conta real definitiva, sem necessidade de cartão sandbox.
 - [x] Documentar as recusas `cc_rejected_high_risk`, interromper novas cobranças sandbox e validar o webhook por testes locais assinados.
 - [x] Exigir confirmação explícita por variável de ambiente antes de executar qualquer cobrança sandbox automática e documentar esse bloqueio operacional.
 - [x] Adicionar teste local de assinatura válida do webhook Mercado Pago sem mockar a verificação criptográfica.
@@ -90,7 +91,7 @@
 - [x] Investigar o erro relatado após pagamento, correlacionando pedido, resposta do Mercado Pago, webhook e fila de entrega.
 - [x] Confirmar na fila de entregas que o pedido afetado não gerou claim nem entrega pendente antes da aprovação do pagamento.
 - [x] Documentar e orientar o uso de conta compradora de teste separada no Checkout Pro sandbox após a confirmação da mensagem de bloqueio.
-- [ ] Acompanhar o próximo Checkout Pro sandbox usando a conta compradora de teste brasileira identificada pelo usuário, sem expor suas credenciais.
+- [x] Dispensado após a validação completa em produção com uma conta compradora normal diferente da conta vendedora.
 - [x] Investigar o erro ERR_TOO_MANY_REDIRECTS em sandbox.mercadopago.com.br relatado durante o checkout de teste.
 - [x] Registrar a repetição do ERR_TOO_MANY_REDIRECTS mesmo com conta compradora de teste e interromper novas tentativas sandbox no celular.
 - [x] Usar o init_point do Checkout Pro para contas vendedoras de teste e cobrir a seleção de URL com testes, evitando o loop do sandbox legado.
@@ -102,6 +103,8 @@
 - [x] Validar as credenciais reais finais da conta vendedora antes de ativar vendas amplamente.
 - [x] Registrar a confirmação do titular de que a conta IsacaoBR é a conta vendedora real definitiva da PlayStorCraft.
 - [x] Registrar evidência operacional adicional de que a conta IsacaoBR está apta para operar vendas reais no Mercado Pago.
+- [ ] Aguardar a disponibilização de um servidor Minecraft Paper pelo usuário para instalar o plugin e concluir a entrega técnica pendente.
+- [ ] Instalar o plugin Paper no servidor Minecraft e validar a coleta, a execução e a conclusão idempotente da entrega 4146e5a4-e23b-4cb5-ae56-83a6032155ee.
 - [x] Validar o Access Token recebido contra a API do Mercado Pago sem expor o valor e solicitar o segredo de webhook faltante antes da ativação final.
 - [x] Propagar MERCADO_PAGO_PUBLIC_KEY ao contêiner da aplicação e validar a configuração final de pagamentos na VPS.
 - [x] Executar e acompanhar uma compra real autorizada de R$ 1,00, confirmando pagamento, webhook e fila de entrega.

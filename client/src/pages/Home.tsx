@@ -4,8 +4,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { addCartItem, readCart, writeCart, type CartItem, type StoreProduct } from "@/lib/cart";
+import { STORE_ROUTES } from "@/lib/storeRoutes";
 import { trpc } from "@/lib/trpc";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Box, ChevronRight, CircleUserRound, Gamepad2, Loader2, Minus, PackageCheck, Plus, Search, ShieldCheck, ShoppingBag, Sparkles, X } from "lucide-react";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -60,10 +61,11 @@ function ProductCard({ product, onAdd }: { product: StoreProduct; onAdd: (produc
 
 export default function Home() {
   const { user, loading, isAuthenticated } = useAuth();
+  const [location, setLocation] = useLocation();
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState<string | undefined>();
   const [cart, setCart] = useState<CartItem[]>(readCart);
-  const [cartOpen, setCartOpen] = useState(false);
+  const [cartOpen, setCartOpen] = useState(() => location === STORE_ROUTES.CART);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [username, setUsername] = useState("");
   const [uuid, setUuid] = useState("");
@@ -94,10 +96,23 @@ export default function Home() {
   const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   useEffect(() => { writeCart(cart); }, [cart]);
+  useEffect(() => {
+    if (location === STORE_ROUTES.CART) setCartOpen(true);
+  }, [location]);
+
+  function openCart() {
+    setCartOpen(true);
+    if (location !== STORE_ROUTES.CART) setLocation(STORE_ROUTES.CART);
+  }
+
+  function closeCart() {
+    setCartOpen(false);
+    if (location === STORE_ROUTES.CART) setLocation(STORE_ROUTES.HOME);
+  }
 
   function addToCart(product: StoreProduct, serverId: number, serverName: string) {
     setCart(current => addCartItem(current, product, serverId, serverName));
-    setCartOpen(true);
+    openCart();
     toast.success(`${product.name} adicionado ao carrinho.`);
   }
 
@@ -146,7 +161,7 @@ export default function Home() {
           </nav>
           <div className="flex items-center gap-2">
             {!loading && (isAuthenticated ? <Link href="/orders" className="hidden items-center gap-2 rounded-xl px-3 py-2 text-sm text-slate-300 transition hover:bg-white/5 sm:flex"><CircleUserRound size={17} />{user?.name || "Conta"}</Link> : <Button variant="ghost" onClick={startLogin} className="hidden rounded-xl text-slate-200 hover:bg-white/10 hover:text-white sm:inline-flex">Entrar</Button>)}
-            <Button onClick={() => setCartOpen(true)} className="relative h-11 rounded-xl bg-white px-4 text-slate-950 hover:bg-emerald-200"><ShoppingBag size={18} /><span className="hidden sm:inline">Carrinho</span>{itemCount ? <span className="absolute -right-2 -top-2 grid h-5 min-w-5 place-items-center rounded-full bg-emerald-300 px-1 text-[10px] font-bold text-slate-950">{itemCount}</span> : null}</Button>
+            <Button onClick={openCart} className="relative h-11 rounded-xl bg-white px-4 text-slate-950 hover:bg-emerald-200"><ShoppingBag size={18} /><span className="hidden sm:inline">Carrinho</span>{itemCount ? <span className="absolute -right-2 -top-2 grid h-5 min-w-5 place-items-center rounded-full bg-emerald-300 px-1 text-[10px] font-bold text-slate-950">{itemCount}</span> : null}</Button>
           </div>
         </div>
       </header>
@@ -182,7 +197,7 @@ export default function Home() {
         <section id="como-funciona" className="container py-20"><div className="grid gap-5 md:grid-cols-3"><div className="process-card"><span>01</span><h3>Escolha o benefício</h3><p>Selecione o produto e o servidor de destino para sua compra.</p></div><div className="process-card"><span>02</span><h3>Confirme o pagamento</h3><p>O pagamento será confirmado pelo gateway, nunca somente pelo navegador.</p></div><div className="process-card"><span>03</span><h3>Receba no jogo</h3><p>O servidor recebe a entrega autenticada quando seu jogador estiver online.</p></div></div></section>
       </main>
 
-      {cartOpen ? <div className="fixed inset-0 z-50 flex justify-end bg-slate-950/65 backdrop-blur-sm"><aside className="flex h-full w-full max-w-md flex-col border-l border-white/10 bg-[#0b1725] shadow-2xl"><div className="flex items-center justify-between border-b border-white/10 p-5"><div><p className="font-mono text-[10px] font-bold tracking-[.16em] text-emerald-300">SEU INVENTÁRIO</p><h2 className="mt-1 text-xl font-bold text-white">Carrinho</h2></div><Button onClick={() => setCartOpen(false)} variant="ghost" size="icon" className="rounded-xl text-slate-300 hover:bg-white/10 hover:text-white"><X /></Button></div><div className="flex-1 space-y-3 overflow-y-auto p-5">{cart.length ? cart.map(item => <div key={`${item.id}:${item.serverId}`} className="rounded-2xl border border-white/10 bg-white/[.035] p-4"><div className="flex justify-between gap-4"><div><h3 className="font-semibold text-white">{item.name}</h3><p className="mt-1 text-xs text-slate-400">{item.serverName}</p></div><button aria-label={`Remover ${item.name}`} onClick={() => adjustQuantity(item.id, item.serverId, -item.quantity)} className="text-slate-500 transition hover:text-rose-300"><X size={17} /></button></div><div className="mt-4 flex items-center justify-between"><div className="flex items-center rounded-lg border border-white/10"><button onClick={() => adjustQuantity(item.id, item.serverId, -1)} className="grid h-8 w-8 place-items-center text-slate-300 hover:bg-white/10"><Minus size={14} /></button><span className="grid h-8 w-8 place-items-center text-xs font-bold">{item.quantity}</span><button onClick={() => adjustQuantity(item.id, item.serverId, 1)} className="grid h-8 w-8 place-items-center text-slate-300 hover:bg-white/10"><Plus size={14} /></button></div><span className="font-mono text-sm font-bold text-emerald-200">{money.format((item.priceCents * item.quantity) / 100)}</span></div></div>) : <div className="grid h-52 place-items-center text-center"><ShoppingBag className="mb-3 text-slate-600" /><p className="text-sm text-slate-400">Seu carrinho está vazio.</p></div>}</div><div className="border-t border-white/10 p-5"><div className="mb-4 flex items-baseline justify-between"><span className="text-sm text-slate-400">Subtotal</span><strong className="font-mono text-xl text-white">{money.format(totalCents / 100)}</strong></div><Button disabled={!cart.length} onClick={startCheckout} className="h-12 w-full rounded-xl bg-emerald-300 font-bold text-slate-950 hover:bg-emerald-200">{isAuthenticated ? "Continuar para pagamento" : "Entrar para continuar"} <ChevronRight size={18} /></Button></div></aside></div> : null}
+      {cartOpen ? <div className="fixed inset-0 z-50 flex justify-end bg-slate-950/65 backdrop-blur-sm"><aside className="flex h-full w-full max-w-md flex-col border-l border-white/10 bg-[#0b1725] shadow-2xl"><div className="flex items-center justify-between border-b border-white/10 p-5"><div><p className="font-mono text-[10px] font-bold tracking-[.16em] text-emerald-300">SEU INVENTÁRIO</p><h2 className="mt-1 text-xl font-bold text-white">Carrinho</h2></div><Button onClick={closeCart} variant="ghost" size="icon" className="rounded-xl text-slate-300 hover:bg-white/10 hover:text-white"><X /></Button></div><div className="flex-1 space-y-3 overflow-y-auto p-5">{cart.length ? cart.map(item => <div key={`${item.id}:${item.serverId}`} className="rounded-2xl border border-white/10 bg-white/[.035] p-4"><div className="flex justify-between gap-4"><div><h3 className="font-semibold text-white">{item.name}</h3><p className="mt-1 text-xs text-slate-400">{item.serverName}</p></div><button aria-label={`Remover ${item.name}`} onClick={() => adjustQuantity(item.id, item.serverId, -item.quantity)} className="text-slate-500 transition hover:text-rose-300"><X size={17} /></button></div><div className="mt-4 flex items-center justify-between"><div className="flex items-center rounded-lg border border-white/10"><button onClick={() => adjustQuantity(item.id, item.serverId, -1)} className="grid h-8 w-8 place-items-center text-slate-300 hover:bg-white/10"><Minus size={14} /></button><span className="grid h-8 w-8 place-items-center text-xs font-bold">{item.quantity}</span><button onClick={() => adjustQuantity(item.id, item.serverId, 1)} className="grid h-8 w-8 place-items-center text-slate-300 hover:bg-white/10"><Plus size={14} /></button></div><span className="font-mono text-sm font-bold text-emerald-200">{money.format((item.priceCents * item.quantity) / 100)}</span></div></div>) : <div className="grid h-52 place-items-center text-center"><ShoppingBag className="mb-3 text-slate-600" /><p className="text-sm text-slate-400">Seu carrinho está vazio.</p></div>}</div><div className="border-t border-white/10 p-5"><div className="mb-4 flex items-baseline justify-between"><span className="text-sm text-slate-400">Subtotal</span><strong className="font-mono text-xl text-white">{money.format(totalCents / 100)}</strong></div><Button disabled={!cart.length} onClick={startCheckout} className="h-12 w-full rounded-xl bg-emerald-300 font-bold text-slate-950 hover:bg-emerald-200">{isAuthenticated ? "Continuar para pagamento" : "Entrar para continuar"} <ChevronRight size={18} /></Button></div></aside></div> : null}
 
       {checkoutOpen ? <div className="fixed inset-0 z-[60] grid place-items-center bg-slate-950/75 p-4 backdrop-blur-sm"><form onSubmit={submitOrder} className="w-full max-w-lg rounded-[1.6rem] border border-white/10 bg-[#0b1725] p-6 shadow-2xl"><div className="flex items-start justify-between gap-5"><div><p className="font-mono text-[10px] font-bold tracking-[.16em] text-emerald-300">IDENTIFICAÇÃO NO JOGO</p><h2 className="mt-1 text-2xl font-bold text-white">Finalize seu pedido</h2><p className="mt-2 text-sm leading-6 text-slate-400">Usamos estas informações somente para entregar o benefício ao jogador correto. PIX e cartão serão processados no ambiente seguro do gateway.</p></div><Button type="button" variant="ghost" size="icon" onClick={() => setCheckoutOpen(false)} className="rounded-xl text-slate-300 hover:bg-white/10 hover:text-white"><X /></Button></div><div className="mt-6 space-y-4"><div><label className="mb-2 block text-xs font-semibold text-slate-300">Nome do jogador</label><Input required value={username} onChange={event => setUsername(event.target.value)} maxLength={16} placeholder="SeuNick" className="h-11 rounded-xl border-white/10 bg-white/5 text-white placeholder:text-slate-500" /></div><div><label className="mb-2 block text-xs font-semibold text-slate-300">UUID do jogador</label><Input required value={uuid} onChange={event => setUuid(event.target.value)} placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" className="h-11 rounded-xl border-white/10 bg-white/5 font-mono text-white placeholder:text-slate-500" /></div><div><label className="mb-2 block text-xs font-semibold text-slate-300">Cupom de desconto <span className="font-normal text-slate-500">(opcional)</span></label><Input value={couponCode} onChange={event => setCouponCode(event.target.value.toUpperCase())} maxLength={48} placeholder="SEUCUPOM" className="h-11 rounded-xl border-white/10 bg-white/5 font-mono text-white placeholder:text-slate-500" /></div></div><div className="mt-6 flex items-center justify-between rounded-xl bg-white/5 p-4"><span className="text-sm text-slate-400">Total antes do cupom</span><strong className="font-mono text-lg text-emerald-200">{money.format(totalCents / 100)}</strong></div><Button type="submit" disabled={createOrder.isPending || checkoutPayment.isPending} className="mt-5 h-12 w-full rounded-xl bg-emerald-300 font-bold text-slate-950 hover:bg-emerald-200">{createOrder.isPending || checkoutPayment.isPending ? <Loader2 className="animate-spin" /> : "Ir para pagamento seguro"}</Button></form></div> : null}
     </div>

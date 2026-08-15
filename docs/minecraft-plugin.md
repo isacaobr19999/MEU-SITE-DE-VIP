@@ -2,6 +2,10 @@
 
 O módulo em `minecraft-plugin/` é um plugin Paper independente. Ele consulta a API da loja em intervalo configurável, recebe somente entregas destinadas ao seu servidor e confirma cada uma com um token de reivindicação de uso único. Nenhuma chave de API é armazenada no banco de dados da loja em texto puro.
 
+## Status de ativação
+
+A loja já possui uma entrega técnica aprovada e em estado `PENDING`, preservada com segurança para o primeiro servidor Paper configurado. Como ainda não há servidor Minecraft disponível, a instalação do plugin e a coleta da entrega ficarão aguardando somente a disponibilização do acesso ao servidor. Quando ele existir, o responsável precisa informar o painel de hospedagem ou um acesso administrativo seguro; a chave individual do servidor será revelada pelo painel da loja no momento da configuração e não deve ser enviada por mensagem.
+
 ## Instalação
 
 Compile o módulo com Java 21 e Gradle, copie o JAR gerado para `plugins/` em um servidor Paper 1.20.6 ou compatível e reinicie. Em `plugins/PlayStorCraft/config.yml`, defina a URL HTTPS da loja e a chave específica do servidor revelada no painel administrativo.

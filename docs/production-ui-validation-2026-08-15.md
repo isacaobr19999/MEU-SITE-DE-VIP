@@ -45,3 +45,11 @@ Esta verificação foi visual e não substitui o teste de uma compra real aprova
 O histórico autenticado exibiu os pedidos técnicos com estados e totais, inclusive as duas recusas sandbox como `FAILED`. No detalhe de um pedido recusado, o estado foi exibido sem indicar entrega liberada. Foi identificada, contudo, uma mensagem informativa genérica de confirmação futura que deve ser substituída por uma comunicação específica para estados `FAILED`, deixando claro que o pagamento não foi aprovado e que não há entrega disponível.
 
 Após a implantação da correção na VPS, o mesmo detalhe foi validado novamente em `https://playstorcraft.com.br`. A mensagem agora informa explicitamente: **"O pagamento não foi aprovado. Nenhuma entrega foi liberada para este pedido."** A página também usa sinalização visual de alerta para o status `FAILED`.
+
+## Correção de navegação do carrinho
+
+Em 15 de agosto de 2026, a rota pública `/cart` foi verificada em produção após a correção de navegação. Ela retornou HTTP 200 e abriu o painel lateral de carrinho com o item técnico existente, o servidor de destino, quantidade, subtotal e ação de continuação. A rota deixou de retornar a página 404 em viewport móvel.
+
+Na primeira tentativa de teste isolado do catálogo administrativo, a página reutilizou dados já em cache e permaneceu carregada. Esse resultado não foi considerado evidência de erro ou de nova tentativa; a validação seguirá somente após provocar uma nova consulta sem alterar dados, credenciais ou pedidos reais.
+
+A navegação da sessão isolada entre o painel e o catálogo foi confirmada sem gravar alterações. Como a tela continuou carregada, a interceptação de rede será ajustada para reconhecer requisições representadas como objetos `Request`; nenhum resultado de erro foi registrado nesta etapa.
