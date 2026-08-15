@@ -64,6 +64,12 @@ O usuário repetiu o acesso com a conta compradora de teste e o mesmo `ERR_TOO_M
 
 Após a repetição, o pedido continuou em `WAITING_PAYMENT`, o registro de pagamento em `PENDING`, sem identificador do gateway, e a fila permaneceu com zero entregas. Isso confirma novamente que não houve cobrança aprovada, webhook recebido ou entrega liberada.
 
+Após a correção e implantação na VPS, um novo pedido técnico foi criado. Seu registro local confirma `checkoutUrl` em `https://www.mercadopago.com.br/checkout/v1/redirect`, sem o subdomínio `sandbox.mercadopago.com.br` que apresentava o loop. A preferência aguarda somente a conclusão manual da compra de teste e não criou cobrança, webhook ou entrega até o momento.
+
+Na tentativa de pagar por esse novo endereço, o Mercado Pago voltou a informar que uma das partes é de teste. Como o redirecionamento já foi corrigido, a investigação passa a verificar se o Access Token configurado na VPS pertence à mesma conta vendedora de teste da conta compradora usada pelo usuário.
+
+A consulta autenticada ao token configurado na VPS identificou uma conta brasileira diferente das contas **Seller Test User** exibidas pelo usuário. Portanto, a conta compradora de teste está correta, mas o token atual não pertence ao vendedor de teste correspondente. Essa incompatibilidade explica a mensagem de que uma das partes é de teste. Para concluir o teste, a VPS deverá receber as credenciais da aplicação criada dentro da conta marcada como **Vendedor** nas Contas de teste; não devem ser usadas as credenciais da conta normal.
+
 ## Referências do diagnóstico
 
 [1] [Mercado Pago — Perform test purchases](https://www.mercadopago.com.ar/developers/en/docs/checkout-pro/integration-test/test-purchases)

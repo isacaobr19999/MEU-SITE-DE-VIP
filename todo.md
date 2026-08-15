@@ -94,5 +94,11 @@
 - [x] Investigar o erro ERR_TOO_MANY_REDIRECTS em sandbox.mercadopago.com.br relatado durante o checkout de teste.
 - [x] Registrar a repetição do ERR_TOO_MANY_REDIRECTS mesmo com conta compradora de teste e interromper novas tentativas sandbox no celular.
 - [x] Usar o init_point do Checkout Pro para contas vendedoras de teste e cobrir a seleção de URL com testes, evitando o loop do sandbox legado.
-- [ ] Implantar na VPS a correção que prioriza init_point no Checkout Pro para contas vendedoras de teste.
-- [ ] Validar após o deploy que um novo pedido técnico abre o Checkout Pro pelo init_point sem cair no loop do sandbox legado, ou documentar uma limitação externa remanescente.
+- [x] Implantar na VPS a correção que prioriza init_point no Checkout Pro para contas vendedoras de teste.
+- [x] Validar após o deploy que um novo pedido técnico abre o Checkout Pro pelo init_point sem cair no loop do sandbox legado, ou documentar uma limitação externa remanescente.
+- [ ] Confirmar manualmente que o novo Checkout Pro abre em mercadopago.com.br sem ERR_TOO_MANY_REDIRECTS após a correção de URL.
+- [x] Verificar se o Access Token em produção pertence à mesma conta vendedora de teste que a conta compradora usada no checkout.
+- [ ] Obter o Access Token da aplicação da conta Seller Test User brasileira correspondente e configurá-lo na VPS para o teste sandbox compatível.
+- [ ] Substituir as credenciais de teste por credenciais reais do Mercado Pago e validar a conta vendedora antes de ativar vendas.
+- [ ] Validar o Access Token recebido contra a API do Mercado Pago sem expor o valor e solicitar o segredo de webhook faltante antes da ativação final.
+- [ ] Propagar MERCADO_PAGO_PUBLIC_KEY ao contêiner da aplicação e validar a configuração final de pagamentos na VPS.

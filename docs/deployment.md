@@ -32,6 +32,10 @@ Na VPS auto-hospedada, as variáveis são mantidas em `/root/playstorcraft-runti
 
 > O executor técnico de cobrança sandbox está bloqueado por padrão. Ele só pode ser usado depois de autorização explícita, por meio da variável efêmera `MERCADO_PAGO_ALLOW_SANDBOX_PAYMENT_EXECUTION=true`; esse bloqueio não interfere no Checkout Pro da loja.
 
+### Transição para vendas reais
+
+Na ativação comercial final, use as credenciais de produção obtidas na conta vendedora real do Mercado Pago, não nas contas de teste. Os valores permanecem exclusivamente no runtime protegido da VPS; não devem ser enviados em capturas de tela, incorporados no código ou usados no frontend. A primeira cobrança real deve permanecer de baixo valor e ser acompanhada até o pedido, webhook e fila de entrega confirmarem o fluxo completo.
+
 ## Ativação da manutenção
 
 Após a publicação, crie uma tarefa de manutenção do projeto com a expressão UTC `0 0 * * * *`, apontando para `POST /api/scheduled/commerce-maintenance`. Esse processo devolve claims expirados à fila e agenda remoções de grupos LuckPerms cujo período contratual terminou. A rota aceita somente chamadas autenticadas da plataforma e é idempotente; não utilize temporizadores em memória. [3]
