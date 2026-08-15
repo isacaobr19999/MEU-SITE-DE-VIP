@@ -55,5 +55,6 @@
 - [x] Implantar a aplicação autonomamente com Docker, Nginx, HTTPS e tarefas de manutenção.
 - [x] Criar uma tela responsiva de login e cadastro por e-mail e senha para a VPS.
 - [x] Redirecionar acionadores de login existentes para a autenticação própria sem OAuth Manus.
-- [ ] Validar a criação do primeiro administrador e o acesso ao painel em produção.
+- [x] Validar a criação do primeiro administrador e o acesso ao painel em produção.
 - [x] Adaptar e ativar a rotina segura de manutenção de comércio na VPS.
+- [x] Corrigir a preservação de e-mail e função administrativa após autenticação local na VPS.
