@@ -17,3 +17,5 @@ Esta verificação foi visual e não substitui o teste de uma compra real aprova
 ## Histórico e detalhe de pedidos
 
 O histórico autenticado exibiu os pedidos técnicos com estados e totais, inclusive as duas recusas sandbox como `FAILED`. No detalhe de um pedido recusado, o estado foi exibido sem indicar entrega liberada. Foi identificada, contudo, uma mensagem informativa genérica de confirmação futura que deve ser substituída por uma comunicação específica para estados `FAILED`, deixando claro que o pagamento não foi aprovado e que não há entrega disponível.
+
+Após a implantação da correção na VPS, o mesmo detalhe foi validado novamente em `https://playstorcraft.com.br`. A mensagem agora informa explicitamente: **"O pagamento não foi aprovado. Nenhuma entrega foi liberada para este pedido."** A página também usa sinalização visual de alerta para o status `FAILED`.
