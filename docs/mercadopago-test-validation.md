@@ -16,4 +16,8 @@ O Checkout Pro do Mercado Pago para o Brasil oferece cartão, Pix, boleto e Cont
 - https://www.mercadopago.com.ar/developers/pt/docs/checkout-pro/integration-test/test-purchases
 - https://www.mercadopago.com.ar/developers/en/docs/checkout-pro/create-payment-preference
 
+## Cobertura automatizada atualizada
+
+Após a ampliação da cobertura, a suíte completa concluiu com 13 arquivos e 28 testes aprovados. Ela inclui regras de cupons e transições de pedido, validação de assinatura e eventos de webhook, aprovação/reprocessamento estável e os fluxos de deferimento offline, retry e conclusão idempotente da fila de entregas.
+
 Como alternativa oficial para validar Pix por API, a documentação do Mercado Pago descreve a criação de uma order de teste com o primeiro nome do pagador igual a `APRO`, o que resulta em aprovação automática no ambiente de teste. Essa rota é distinta do fluxo de Checkout Pro que a loja utiliza; portanto, ela serve para validar o gateway, mas não substitui a confirmação de um pedido real da loja via Checkout Pro.

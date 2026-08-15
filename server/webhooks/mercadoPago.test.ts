@@ -48,4 +48,21 @@ describe("webhook Mercado Pago", () => {
     expect(mocks.applyPayment).toHaveBeenCalledWith(expect.objectContaining({ eventId: "evt-44" }));
     expect(res.status).toHaveBeenCalledWith(200);
   });
+
+  it("encaminha o pagamento aprovado consultado no gateway, sem confiar no payload recebido", async () => {
+    const res = response();
+    await mercadoPagoWebhook(request({ id: "evt-approved", type: "payment", data: { id: "991" } }, { "x-signature": "ok", "x-request-id": "req-approved" }), res);
+    expect(mocks.applyPayment).toHaveBeenCalledWith({
+      eventId: "evt-approved",
+      payment: expect.objectContaining({ id: 991, status: "approved", transaction_amount: 25 }),
+    });
+  });
+
+  it("repassa o mesmo identificador quando o gateway reenvia uma notificação", async () => {
+    const payload = { id: "evt-replay", type: "payment", data: { id: "991" } };
+    await mercadoPagoWebhook(request(payload, { "x-signature": "ok", "x-request-id": "req-first" }), response());
+    await mercadoPagoWebhook(request(payload, { "x-signature": "ok", "x-request-id": "req-retry" }), response());
+    expect(mocks.applyPayment).toHaveBeenNthCalledWith(1, expect.objectContaining({ eventId: "evt-replay" }));
+    expect(mocks.applyPayment).toHaveBeenNthCalledWith(2, expect.objectContaining({ eventId: "evt-replay" }));
+  });
 });

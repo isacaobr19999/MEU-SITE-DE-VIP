@@ -18,7 +18,7 @@
 - [x] Criar o módulo do plugin Paper PlayStorCraft com comandos, permissões, autenticação de servidor e suporte a placeholders.
 - [x] Documentar a integração com LuckPerms e o modelo de comandos de entrega sem conflito com TAB.
 - [x] Criar referência versionada permitida de variáveis de ambiente, documentação de API e guia de implantação em domínio próprio.
-- [ ] Escrever e executar testes Vitest para regras de preços, cupons, estados de pedidos, webhook e idempotência de entregas.
+- [x] Escrever e executar testes Vitest para regras de preços, cupons, estados de pedidos, webhook e idempotência de entregas.
 - [ ] Verificar tipos, build, migrations, fluxos críticos e experiência em desktop e celular.
 - [ ] Salvar um checkpoint final com todos os itens concluídos.
 - [x] Criar rota/página de detalhes do produto no frontend e ligar cada card do catálogo a essa página.
@@ -37,8 +37,8 @@
 - [x] Criar a tarefa recorrente de manutenção de comércio após publicar a versão com o endpoint agendado.
 - [x] Adiar a entrega quando o jogador estiver offline e somente confirmar comandos que exigem presença após ele entrar no servidor.
 - [x] Compilar e validar o artefato JAR do módulo minecraft-plugin antes da entrega final.
-- [ ] Adicionar testes para webhook: assinatura inválida, evento ignorado, aprovação e reprocessamento idempotente.
-- [ ] Adicionar testes da fila para defer offline, retry e conclusão idempotente com repositórios isolados.
+- [x] Adicionar testes para webhook: assinatura inválida, evento ignorado, aprovação e reprocessamento idempotente.
+- [x] Adicionar testes da fila para defer offline, retry e conclusão idempotente com repositórios isolados.
 - [ ] Validar de ponta a ponta checkout e webhook em HTTPS público após configurar as credenciais do Mercado Pago.
 - [x] Executar e validar o build de produção da aplicação web.
 - [ ] Cadastrar APP_BASE_URL com https://playcraft-fw9e2wu7.manus.space e os segredos do gateway antes de ativar pagamentos reais.
@@ -58,7 +58,7 @@
 - [x] Validar a criação do primeiro administrador e o acesso ao painel em produção.
 - [x] Adaptar e ativar a rotina segura de manutenção de comércio na VPS.
 - [x] Corrigir a preservação de e-mail e função administrativa após autenticação local na VPS.
-- [ ] Cobrir explicitamente com Vitest cupons, estados de pedidos, assinatura inválida, evento ignorado, aprovação e reprocessamento idempotente do webhook, além de defer offline, retry e conclusão idempotente da fila.
+- [x] Cobrir explicitamente com Vitest cupons, estados de pedidos, assinatura inválida, evento ignorado, aprovação e reprocessamento idempotente do webhook, além de defer offline, retry e conclusão idempotente da fila.
 - [ ] Validar em produção, em desktop e celular, catálogo, login/cadastro, carrinho, histórico/detalhe de pedidos e painel administrativo.
 - [x] Configurar e validar o segredo de assinatura do webhook do Mercado Pago no ambiente da VPS.
 - [ ] Configurar o Access Token de teste do Mercado Pago e executar uma cobrança de validação por PIX ou cartão.
