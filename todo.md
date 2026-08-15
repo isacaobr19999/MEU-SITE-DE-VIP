@@ -66,3 +66,9 @@
 - [x] Ajustar o Checkout Pro para usar a URL de sandbox quando o Access Token de teste estiver configurado.
 - [ ] Confirmar a habilitação de PIX na preferência do Mercado Pago e documentar a ativação no ambiente real.
 - [x] Impedir a inicialização do OAuth Manus quando a loja estiver executando em modo auto-hospedado.
+- [ ] Validar uma aprovação sandbox vinculada ao pedido técnico sem depender do botão bloqueado no checkout móvel.
+- [ ] Obter credenciais de uma conta vendedora de teste separada para concluir o pagamento sandbox sem credenciais reais.
+- [ ] Obter as credenciais de produção da conta vendedora de teste para validar o Checkout Pro com cartão sandbox.
+- [x] Documentar as recusas `cc_rejected_high_risk`, interromper novas cobranças sandbox e validar o webhook por testes locais assinados.
+- [x] Exigir confirmação explícita por variável de ambiente antes de executar qualquer cobrança sandbox automática e documentar esse bloqueio operacional.
+- [x] Adicionar teste local de assinatura válida do webhook Mercado Pago sem mockar a verificação criptográfica.

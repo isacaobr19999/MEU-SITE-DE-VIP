@@ -16,9 +16,23 @@ O Checkout Pro do Mercado Pago para o Brasil oferece cartão, Pix, boleto e Cont
 - https://www.mercadopago.com.ar/developers/pt/docs/checkout-pro/integration-test/test-purchases
 - https://www.mercadopago.com.ar/developers/en/docs/checkout-pro/create-payment-preference
 
+Na documentação oficial brasileira de testes do Checkout Pro, o Mercado Pago orienta o uso de uma janela anônima, conta compradora de teste e cartão de teste; para aprovação, o cartão Mastercard `5480 8328 0103 3311`, validade `11/30`, código `123` deve ser combinado com titular `APRO` e CPF `12345678909`. A documentação também esclarece que vendedor e comprador de teste devem ser contas diferentes. Como o botão móvel do Checkout Pro permaneceu bloqueado para o navegador automatizado, foi considerada uma transação técnica de sandbox vinculada por referência externa.
+
+- https://www.mercadopago.com.ar/developers/en/docs/checkout-pro/integration-test/test-purchases
+- https://www.mercadopago.com.br/developers/en/docs/checkout-bricks/integration-test/test-payment-flow
+- https://www.mercadopago.com.br/developers/en/docs/subscriptions/additional-content/cardtoken
+
+## Recusas sandbox por prevenção a fraude
+
+Em 15 de agosto de 2026, duas cobranças técnicas, sem qualquer valor real, foram enviadas ao ambiente de testes por API. A primeira, de ID `173022564123`, e a segunda, de ID `173021553017`, retornaram ambas o estado `rejected` com detalhe `cc_rejected_high_risk`. A segunda tentativa já usava exatamente o cartão, titular e CPF de aprovação publicados para o Brasil, em pedido técnico distinto. Por segurança, nenhuma outra tentativa automática será enviada.
+
+O próprio Mercado Pago classifica `cc_rejected_high_risk` como uma recusa pela camada de prevenção a fraude e informa que tentativas consecutivas com itens ou parâmetros semelhantes podem acionar bloqueio temporário. O resultado, portanto, não indica aprovação, falha de estoque ou entrega; a cobrança foi recusada antes de qualquer confirmação de pagamento. A validação ponta a ponta ficará pendente até que o Checkout Pro seja concluído manualmente, em janela anônima, por uma conta compradora de teste diferente da vendedora.
+
+O utilitário técnico de criação de cobrança agora está **bloqueado por padrão**. Uma execução futura exige que o responsável defina explicitamente `MERCADO_PAGO_ALLOW_SANDBOX_PAYMENT_EXECUTION=true` no mesmo comando, além de informar um pedido técnico. Essa barreira evita novos disparos acidentais e não afeta o Checkout Pro público da loja.
+
 ## Cobertura automatizada atualizada
 
-Após a ampliação da cobertura, a suíte completa concluiu com 13 arquivos e 28 testes aprovados. Ela inclui regras de cupons e transições de pedido, validação de assinatura e eventos de webhook, aprovação/reprocessamento estável e os fluxos de deferimento offline, retry e conclusão idempotente da fila de entregas.
+Após a ampliação da cobertura, a suíte completa concluiu com 14 arquivos e 29 testes aprovados. Ela inclui regras de cupons e transições de pedido, validação de assinatura e eventos de webhook, aprovação/reprocessamento estável e os fluxos de deferimento offline, retry e conclusão idempotente da fila de entregas.
 
 ## Verificação de produção
 
@@ -29,3 +43,9 @@ O histórico autenticado exibiu os pedidos técnicos pendentes, e o detalhe do p
 O painel administrativo permaneceu acessível para a conta proprietária e exibiu o catálogo, o servidor de validação, o jogador técnico, a auditoria e os pedidos pendentes. As métricas permaneceram coerentes: nove pedidos ativos, nenhuma entrega pendente ou com erro e um jogador registrado.
 
 Como alternativa oficial para validar Pix por API, a documentação do Mercado Pago descreve a criação de uma order de teste com o primeiro nome do pagador igual a `APRO`, o que resulta em aprovação automática no ambiente de teste. Essa rota é distinta do fluxo de Checkout Pro que a loja utiliza; portanto, ela serve para validar o gateway, mas não substitui a confirmação de um pedido real da loja via Checkout Pro.
+
+## Referências complementares
+
+- https://www.mercadopago.com.br/developers/pt/docs/checkout-pro/integration-test/test-purchases
+- https://www.mercadopago.com.br/developers/pt/docs/your-integrations/test/cards
+- https://www.mercadopago.com.br/developers/pt/docs/subscriptions/how-tos/improve-payment-approval/reasons-for-rejection
