@@ -121,9 +121,14 @@
 - [x] Executar e acompanhar uma compra real autorizada de R$ 1,00, confirmando pagamento, webhook e fila de entrega.
 - [x] Validar a compra real de R$ 1,00 com uma conta compradora normal diferente da conta vendedora IsacaoBR.
 - [x] Correlacionar o pagamento real informado com o pedido, webhook e entrega gerada pela PlayStorCraft.
-- [ ] Desativar o produto técnico de validação sem apagar pedidos, pagamentos ou auditoria histórica.
+- [x] Desativar o produto técnico de validação sem apagar pedidos, pagamentos ou auditoria histórica.
 - [ ] Cadastrar os produtos reais informados pelo usuário com preços, destinos e comandos de entrega corretos.
 - [ ] Configurar os benefícios VIP e os comandos LuckPerms correspondentes no servidor Paper.
 - [ ] Validar o catálogo real e a entrega dos benefícios VIP antes de salvar a próxima versão.
 - [x] Substituir o banner visual atual da vitrine pela imagem Banner.webp fornecida pelo usuário.
 - [x] Validar o novo banner em desktop e celular e salvar a atualização visual.
+- [x] Extrair e identificar as imagens de VIP, boost e cash do arquivo Imagens.rar.
+- [x] Associar as imagens aos sete produtos correspondentes em rascunho, sem alterar preços, comandos ou histórico.
+- [x] Validar os sete rascunhos no banco: todos possuem imagem, preço zero, nenhum comando e nenhum produto publicado para compra.
+- [ ] Validar visualmente em desktop e celular as imagens de VIP, Booster e Cash em uma interface administrativa segura antes de ativar os produtos.
+- [ ] Confirmar com o usuário os preços, durações, servidores de destino e comandos LuckPerms antes de ativar os produtos reais.
