@@ -135,3 +135,4 @@
 - [ ] Receber e confirmar os nomes exatos dos grupos LuckPerms criados para Ferro, Ouro, Diamante, Esmeralda, Obsidian e Booster antes de associá-los aos rascunhos.
 - [x] Associar os grupos LuckPerms confirmados `ferro`, `ouro`, `diamante`, `esmeralda` e `obsidian` aos cinco rascunhos VIP, mantendo-os inativos.
 - [ ] Confirmar se Booster e Cash usam grupo LuckPerms, comando específico ou nenhum grupo antes de configurar esses produtos.
+- [x] Validar no Paper que LuckPerms e PlayStorCraft estão ativos e que os cinco grupos VIP podem ser usados pelos rascunhos vinculados.
