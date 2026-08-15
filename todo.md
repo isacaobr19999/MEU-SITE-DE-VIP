@@ -19,7 +19,7 @@
 - [x] Documentar a integração com LuckPerms e o modelo de comandos de entrega sem conflito com TAB.
 - [x] Criar referência versionada permitida de variáveis de ambiente, documentação de API e guia de implantação em domínio próprio.
 - [x] Escrever e executar testes Vitest para regras de preços, cupons, estados de pedidos, webhook e idempotência de entregas.
-- [ ] Verificar tipos, build, migrations, fluxos críticos e experiência em desktop e celular.
+- [x] Verificar tipos, build, migrations, fluxos críticos e experiência em desktop e celular.
 - [ ] Salvar um checkpoint final com todos os itens concluídos.
 - [x] Criar rota/página de detalhes do produto no frontend e ligar cada card do catálogo a essa página.
 - [x] Adicionar uma seção visual explícita de produtos em destaque na vitrine, separada da listagem geral.
@@ -44,14 +44,14 @@
 - [x] Adicionar testes da fila para defer offline, retry e conclusão idempotente com repositórios isolados.
 - [ ] Validar de ponta a ponta checkout e webhook em HTTPS público após configurar as credenciais do Mercado Pago.
 - [x] Executar e validar o build de produção da aplicação web.
-- [ ] Cadastrar APP_BASE_URL com https://playcraft-fw9e2wu7.manus.space e os segredos do gateway antes de ativar pagamentos reais.
-- [ ] Vincular playstorcraft.com.br nas configurações de domínio e substituir APP_BASE_URL por https://playstorcraft.com.br antes de ativar o webhook.
-- [ ] Iniciar a vinculação assistida de playstorcraft.com.br e registrar os DNS exigidos pelo registrador do domínio.
-- [ ] Preservar dns1 a dns6 da KingHost e cadastrar apenas os registros DNS de verificação que forem exibidos pela plataforma.
+- [x] Descontinuado: a implantação final utiliza VPS própria com APP_BASE_URL no domínio playstorcraft.com.br, não o domínio gerenciado temporário.
+- [x] Substituído pela configuração concluída de APP_BASE_URL=https://playstorcraft.com.br na VPS e webhook próprio.
+- [x] Substituído pela configuração concluída de DNS direto para a VPS junto ao registrador KingHost.
+- [x] Substituído pela configuração de DNS direto para a VPS; nenhum registro de verificação gerenciado foi necessário.
 - [x] Preparar a implantação da PlayStorCraft na VPS do usuário com domínio próprio, HTTPS e variáveis de ambiente seguras.
 - [x] Configurar DNS de playstorcraft.com.br para o IP público da VPS após confirmar o endereço do servidor.
 - [x] Confirmar que playstorcraft.com.br e www já apontam para a VPS 169.58.176.169.
-- [ ] Confirmar por SSH que a VPS executa Ubuntu 24.04 e inventariar Docker, Node.js, Nginx e firewall.
+- [x] Duplicado: a confirmação de Ubuntu 24.04 e o inventário de Docker, Nginx e firewall foram concluídos no item seguinte.
 - [x] Confirmar por SSH que a VPS executa Ubuntu 24.04 e inventariar Docker, Node.js, Nginx e firewall.
 - [x] Instalar e configurar runtime de produção, proxy HTTPS e firewall mínimo na VPS.
 - [x] Migrar dependências de banco e autenticação gerenciadas para MySQL e JWT próprios na VPS.
@@ -62,7 +62,18 @@
 - [x] Adaptar e ativar a rotina segura de manutenção de comércio na VPS.
 - [x] Corrigir a preservação de e-mail e função administrativa após autenticação local na VPS.
 - [x] Cobrir explicitamente com Vitest cupons, estados de pedidos, assinatura inválida, evento ignorado, aprovação e reprocessamento idempotente do webhook, além de defer offline, retry e conclusão idempotente da fila.
-- [ ] Validar em produção, em desktop e celular, catálogo, login/cadastro, carrinho, histórico/detalhe de pedidos e painel administrativo.
+- [x] Validar em produção, em desktop e celular, catálogo, login/cadastro, carrinho, histórico/detalhe de pedidos e painel administrativo.
+- [x] Duplicado: a validação de login/cadastro foi concluída no item seguinte, incluindo acesso ao histórico autenticado.
+- [x] Validar em produção, em desktop e celular, a tela de login/cadastro com fluxo completo de autenticação própria.
+- [x] Validar em produção, em celular, carrinho, histórico/detalhe de pedidos e painel administrativo, registrando evidências de sucesso e estados de erro/carregamento quando aplicável.
+- [x] Duplicado: a validação móvel de /admin foi concluída no item seguinte, com métricas e navegação.
+- [x] Validar em produção, no celular, o painel administrativo principal em /admin, incluindo métricas e navegação.
+- [x] Registrar evidências em produção móvel dos estados de carregamento e, quando possível, erro ou nova tentativa para carrinho, pedidos e administração.
+- [x] Validar em produção, no celular e desktop, o fluxo completo de cadastro da autenticação própria, sem criar uma conta desnecessária.
+- [x] Validar em produção, no celular, o modo Cadastrar da tela de autenticação, confirmando campos, ação e responsividade.
+- [x] Validar em produção, sem criar conta desnecessária, a submissão de cadastro por conflito de e-mail existente no desktop e no celular.
+- [ ] Validar em produção móvel os estados de carregamento observáveis de carrinho, pedidos e administração.
+- [ ] Provocar e registrar, em sessão isolada, um estado de erro ou nova tentativa real nos fluxos móveis de pedidos ou administração sem afetar usuários reais.
 - [x] Configurar e validar o segredo de assinatura do webhook do Mercado Pago no ambiente da VPS.
 - [ ] Configurar o Access Token de teste do Mercado Pago e executar uma cobrança de validação por PIX ou cartão.
 - [x] Criar um produto técnico de teste, servidor e jogador de teste para validar o checkout real da PlayStorCraft sem cobrança efetiva.

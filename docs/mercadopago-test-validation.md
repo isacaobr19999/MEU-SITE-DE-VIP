@@ -32,7 +32,17 @@ O utilitário técnico de criação de cobrança agora está **bloqueado por pad
 
 ## Cobertura automatizada atualizada
 
-Após a ampliação da cobertura, a suíte completa concluiu com 14 arquivos e 29 testes aprovados. Ela inclui regras de cupons e transições de pedido, validação de assinatura e eventos de webhook, aprovação/reprocessamento estável e os fluxos de deferimento offline, retry e conclusão idempotente da fila de entregas.
+Após a ampliação da cobertura, a suíte completa concluiu com 18 arquivos e 46 testes aprovados. Ela inclui regras de cupons e transições de pedido, validação de assinatura e eventos de webhook, aprovação/reprocessamento estável, cadastro local, operações administrativas críticas e os fluxos de deferimento offline, retry e conclusão idempotente da fila de entregas.
+
+## Dependências externas para concluir pagamentos
+
+| Dependência | Situação atual | Próxima ação necessária |
+| --- | --- | --- |
+| Aprovação de checkout sandbox | Bloqueada pelo antifraude em tentativas automatizadas; nenhuma cobrança real foi criada. | Concluir manualmente o Checkout Pro em janela anônima, com conta compradora de teste diferente da conta vendedora. |
+| Pix em ambiente real | A preferência da loja não exclui Pix, mas a disponibilidade é definida pelo Mercado Pago e pela conta vendedora. | Confirmar Pix habilitado no painel do Mercado Pago após disponibilizar as credenciais reais. |
+| Pagamento real de validação | Ainda não realizado para evitar cobrança antes da ativação comercial. | Após receber as credenciais reais, realizar uma compra de baixo valor, confirmar o webhook e acompanhar uma entrega. |
+
+> A aplicação e a VPS já estão preparadas para essas etapas: a URL HTTPS pública, a verificação de assinatura, a consulta autenticada do pagamento e a fila idempotente de entrega permanecem configuradas. O passo restante depende exclusivamente de ações na conta Mercado Pago e de uma conta compradora de teste ou de credenciais reais.
 
 ## Verificação de produção
 
