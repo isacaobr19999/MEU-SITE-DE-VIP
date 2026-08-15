@@ -65,3 +65,4 @@
 - [x] Criar um produto técnico de teste, servidor e jogador de teste para validar o checkout real da PlayStorCraft sem cobrança efetiva.
 - [x] Ajustar o Checkout Pro para usar a URL de sandbox quando o Access Token de teste estiver configurado.
 - [ ] Confirmar a habilitação de PIX na preferência do Mercado Pago e documentar a ativação no ambiente real.
+- [x] Impedir a inicialização do OAuth Manus quando a loja estiver executando em modo auto-hospedado.

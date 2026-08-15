@@ -3,7 +3,6 @@ import express from "express";
 import { createServer } from "http";
 import net from "net";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
-import { registerOAuthRoutes } from "./oauth";
 import { registerLocalAuthRoutes } from "../localAuth";
 import { registerStorageProxy } from "./storageProxy";
 import { appRouter } from "../routers";
@@ -39,8 +38,12 @@ async function startServer() {
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
   registerStorageProxy(app);
-  if (process.env.SELF_HOSTED === "true") registerLocalAuthRoutes(app);
-  else registerOAuthRoutes(app);
+  if (process.env.SELF_HOSTED === "true") {
+    registerLocalAuthRoutes(app);
+  } else {
+    const { registerOAuthRoutes } = await import("./oauth");
+    registerOAuthRoutes(app);
+  }
   app.post("/api/webhooks/mercadopago", mercadoPagoWebhook);
   app.post("/api/minecraft/deliveries/claim", claimMinecraftDeliveries);
   app.post("/api/minecraft/deliveries/complete", completeMinecraftDelivery);
