@@ -20,4 +20,12 @@ O Checkout Pro do Mercado Pago para o Brasil oferece cartão, Pix, boleto e Cont
 
 Após a ampliação da cobertura, a suíte completa concluiu com 13 arquivos e 28 testes aprovados. Ela inclui regras de cupons e transições de pedido, validação de assinatura e eventos de webhook, aprovação/reprocessamento estável e os fluxos de deferimento offline, retry e conclusão idempotente da fila de entregas.
 
+## Verificação de produção
+
+O domínio `https://playstorcraft.com.br/` foi verificado após a atualização da VPS. A vitrine, navegação pública, catálogo, categoria de validação e produto técnico de R$ 1,00 foram carregados corretamente. A primeira captura ocorreu durante a transição de carregamento; uma nova inspeção confirmou a renderização completa do conteúdo e dos controles do catálogo.
+
+O histórico autenticado exibiu os pedidos técnicos pendentes, e o detalhe do pedido apresentou produto, valor, estado `WAITING PAYMENT` e a instrução de que somente a confirmação do gateway disponibiliza a entrega.
+
+O painel administrativo permaneceu acessível para a conta proprietária e exibiu o catálogo, o servidor de validação, o jogador técnico, a auditoria e os pedidos pendentes. As métricas permaneceram coerentes: nove pedidos ativos, nenhuma entrega pendente ou com erro e um jogador registrado.
+
 Como alternativa oficial para validar Pix por API, a documentação do Mercado Pago descreve a criação de uma order de teste com o primeiro nome do pagador igual a `APRO`, o que resulta em aprovação automática no ambiente de teste. Essa rota é distinta do fluxo de Checkout Pro que a loja utiliza; portanto, ela serve para validar o gateway, mas não substitui a confirmação de um pedido real da loja via Checkout Pro.
