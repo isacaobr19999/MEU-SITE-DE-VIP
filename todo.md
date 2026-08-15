@@ -87,3 +87,9 @@
 - [x] Exigir confirmação explícita por variável de ambiente antes de executar qualquer cobrança sandbox automática e documentar esse bloqueio operacional.
 - [x] Adicionar teste local de assinatura válida do webhook Mercado Pago sem mockar a verificação criptográfica.
 - [x] Exibir uma mensagem específica para pedidos `FAILED`, sem sugerir que a confirmação e a entrega ainda estão pendentes.
+- [x] Investigar o erro relatado após pagamento, correlacionando pedido, resposta do Mercado Pago, webhook e fila de entrega.
+- [x] Confirmar na fila de entregas que o pedido afetado não gerou claim nem entrega pendente antes da aprovação do pagamento.
+- [x] Documentar e orientar o uso de conta compradora de teste separada no Checkout Pro sandbox após a confirmação da mensagem de bloqueio.
+- [ ] Acompanhar o próximo Checkout Pro sandbox usando a conta compradora de teste brasileira identificada pelo usuário, sem expor suas credenciais.
+- [x] Investigar o erro ERR_TOO_MANY_REDIRECTS em sandbox.mercadopago.com.br relatado durante o checkout de teste.
+- [x] Registrar a repetição do ERR_TOO_MANY_REDIRECTS mesmo com conta compradora de teste e interromper novas tentativas sandbox no celular.

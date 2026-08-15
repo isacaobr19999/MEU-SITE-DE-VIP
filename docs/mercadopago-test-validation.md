@@ -44,6 +44,34 @@ Após a ampliação da cobertura, a suíte completa concluiu com 18 arquivos e 4
 
 > A aplicação e a VPS já estão preparadas para essas etapas: a URL HTTPS pública, a verificação de assinatura, a consulta autenticada do pagamento e a fila idempotente de entrega permanecem configuradas. O passo restante depende exclusivamente de ações na conta Mercado Pago e de uma conta compradora de teste ou de credenciais reais.
 
+## Incidente de pagamento informado pelo usuário
+
+Em 15 de agosto de 2026, após o relato de erro ao tentar pagar, foi localizado o pedido `PSC-20260815-6E7C7B06`, no valor de R$ 1,00. O pedido permanece em `WAITING_PAYMENT` e seu registro de pagamento permanece `PENDING`, sem identificador de pagamento do Mercado Pago. A preferência foi criada corretamente no sandbox e aponta para a referência externa esperada, mas a consulta autenticada ao Mercado Pago não retornou nenhuma cobrança vinculada a essa referência, nem a listagem recente do gateway retornou uma nova aprovação ou recusa. A fila de entregas foi consultada diretamente e retornou **zero** entregas para esse pedido.
+
+> Portanto, não houve cobrança confirmada nem webhook recebido para esse pedido. O erro ocorreu antes da criação de um pagamento pelo Mercado Pago; não há item liberado nem valor a ser estornado pela PlayStorCraft.
+
+O usuário confirmou que o Checkout Pro exibiu a mensagem: **"Uma das partes com as quais você está tentando efetuar o pagamento é de teste."** Esse retorno confirma que a preferência sandbox foi aberta corretamente e que a tentativa usou uma conta que não é a conta compradora de teste exigida pelo Mercado Pago. A correção não exige mudança no código da loja: o próximo teste deve usar uma conta compradora de teste distinta da conta vendedora, sem cobrar valor real.
+
+Para o próximo teste, a documentação oficial do Mercado Pago orienta: criar ou localizar uma conta de teste do tipo **Buyer** no mesmo país da conta vendedora; usar o usuário, senha e, se solicitado, o código de verificação da própria conta de teste; abrir a loja em uma janela anônima; e iniciar o Checkout Pro usando essa sessão. O Mercado Pago também recomenda cartão de teste para simular aprovação, sem uso de cartão ou saldo real. [1] [2]
+
+A conta compradora de teste brasileira foi identificada pelo usuário nas telas de Contas de teste. Por segurança, seus dados de acesso não são armazenados nesta documentação nem repetidos em mensagens. O procedimento é encerrar a sessão normal do Mercado Pago, abrir uma guia anônima, autenticar exclusivamente com a conta marcada como **Comprador** e então iniciar novamente o checkout de R$ 1,00 na loja.
+
+Na tentativa seguinte, o navegador do usuário apresentou `ERR_TOO_MANY_REDIRECTS` em `sandbox.mercadopago.com.br`. Esse é um loop de sessão do checkout sandbox e ocorreu antes da criação de pagamento, sem webhook ou entrega. A preferência da loja continua válida; a verificação seguinte deve confirmar os back URLs e as regras de redirecionamento retornadas pelo Mercado Pago.
+
+A preferência afetada foi consultada diretamente. Seus três `back_urls` apontam para a página HTTPS do pedido em `playstorcraft.com.br`, `auto_return` está configurado somente para aprovação e `notification_url` aponta para o webhook público da loja. Isso está alinhado ao formato oficial de Checkout Pro; portanto, não há loop entre a loja e o Mercado Pago. O redirecionamento excessivo está restrito à sessão/cookies do ambiente sandbox. [3]
+
+O usuário repetiu o acesso com a conta compradora de teste e o mesmo `ERR_TOO_MANY_REDIRECTS` persistiu. Como o erro é reproduzível no próprio domínio sandbox após a separação correta das contas, novas tentativas pelo celular foram interrompidas. O teste fim a fim permanece bloqueado por uma limitação externa do ambiente sandbox, não por configuração da preferência, do retorno HTTPS, do webhook ou da fila de entrega.
+
+Após a repetição, o pedido continuou em `WAITING_PAYMENT`, o registro de pagamento em `PENDING`, sem identificador do gateway, e a fila permaneceu com zero entregas. Isso confirma novamente que não houve cobrança aprovada, webhook recebido ou entrega liberada.
+
+## Referências do diagnóstico
+
+[1] [Mercado Pago — Perform test purchases](https://www.mercadopago.com.ar/developers/en/docs/checkout-pro/integration-test/test-purchases)
+
+[2] [Mercado Pago — Test accounts](https://www.mercadopago.com.ar/developers/en/docs/your-integrations/test/accounts)
+
+[3] [Mercado Pago — Configure return URLs](https://www.mercadopago.com.ar/developers/en/docs/checkout-pro/configure-back-urls)
+
 ## Verificação de produção
 
 O domínio `https://playstorcraft.com.br/` foi verificado após a atualização da VPS. A vitrine, navegação pública, catálogo, categoria de validação e produto técnico de R$ 1,00 foram carregados corretamente. A primeira captura ocorreu durante a transição de carregamento; uma nova inspeção confirmou a renderização completa do conteúdo e dos controles do catálogo.
