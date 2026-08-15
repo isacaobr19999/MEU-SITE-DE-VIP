@@ -62,3 +62,6 @@
 - [ ] Validar em produção, em desktop e celular, catálogo, login/cadastro, carrinho, histórico/detalhe de pedidos e painel administrativo.
 - [x] Configurar e validar o segredo de assinatura do webhook do Mercado Pago no ambiente da VPS.
 - [ ] Configurar o Access Token de teste do Mercado Pago e executar uma cobrança de validação por PIX ou cartão.
+- [x] Criar um produto técnico de teste, servidor e jogador de teste para validar o checkout real da PlayStorCraft sem cobrança efetiva.
+- [x] Ajustar o Checkout Pro para usar a URL de sandbox quando o Access Token de teste estiver configurado.
+- [ ] Confirmar a habilitação de PIX na preferência do Mercado Pago e documentar a ativação no ambiente real.
