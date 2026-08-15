@@ -46,7 +46,7 @@
 - [ ] Iniciar a vinculação assistida de playstorcraft.com.br e registrar os DNS exigidos pelo registrador do domínio.
 - [ ] Preservar dns1 a dns6 da KingHost e cadastrar apenas os registros DNS de verificação que forem exibidos pela plataforma.
 - [x] Preparar a implantação da PlayStorCraft na VPS do usuário com domínio próprio, HTTPS e variáveis de ambiente seguras.
-- [ ] Configurar DNS de playstorcraft.com.br para o IP público da VPS após confirmar o endereço do servidor.
+- [x] Configurar DNS de playstorcraft.com.br para o IP público da VPS após confirmar o endereço do servidor.
 - [x] Confirmar que playstorcraft.com.br e www já apontam para a VPS 169.58.176.169.
 - [ ] Confirmar por SSH que a VPS executa Ubuntu 24.04 e inventariar Docker, Node.js, Nginx e firewall.
 - [x] Confirmar por SSH que a VPS executa Ubuntu 24.04 e inventariar Docker, Node.js, Nginx e firewall.
@@ -58,3 +58,5 @@
 - [x] Validar a criação do primeiro administrador e o acesso ao painel em produção.
 - [x] Adaptar e ativar a rotina segura de manutenção de comércio na VPS.
 - [x] Corrigir a preservação de e-mail e função administrativa após autenticação local na VPS.
+- [ ] Cobrir explicitamente com Vitest cupons, estados de pedidos, assinatura inválida, evento ignorado, aprovação e reprocessamento idempotente do webhook, além de defer offline, retry e conclusão idempotente da fila.
+- [ ] Validar em produção, em desktop e celular, catálogo, login/cadastro, carrinho, histórico/detalhe de pedidos e painel administrativo.
