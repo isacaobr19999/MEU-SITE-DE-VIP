@@ -138,5 +138,7 @@
 - [x] Validar no Paper que LuckPerms e PlayStorCraft estão ativos e que os cinco grupos VIP podem ser usados pelos rascunhos vinculados.
 - [x] Classificar Cash como moeda do servidor e Booster como item/benefício, ambos sem grupo LuckPerms por enquanto.
 - [ ] Definir o comando de entrega do Booster e a forma de creditar Cash antes de ativar os produtos.
+- [ ] Aguardar a configuração futura dos sistemas de Booster e Cash pelo usuário antes de solicitar ou vincular comandos de entrega.
+- [x] Publicar a versão atual da PlayStorCraft no repositório GitHub selecionado, sem credenciais, arquivos de runtime ou outros dados sensíveis.
 - [x] Sincronizar a versão atual da loja com a VPS preservando o runtime seguro e verificar a resposta pública após a atualização.
 - [x] Sincronizar a versão atual da loja com a VPS preservando o runtime seguro e verificar HTTP 200 nas rotas públicas `/` e `/cart` após a atualização.
