@@ -76,6 +76,18 @@ describe("páginas de comércio em runtime", () => {
     expect(screen.getByText("Não foi possível carregar o catálogo")).toBeInTheDocument();
   });
 
+  it("mantém o carrinho utilizável enquanto o catálogo está carregando", () => {
+    window.history.pushState({}, "", "/cart");
+    mocks.products.mockImplementation((input?: { featuredOnly?: boolean }) => input?.featuredOnly ? { ...queryIdle, data: [] } : { ...queryIdle, isLoading: true });
+
+    const cartView = render(<Home />);
+
+    expect(cartView.getAllByRole("heading", { name: "Carrinho" }).length).toBeGreaterThan(0);
+    expect(cartView.getAllByText("Seu carrinho está vazio.").length).toBeGreaterThan(0);
+    expect(cartView.getAllByText("Entrar para continuar").length).toBeGreaterThan(0);
+    expect(cartView.container.querySelector(".animate-spin")).toBeInTheDocument();
+  });
+
   it("diferencia erro de produto de produto inexistente", () => {
     mocks.product.mockReturnValue({ ...queryIdle, isError: true });
     const errorView = render(<ProductDetail />);

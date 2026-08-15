@@ -57,3 +57,11 @@ A navegação da sessão isolada entre o painel e o catálogo foi confirmada sem
 Uma nova sessão autenticada do catálogo foi aberta sem alterações de dados. Nela, uma interceptação temporária foi instalada no contexto principal da página exclusivamente para as consultas administrativas; a regra rejeita somente essas consultas locais e não envia mutações, não acessa credenciais e não afeta outros visitantes ou o servidor de produção.
 
 A navegação entre painel e catálogo foi repetida sob essa interceptação, mas o cliente reutilizou o resultado em cache e não exibiu novamente o estado de erro visual. Portanto, esse percurso não foi usado como confirmação manual do erro. Para garantir o comportamento sem tocar em dados de produção, foi adicionada uma validação automatizada isolada: ela confirma o carregamento, a tela de erro e que o botão **Tentar novamente** reexecuta as quatro consultas administrativas. A suíte total passou com 50 testes e a verificação de tipos foi concluída sem erros.
+
+## Revalidação móvel complementar
+
+Uma nova inspeção em viewport de **375 × 812** confirmou a vitrine pública, o painel de carrinho em `/cart`, a proteção de `/orders` e a proteção das rotas administrativas. O carrinho abriu como painel de largura integral, sem retorno 404; quando não há sessão, pedidos e administração exibem uma ação de entrada clara, sem conteúdo parcial.
+
+Os estados transitórios foram validados em sessão isolada por testes de interface: a vitrine cobre carregamento e indisponibilidade do catálogo, o histórico e o detalhe de pedidos cobrem indisponibilidade recuperável, e o catálogo administrativo cobre carregamento, tela de erro e a ação **Tentar novamente** que reexecuta as quatro consultas. Essa cobertura não altera pedidos, pagamentos, dados de usuários ou configurações de produção.
+
+O painel do carrinho foi verificado separadamente em `/cart` enquanto a consulta de catálogo permanecia em carregamento na sessão isolada. Como o carrinho é estado persistido do cliente, ele não depende de consulta própria: continuou aberto, exibiu o carrinho vazio e manteve a ação de continuação acessível. A suíte de interface confirmou esse contrato, junto das demais rotas, com **52 testes aprovados**.

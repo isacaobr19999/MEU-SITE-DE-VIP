@@ -1,7 +1,5 @@
 package com.playstorcraft.paper;
 
-import net.luckperms.api.LuckPerms;
-import net.luckperms.api.node.types.InheritanceNode;
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -11,9 +9,9 @@ import java.util.concurrent.CompletableFuture;
 final class DeliveryPoller implements Runnable {
     private final JavaPlugin plugin;
     private final StoreApiClient api;
-    private final LuckPerms luckPerms;
+    private final boolean luckPermsAvailable;
 
-    DeliveryPoller(JavaPlugin plugin, StoreApiClient api, LuckPerms luckPerms) { this.plugin = plugin; this.api = api; this.luckPerms = luckPerms; }
+    DeliveryPoller(JavaPlugin plugin, StoreApiClient api, boolean luckPermsAvailable) { this.plugin = plugin; this.api = api; this.luckPermsAvailable = luckPermsAvailable; }
 
     @Override public void run() {
         try {
@@ -42,14 +40,12 @@ final class DeliveryPoller implements Runnable {
     }
 
     private CompletableFuture<Void> applyLuckPermsMarker(DeliveryEnvelope delivery, String marker) {
-        if (luckPerms == null) return CompletableFuture.failedFuture(new IllegalStateException("LuckPerms não está disponível"));
+        if (!luckPermsAvailable) return CompletableFuture.failedFuture(new IllegalStateException("LuckPerms não está disponível"));
         String[] values = marker.split(":", 3);
         if (values.length != 3 || !(values[1].equals("add") || values[1].equals("remove"))) return CompletableFuture.failedFuture(new IllegalArgumentException("Marcador LuckPerms inválido"));
-        return luckPerms.getUserManager().loadUser(java.util.UUID.fromString(delivery.uuid())).thenCompose(user -> {
-            InheritanceNode node = InheritanceNode.builder(values[2]).build();
-            if (values[1].equals("add")) user.data().add(node); else user.data().remove(node);
-            return luckPerms.getUserManager().saveUser(user);
-        });
+        String command = "lp user " + delivery.uuid() + " parent " + values[1] + " " + values[2];
+        if (!Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command)) return CompletableFuture.failedFuture(new IllegalStateException("Comando LuckPerms recusado"));
+        return CompletableFuture.completedFuture(null);
     }
 
     private void acknowledge(DeliveryEnvelope delivery, Throwable error) {

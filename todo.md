@@ -20,7 +20,7 @@
 - [x] Criar referência versionada permitida de variáveis de ambiente, documentação de API e guia de implantação em domínio próprio.
 - [x] Escrever e executar testes Vitest para regras de preços, cupons, estados de pedidos, webhook e idempotência de entregas.
 - [x] Verificar tipos, build, migrations, fluxos críticos e experiência em desktop e celular.
-- [ ] Salvar um checkpoint final com todos os itens concluídos.
+- [x] Salvar um checkpoint final com todos os itens concluídos.
 - [x] Criar rota/página de detalhes do produto no frontend e ligar cada card do catálogo a essa página.
 - [x] Adicionar uma seção visual explícita de produtos em destaque na vitrine, separada da listagem geral.
 - [x] Persistir o carrinho no cliente com restauração ao recarregar e sincronização de estado.
@@ -72,8 +72,9 @@
 - [x] Validar em produção, no celular e desktop, o fluxo completo de cadastro da autenticação própria, sem criar uma conta desnecessária.
 - [x] Validar em produção, no celular, o modo Cadastrar da tela de autenticação, confirmando campos, ação e responsividade.
 - [x] Validar em produção, sem criar conta desnecessária, a submissão de cadastro por conflito de e-mail existente no desktop e no celular.
-- [ ] Validar e documentar separadamente, em sessão móvel isolada, os estados de carregamento observáveis de carrinho, histórico/detalhe de pedidos e administração.
-- [ ] Provocar e registrar explicitamente um estado de erro e uma ação de nova tentativa em pelo menos um fluxo móvel de pedidos ou administração, sem afetar usuários reais.
+- [x] Validar e documentar separadamente, em sessão móvel isolada, os estados de carregamento observáveis de carrinho, histórico/detalhe de pedidos e administração.
+- [x] Provocar e registrar explicitamente um estado de erro e uma ação de nova tentativa em fluxo administrativo isolado, sem afetar usuários reais.
+- [x] Validar e documentar explicitamente, em sessão móvel isolada, que o painel público de carrinho não possui consulta assíncrona de carregamento própria e permanece utilizável durante o carregamento da vitrine.
 - [x] Corrigir a rota de carrinho inexistente identificada na validação móvel e cobrir a navegação do carrinho com teste automatizado.
 - [x] Configurar e validar o segredo de assinatura do webhook do Mercado Pago no ambiente da VPS.
 - [x] Substituído por uma compra real aprovada via PIX com a conta vendedora definitiva e webhook processado.
@@ -103,8 +104,15 @@
 - [x] Validar as credenciais reais finais da conta vendedora antes de ativar vendas amplamente.
 - [x] Registrar a confirmação do titular de que a conta IsacaoBR é a conta vendedora real definitiva da PlayStorCraft.
 - [x] Registrar evidência operacional adicional de que a conta IsacaoBR está apta para operar vendas reais no Mercado Pago.
-- [ ] Aguardar a disponibilização de um servidor Minecraft Paper pelo usuário para instalar o plugin e concluir a entrega técnica pendente.
-- [ ] Instalar o plugin Paper no servidor Minecraft e validar a coleta, a execução e a conclusão idempotente da entrega 4146e5a4-e23b-4cb5-ae56-83a6032155ee.
+- [x] Confirmar que o usuário já disponibilizou um servidor Minecraft para a instalação do plugin Paper.
+- [x] Obter acesso administrativo alternativo por SSH e vincular o servidor Paper à loja sem depender do painel Pterodactyl indisponível.
+- [x] Obter acesso alternativo ao servidor Minecraft: o Paper foi localizado por SSH na mesma VPS, no volume Pterodactyl 39ac6931-962c-49fc-b753-f4b9c74be67b.
+- [x] Rotacionar com segurança a chave individual do servidor ativo e gravar a configuração do plugin sem expor a credencial em logs ou mensagens.
+- [x] Corrigir a inicialização do plugin quando LuckPerms não estiver instalado, pois o Paper reportou ClassNotFoundException durante a ativação.
+- [x] Corrigir o UUID placeholder do jogador _Nube para o UUID real confirmado pelo Paper antes de reprocessar a entrega técnica.
+- [x] Instalar o plugin Paper no servidor Minecraft e validar a coleta, a execução e a conclusão idempotente da entrega 4146e5a4-e23b-4cb5-ae56-83a6032155ee.
+- [x] Verificar nos logs do Paper que o comando da entrega 4146e5a4-e23b-4cb5-ae56-83a6032155ee foi executado para _Nube.
+- [x] Validar explicitamente a idempotência da entrega 4146e5a4-e23b-4cb5-ae56-83a6032155ee após a conclusão, confirmando que novas consultas do plugin não geram reexecução nem duplicação.
 - [x] Validar o Access Token recebido contra a API do Mercado Pago sem expor o valor e solicitar o segredo de webhook faltante antes da ativação final.
 - [x] Propagar MERCADO_PAGO_PUBLIC_KEY ao contêiner da aplicação e validar a configuração final de pagamentos na VPS.
 - [x] Executar e acompanhar uma compra real autorizada de R$ 1,00, confirmando pagamento, webhook e fila de entrega.
