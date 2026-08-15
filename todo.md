@@ -1,0 +1,43 @@
+# Project TODO
+
+- [x] Documentar a arquitetura, as fronteiras de segurança e as variáveis de ambiente necessárias.
+- [x] Definir os enums e as tabelas de usuários, jogadores, categorias, produtos, servidores, pedidos, pagamentos, entregas, cupons, usos de cupom e logs.
+- [x] Gerar e aplicar a migration inicial do banco de dados MySQL.
+- [x] Implementar repositórios tipados para catálogo, pedidos, pagamentos, entregas e auditoria; carrinho é persistido como estado tipado do cliente.
+- [x] Implementar validação de entradas e autorização por função para as operações administrativas.
+- [x] Criar a vitrine pública responsiva com página inicial, busca, categorias, produtos em destaque e detalhes do produto.
+- [x] Implementar carrinho persistido no cliente e criação segura de pedidos no servidor.
+- [x] Implementar histórico de pedidos e página de detalhes de pedido para clientes autenticados.
+- [x] Criar painel administrativo protegido em /admin com dashboard de métricas e navegação operacional.
+- [x] Implementar gestão administrativa de categorias, produtos, pedidos, jogadores, servidores, entregas, cupons e logs.
+- [x] Criar uma abstração de gateway de pagamento configurável por variáveis de ambiente, sem chaves embutidas.
+- [x] Implementar endpoint de webhook com verificação de assinatura, idempotência e transições de status auditáveis.
+- [x] Implementar a fila de entregas com reivindicação autenticada por servidor, locks, tentativas e conclusão idempotente.
+- [x] Implementar a API autenticada para o plugin Minecraft consultar e concluir entregas.
+- [ ] Implementar processamento de duração de VIPs e expirações por tarefa periódica idempotente.
+- [x] Criar o módulo do plugin Paper PlayStorCraft com comandos, permissões, autenticação de servidor e suporte a placeholders.
+- [x] Documentar a integração com LuckPerms e o modelo de comandos de entrega sem conflito com TAB.
+- [x] Criar referência versionada permitida de variáveis de ambiente, documentação de API e guia de implantação em domínio próprio.
+- [ ] Escrever e executar testes Vitest para regras de preços, cupons, estados de pedidos, webhook e idempotência de entregas.
+- [ ] Verificar tipos, build, migrations, fluxos críticos e experiência em desktop e celular.
+- [ ] Salvar um checkpoint final com todos os itens concluídos.
+- [x] Criar rota/página de detalhes do produto no frontend e ligar cada card do catálogo a essa página.
+- [x] Adicionar uma seção visual explícita de produtos em destaque na vitrine, separada da listagem geral.
+- [x] Persistir o carrinho no cliente com restauração ao recarregar e sincronização de estado.
+- [x] Criar rota/página de detalhes do pedido autenticada consumindo orders.byId, com itens, status e dados principais.
+- [x] Adicionar estados de erro explícitos na vitrine pública para falhas em catálogo e destinos de produto.
+- [x] Adicionar estados de erro explícitos no histórico e no detalhe de pedidos, diferenciando erro de API de recurso inexistente.
+- [x] Revalidar os estados de loading, vazio e erro antes de concluir a vitrine e as páginas de detalhes.
+- [x] Adicionar estado de erro explícito e retry à consulta de produtos em destaque.
+- [x] Cobrir com testes os estados de loading, vazio e erro nas páginas de catálogo e pedidos.
+- [x] Implementar detalhes, filtros e operações administrativas adequadas para pedidos, jogadores, entregas e logs.
+- [ ] Adicionar edição completa de categorias, produtos, servidores e cupons no painel administrativo.
+- [ ] Cobrir os fluxos administrativos críticos com testes de autorização e operações de gestão.
+- [ ] Configurar as credenciais do Mercado Pago e executar uma compra de teste com webhook em ambiente público HTTPS.
+- [ ] Criar a tarefa recorrente de manutenção de comércio após publicar a versão com o endpoint agendado.
+- [x] Adiar a entrega quando o jogador estiver offline e somente confirmar comandos que exigem presença após ele entrar no servidor.
+- [x] Compilar e validar o artefato JAR do módulo minecraft-plugin antes da entrega final.
+- [ ] Adicionar testes para webhook: assinatura inválida, evento ignorado, aprovação e reprocessamento idempotente.
+- [ ] Adicionar testes da fila para defer offline, retry e conclusão idempotente com repositórios isolados.
+- [ ] Validar de ponta a ponta checkout e webhook em HTTPS público após configurar as credenciais do Mercado Pago.
+- [x] Executar e validar o build de produção da aplicação web.

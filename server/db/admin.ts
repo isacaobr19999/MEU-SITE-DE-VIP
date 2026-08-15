@@ -1,0 +1,178 @@
+import { and, asc, count, desc, eq, gte, inArray, sql } from "drizzle-orm";
+import { randomBytes } from "node:crypto";
+import { adminUsers, categories, couponProducts, coupons, deliveries, logs, orderItems, orders, players, productServers, products, servers, users } from "../../drizzle/schema";
+import { hashSecret } from "../services/secretHash";
+import { requireDb } from "../db";
+
+function startOfUtcDay(date: Date) {
+  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+}
+
+function startOfUtcMonth(date: Date) {
+  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), 1));
+}
+
+export async function getAdminOverview() {
+  const db = await requireDb();
+  const now = new Date();
+  const completedStatuses = ["PAID", "PROCESSING", "COMPLETED"] as const;
+  const [todaySales] = await db.select({ value: sql<number>`coalesce(sum(${orders.totalCents}), 0)` }).from(orders).where(and(inArray(orders.status, completedStatuses), gte(orders.paidAt, startOfUtcDay(now))));
+  const [monthSales] = await db.select({ value: sql<number>`coalesce(sum(${orders.totalCents}), 0)` }).from(orders).where(and(inArray(orders.status, completedStatuses), gte(orders.paidAt, startOfUtcMonth(now))));
+  const [pendingOrders] = await db.select({ value: count() }).from(orders).where(inArray(orders.status, ["PENDING", "WAITING_PAYMENT", "PAID", "PROCESSING"]));
+  const [pendingDeliveries] = await db.select({ value: count() }).from(deliveries).where(inArray(deliveries.status, ["PENDING", "RETRYING", "CLAIMED", "PROCESSING"]));
+  const [failedDeliveries] = await db.select({ value: count() }).from(deliveries).where(eq(deliveries.status, "FAILED"));
+  const [playerCount] = await db.select({ value: count() }).from(players);
+  return {
+    salesTodayCents: Number(todaySales?.value ?? 0),
+    salesMonthCents: Number(monthSales?.value ?? 0),
+    pendingOrders: pendingOrders?.value ?? 0,
+    pendingDeliveries: pendingDeliveries?.value ?? 0,
+    failedDeliveries: failedDeliveries?.value ?? 0,
+    playerCount: playerCount?.value ?? 0,
+  };
+}
+
+export async function listAdminProducts() {
+  const db = await requireDb();
+  return db.select({ id: products.id, name: products.name, slug: products.slug, priceCents: products.priceCents, kind: products.kind, active: products.active, featured: products.featured, categoryName: categories.name, position: products.position }).from(products).innerJoin(categories, eq(products.categoryId, categories.id)).orderBy(asc(products.position), asc(products.name));
+}
+
+export async function updateCategoryRecord(id: number, input: { name: string; slug: string; description?: string; position: number; active: boolean }) {
+  const db = await requireDb();
+  await db.update(categories).set({ name: input.name, slug: input.slug, description: input.description ?? null, position: input.position, active: input.active }).where(eq(categories.id, id));
+}
+
+export async function setProductStatus(id: number, active: boolean) {
+  const db = await requireDb();
+  await db.update(products).set({ active }).where(eq(products.id, id));
+}
+
+export async function listAdminOrders() {
+  const db = await requireDb();
+  return db.select({ id: orders.id, orderNumber: orders.orderNumber, status: orders.status, totalCents: orders.totalCents, createdAt: orders.createdAt, paidAt: orders.paidAt, playerName: players.username, playerUuid: players.uuid }).from(orders).innerJoin(players, eq(orders.playerId, players.id)).orderBy(desc(orders.createdAt)).limit(100);
+}
+
+export async function listAdminPlayers() {
+  const db = await requireDb();
+  return db.select({ id: players.id, username: players.username, uuid: players.uuid, email: players.email, lastSeenAt: players.lastSeenAt, createdAt: players.createdAt }).from(players).orderBy(desc(players.createdAt)).limit(100);
+}
+
+export async function listAdminDeliveries() {
+  const db = await requireDb();
+  return db.select({ id: deliveries.id, status: deliveries.status, attemptCount: deliveries.attemptCount, maxAttempts: deliveries.maxAttempts, nextAttemptAt: deliveries.nextAttemptAt, lastError: deliveries.lastError, orderNumber: orders.orderNumber, playerName: players.username, serverName: servers.name }).from(deliveries).innerJoin(orders, eq(deliveries.orderId, orders.id)).innerJoin(players, eq(deliveries.playerId, players.id)).innerJoin(servers, eq(deliveries.serverId, servers.id)).orderBy(desc(deliveries.createdAt)).limit(100);
+}
+
+export async function listAdminServers() {
+  const db = await requireDb();
+  return db.select({ id: servers.id, name: servers.name, slug: servers.slug, kind: servers.kind, active: servers.active, apiKeyLastFour: servers.apiKeyLastFour, createdAt: servers.createdAt }).from(servers).orderBy(asc(servers.name));
+}
+
+export async function createServerRecord(input: { name: string; slug: string; kind: "SURVIVAL" | "SKYBLOCK" | "BEDWARS" | "GLOBAL" }, pepper: string) {
+  const db = await requireDb();
+  const apiKey = `psc_${randomBytes(24).toString("base64url")}`;
+  const apiKeyHash = await hashSecret(apiKey, pepper);
+  const result = await db.insert(servers).values({ ...input, apiKeyHash, apiKeyLastFour: apiKey.slice(-4) });
+  return { id: result[0].insertId, apiKey };
+}
+
+export async function listAdminCoupons() {
+  const db = await requireDb();
+  return db.select().from(coupons).orderBy(desc(coupons.createdAt));
+}
+
+export async function createCouponRecord(input: { code: string; type: "PERCENTAGE" | "FIXED"; percentageBasisPoints?: number; fixedDiscountCents?: number; startsAt?: Date | null; endsAt?: Date | null; maxUses?: number | null; maxUsesPerPlayer: number }) {
+  const db = await requireDb();
+  const result = await db.insert(coupons).values({
+    code: input.code,
+    type: input.type,
+    percentageBasisPoints: input.type === "PERCENTAGE" ? input.percentageBasisPoints ?? null : null,
+    fixedDiscountCents: input.type === "FIXED" ? input.fixedDiscountCents ?? null : null,
+    startsAt: input.startsAt ?? null,
+    endsAt: input.endsAt ?? null,
+    maxUses: input.maxUses ?? null,
+    maxUsesPerPlayer: input.maxUsesPerPlayer,
+  });
+  return result[0].insertId;
+}
+
+export async function listAdminLogs() {
+  const db = await requireDb();
+  return db.select().from(logs).orderBy(desc(logs.createdAt)).limit(150);
+}
+
+export async function listAdminUsers() {
+  const db = await requireDb();
+  return db.select({ id: users.id, name: users.name, email: users.email, role: users.role, lastSignedIn: users.lastSignedIn, permissions: adminUsers.permissions, active: adminUsers.active }).from(users).leftJoin(adminUsers, eq(users.id, adminUsers.userId)).orderBy(asc(users.name)).limit(100);
+}
+
+export async function setAdminRole(userId: number, role: "admin" | "user") {
+  const db = await requireDb();
+  await db.transaction(async tx => {
+    await tx.update(users).set({ role }).where(eq(users.id, userId));
+    if (role === "admin") {
+      await tx.insert(adminUsers).values({ userId, permissions: ["catalog:write", "orders:read", "deliveries:read", "coupons:write", "servers:write", "logs:read"], active: true }).onDuplicateKeyUpdate({ set: { active: true } });
+    } else {
+      await tx.update(adminUsers).set({ active: false }).where(eq(adminUsers.userId, userId));
+    }
+  });
+}
+
+export async function writeAdminAuditLog(actorId: string, action: string, entityType: string, entityId?: string, metadata?: Record<string, unknown>) {
+  const db = await requireDb();
+  await db.insert(logs).values({ actorType: "admin", actorId, action, entityType, entityId: entityId ?? null, metadata: metadata ?? null });
+}
+
+export async function listOrderItemsForAdmin(orderId: string) {
+  const db = await requireDb();
+  return db.select().from(orderItems).where(eq(orderItems.orderId, orderId));
+}
+
+export async function getAdminOrderDetail(id: string) {
+  const db = await requireDb();
+  const [order] = await db.select({ id: orders.id, orderNumber: orders.orderNumber, status: orders.status, totalCents: orders.totalCents, discountCents: orders.discountCents, createdAt: orders.createdAt, paidAt: orders.paidAt, playerName: players.username, playerUuid: players.uuid, playerId: players.id }).from(orders).innerJoin(players, eq(orders.playerId, players.id)).where(eq(orders.id, id)).limit(1);
+  if (!order) return undefined;
+  const items = await listOrderItemsForAdmin(id);
+  return { ...order, items };
+}
+
+export async function cancelOrderRecord(id: string) {
+  const db = await requireDb();
+  const result = await db.update(orders).set({ status: "CANCELLED", cancelledAt: new Date() }).where(and(eq(orders.id, id), inArray(orders.status, ["PENDING", "WAITING_PAYMENT"])));
+  if (result[0].affectedRows !== 1) throw new Error("Somente pedidos aguardando pagamento podem ser cancelados manualmente.");
+}
+
+export async function listPlayerHistory(playerId: number) {
+  const db = await requireDb();
+  return db.select({ id: orders.id, orderNumber: orders.orderNumber, status: orders.status, totalCents: orders.totalCents, createdAt: orders.createdAt }).from(orders).where(eq(orders.playerId, playerId)).orderBy(desc(orders.createdAt)).limit(50);
+}
+
+export async function retryDeliveryRecord(id: string) {
+  const db = await requireDb();
+  const result = await db.update(deliveries).set({ status: "PENDING", claimedByServerId: null, claimTokenHash: null, claimExpiresAt: null, nextAttemptAt: new Date(), lastError: null }).where(and(eq(deliveries.id, id), inArray(deliveries.status, ["FAILED", "RETRYING", "PENDING"])));
+  if (result[0].affectedRows !== 1) throw new Error("A entrega não pode ser reprocessada no estado atual.");
+}
+
+export async function updateServerRecord(id: number, input: { name: string; slug: string; kind: "SURVIVAL" | "SKYBLOCK" | "BEDWARS" | "GLOBAL"; active: boolean }) {
+  const db = await requireDb();
+  await db.update(servers).set(input).where(eq(servers.id, id));
+}
+
+export async function updateCouponRecord(id: number, input: { code: string; type: "PERCENTAGE" | "FIXED"; percentageBasisPoints?: number; fixedDiscountCents?: number; startsAt?: Date | null; endsAt?: Date | null; maxUses?: number | null; maxUsesPerPlayer: number; active: boolean; productIds?: number[] }) {
+  const db = await requireDb();
+  await db.transaction(async tx => {
+    await tx.update(coupons).set({ code: input.code, type: input.type, percentageBasisPoints: input.type === "PERCENTAGE" ? input.percentageBasisPoints ?? null : null, fixedDiscountCents: input.type === "FIXED" ? input.fixedDiscountCents ?? null : null, startsAt: input.startsAt ?? null, endsAt: input.endsAt ?? null, maxUses: input.maxUses ?? null, maxUsesPerPlayer: input.maxUsesPerPlayer, active: input.active }).where(eq(coupons.id, id));
+    if (input.productIds) {
+      await tx.delete(couponProducts).where(eq(couponProducts.couponId, id));
+      if (input.productIds.length) await tx.insert(couponProducts).values(input.productIds.map(productId => ({ couponId: id, productId })));
+    }
+  });
+}
+
+export async function updateProductRecord(id: number, input: { categoryId: number; name: string; slug: string; kind: "VIP" | "COINS" | "KIT" | "COSMETIC"; priceCents: number; durationDays?: number | null; luckPermsGroup?: string; deliveryCommands: string[]; featured: boolean; active: boolean; serverIds: number[] }) {
+  const db = await requireDb();
+  await db.transaction(async tx => {
+    await tx.update(products).set({ categoryId: input.categoryId, name: input.name, slug: input.slug, kind: input.kind, priceCents: input.priceCents, durationDays: input.durationDays ?? null, luckPermsGroup: input.luckPermsGroup ?? null, deliveryCommands: input.deliveryCommands, featured: input.featured, active: input.active }).where(eq(products.id, id));
+    await tx.delete(productServers).where(eq(productServers.productId, id));
+    await tx.insert(productServers).values(input.serverIds.map(serverId => ({ productId: id, serverId })));
+  });
+}

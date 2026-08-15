@@ -7,6 +7,9 @@ import { registerOAuthRoutes } from "./oauth";
 import { registerStorageProxy } from "./storageProxy";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
+import { mercadoPagoWebhook } from "../webhooks/mercadoPago";
+import { claimMinecraftDeliveries, completeMinecraftDelivery, deferMinecraftDelivery, failMinecraftDelivery } from "../minecraft";
+import { commerceMaintenance } from "../scheduled/commerceMaintenance";
 import { serveStatic, setupVite } from "./vite";
 
 function isPortAvailable(port: number): Promise<boolean> {
@@ -36,6 +39,12 @@ async function startServer() {
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
   registerStorageProxy(app);
   registerOAuthRoutes(app);
+  app.post("/api/webhooks/mercadopago", mercadoPagoWebhook);
+  app.post("/api/minecraft/deliveries/claim", claimMinecraftDeliveries);
+  app.post("/api/minecraft/deliveries/complete", completeMinecraftDelivery);
+  app.post("/api/minecraft/deliveries/fail", failMinecraftDelivery);
+  app.post("/api/minecraft/deliveries/defer", deferMinecraftDelivery);
+  app.post("/api/scheduled/commerce-maintenance", commerceMaintenance);
   // tRPC API
   app.use(
     "/api/trpc",

@@ -1,0 +1,8 @@
+# URL pública da PlayStorCraft, sem barra final.
+api-base-url: "https://sua-loja.exemplo.com"
+# Chave individual exibida uma única vez no painel administrativo após criar o servidor.
+server-api-key: "ALTERE_ESTA_CHAVE"
+# Intervalo de polling em segundos. O plugin só recebe entregas deste servidor.
+poll-interval-seconds: 15
+# Limite por consulta para evitar execução concentrada de comandos.
+claim-limit: 10
