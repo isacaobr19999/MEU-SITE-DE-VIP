@@ -15,6 +15,13 @@
       "when": 1786759075479,
       "tag": "0001_sloppy_squadron_sinister",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1786766365871,
+      "tag": "0002_loud_susan_delgado",
+      "breakpoints": true
     }
   ]
 }

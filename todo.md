@@ -14,7 +14,7 @@
 - [x] Implementar endpoint de webhook com verificação de assinatura, idempotência e transições de status auditáveis.
 - [x] Implementar a fila de entregas com reivindicação autenticada por servidor, locks, tentativas e conclusão idempotente.
 - [x] Implementar a API autenticada para o plugin Minecraft consultar e concluir entregas.
-- [ ] Implementar processamento de duração de VIPs e expirações por tarefa periódica idempotente.
+- [x] Implementar processamento de duração de VIPs e expirações por tarefa periódica idempotente.
 - [x] Criar o módulo do plugin Paper PlayStorCraft com comandos, permissões, autenticação de servidor e suporte a placeholders.
 - [x] Documentar a integração com LuckPerms e o modelo de comandos de entrega sem conflito com TAB.
 - [x] Criar referência versionada permitida de variáveis de ambiente, documentação de API e guia de implantação em domínio próprio.
@@ -34,10 +34,26 @@
 - [ ] Adicionar edição completa de categorias, produtos, servidores e cupons no painel administrativo.
 - [ ] Cobrir os fluxos administrativos críticos com testes de autorização e operações de gestão.
 - [ ] Configurar as credenciais do Mercado Pago e executar uma compra de teste com webhook em ambiente público HTTPS.
-- [ ] Criar a tarefa recorrente de manutenção de comércio após publicar a versão com o endpoint agendado.
+- [x] Criar a tarefa recorrente de manutenção de comércio após publicar a versão com o endpoint agendado.
 - [x] Adiar a entrega quando o jogador estiver offline e somente confirmar comandos que exigem presença após ele entrar no servidor.
 - [x] Compilar e validar o artefato JAR do módulo minecraft-plugin antes da entrega final.
 - [ ] Adicionar testes para webhook: assinatura inválida, evento ignorado, aprovação e reprocessamento idempotente.
 - [ ] Adicionar testes da fila para defer offline, retry e conclusão idempotente com repositórios isolados.
 - [ ] Validar de ponta a ponta checkout e webhook em HTTPS público após configurar as credenciais do Mercado Pago.
 - [x] Executar e validar o build de produção da aplicação web.
+- [ ] Cadastrar APP_BASE_URL com https://playcraft-fw9e2wu7.manus.space e os segredos do gateway antes de ativar pagamentos reais.
+- [ ] Vincular playstorcraft.com.br nas configurações de domínio e substituir APP_BASE_URL por https://playstorcraft.com.br antes de ativar o webhook.
+- [ ] Iniciar a vinculação assistida de playstorcraft.com.br e registrar os DNS exigidos pelo registrador do domínio.
+- [ ] Preservar dns1 a dns6 da KingHost e cadastrar apenas os registros DNS de verificação que forem exibidos pela plataforma.
+- [x] Preparar a implantação da PlayStorCraft na VPS do usuário com domínio próprio, HTTPS e variáveis de ambiente seguras.
+- [ ] Configurar DNS de playstorcraft.com.br para o IP público da VPS após confirmar o endereço do servidor.
+- [x] Confirmar que playstorcraft.com.br e www já apontam para a VPS 169.58.176.169.
+- [ ] Confirmar por SSH que a VPS executa Ubuntu 24.04 e inventariar Docker, Node.js, Nginx e firewall.
+- [x] Confirmar por SSH que a VPS executa Ubuntu 24.04 e inventariar Docker, Node.js, Nginx e firewall.
+- [x] Instalar e configurar runtime de produção, proxy HTTPS e firewall mínimo na VPS.
+- [x] Migrar dependências de banco e autenticação gerenciadas para MySQL e JWT próprios na VPS.
+- [x] Implantar a aplicação autonomamente com Docker, Nginx, HTTPS e tarefas de manutenção.
+- [x] Criar uma tela responsiva de login e cadastro por e-mail e senha para a VPS.
+- [x] Redirecionar acionadores de login existentes para a autenticação própria sem OAuth Manus.
+- [ ] Validar a criação do primeiro administrador e o acesso ao painel em produção.
+- [x] Adaptar e ativar a rotina segura de manutenção de comércio na VPS.

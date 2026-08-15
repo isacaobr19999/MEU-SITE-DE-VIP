@@ -1,0 +1,44 @@
+import { randomBytes, scryptSync, timingSafeEqual } from "crypto";
+import type { Express, Request, Response } from "express";
+import * as db from "./db";
+import { sdk } from "./_core/sdk";
+import { COOKIE_NAME, ONE_YEAR_MS } from "../shared/const";
+import { getSessionCookieOptions } from "./_core/cookies";
+
+function hashPassword(password: string, salt = randomBytes(16).toString("hex")) {
+  return `${salt}:${scryptSync(password, salt, 64).toString("hex")}`;
+}
+
+function verifyPassword(password: string, stored: string) {
+  const [salt, expected] = stored.split(":");
+  if (!salt || !expected) return false;
+  const actual = scryptSync(password, salt, 64).toString("hex");
+  return timingSafeEqual(Buffer.from(actual, "hex"), Buffer.from(expected, "hex"));
+}
+
+async function startSession(req: Request, res: Response, user: NonNullable<Awaited<ReturnType<typeof db.getUserByEmail>>>) {
+  const token = await sdk.createSessionToken(user.openId, { name: user.name ?? user.email ?? "Usuário", expiresInMs: ONE_YEAR_MS });
+  res.cookie(COOKIE_NAME, token, { ...getSessionCookieOptions(req), maxAge: ONE_YEAR_MS });
+  return { id: user.id, name: user.name, email: user.email, role: user.role };
+}
+
+export function registerLocalAuthRoutes(app: Express) {
+  app.post("/api/auth/register", async (req, res) => {
+    const { name, email, password } = req.body ?? {};
+    if (typeof name !== "string" || typeof email !== "string" || typeof password !== "string" || name.trim().length < 2 || password.length < 10) return res.status(400).json({ error: "Informe nome, e-mail e senha com ao menos 10 caracteres." });
+    const normalizedEmail = email.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) return res.status(400).json({ error: "E-mail inválido." });
+    if (await db.getUserByEmail(normalizedEmail)) return res.status(409).json({ error: "Este e-mail já está cadastrado." });
+    const user = await db.createLocalUser({ name: name.trim(), email: normalizedEmail, passwordHash: hashPassword(password), role: (await db.hasAnyUser()) ? "user" : "admin" });
+    if (!user) return res.status(500).json({ error: "Não foi possível criar o usuário." });
+    res.status(201).json(await startSession(req, res, user));
+  });
+
+  app.post("/api/auth/login", async (req, res) => {
+    const { email, password } = req.body ?? {};
+    if (typeof email !== "string" || typeof password !== "string") return res.status(400).json({ error: "Credenciais inválidas." });
+    const user = await db.getUserByEmail(email.trim().toLowerCase());
+    if (!user?.passwordHash || !verifyPassword(password, user.passwordHash)) return res.status(401).json({ error: "E-mail ou senha inválidos." });
+    res.json(await startSession(req, res, user));
+  });
+}
