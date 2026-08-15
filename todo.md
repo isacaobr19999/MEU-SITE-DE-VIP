@@ -75,3 +75,4 @@
 - [x] Documentar as recusas `cc_rejected_high_risk`, interromper novas cobranças sandbox e validar o webhook por testes locais assinados.
 - [x] Exigir confirmação explícita por variável de ambiente antes de executar qualquer cobrança sandbox automática e documentar esse bloqueio operacional.
 - [x] Adicionar teste local de assinatura válida do webhook Mercado Pago sem mockar a verificação criptográfica.
+- [x] Exibir uma mensagem específica para pedidos `FAILED`, sem sugerir que a confirmação e a entrega ainda estão pendentes.
