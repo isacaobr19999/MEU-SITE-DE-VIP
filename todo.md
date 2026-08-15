@@ -136,3 +136,7 @@
 - [x] Associar os grupos LuckPerms confirmados `ferro`, `ouro`, `diamante`, `esmeralda` e `obsidian` aos cinco rascunhos VIP, mantendo-os inativos.
 - [ ] Confirmar se Booster e Cash usam grupo LuckPerms, comando específico ou nenhum grupo antes de configurar esses produtos.
 - [x] Validar no Paper que LuckPerms e PlayStorCraft estão ativos e que os cinco grupos VIP podem ser usados pelos rascunhos vinculados.
+- [x] Classificar Cash como moeda do servidor e Booster como item/benefício, ambos sem grupo LuckPerms por enquanto.
+- [ ] Definir o comando de entrega do Booster e a forma de creditar Cash antes de ativar os produtos.
+- [x] Sincronizar a versão atual da loja com a VPS preservando o runtime seguro e verificar a resposta pública após a atualização.
+- [x] Sincronizar a versão atual da loja com a VPS preservando o runtime seguro e verificar HTTP 200 nas rotas públicas `/` e `/cart` após a atualização.
