@@ -29,11 +29,11 @@ describe("preferência Mercado Pago", () => {
     });
   });
 
-  it("usa o checkout sandbox para Access Token de teste", async () => {
+  it("usa o checkout padrão para credencial da conta vendedora de teste", async () => {
     process.env.MERCADO_PAGO_ACCESS_TOKEN = "APP_USR-teste";
     await expect(createMercadoPagoPreference(input)).resolves.toEqual({
       preferenceId: "pref-1",
-      checkoutUrl: "https://sandbox.mercadopago.com.br/checkout/teste",
+      checkoutUrl: "https://www.mercadopago.com.br/checkout/producao",
     });
   });
 
@@ -43,5 +43,11 @@ describe("preferência Mercado Pago", () => {
       preferenceId: "pref-1",
       checkoutUrl: "https://www.mercadopago.com.br/checkout/producao",
     });
+  });
+
+  it("usa a URL sandbox apenas quando o gateway não retorna init_point", async () => {
+    process.env.MERCADO_PAGO_ACCESS_TOKEN = "APP_USR-teste";
+    mocks.createPreference.mockResolvedValue({ id: "pref-1", sandbox_init_point: "https://sandbox.mercadopago.com.br/checkout/teste" });
+    await expect(createMercadoPagoPreference(input)).resolves.toEqual({ preferenceId: "pref-1", checkoutUrl: "https://sandbox.mercadopago.com.br/checkout/teste" });
   });
 });

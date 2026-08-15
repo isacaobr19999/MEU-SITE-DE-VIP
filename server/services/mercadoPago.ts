@@ -13,7 +13,7 @@ export function getMercadoPagoClient() {
 }
 
 export async function createMercadoPagoPreference(input: { orderId: string; orderNumber: string; totalCents: number; items: Array<{ productId: number; productName: string; quantity: number; unitPriceCents: number }> }) {
-  const { appBaseUrl, accessToken } = getCredentials();
+  const { appBaseUrl } = getCredentials();
   const preference = new Preference(getMercadoPagoClient());
   const result = await preference.create({
     body: {
@@ -27,7 +27,7 @@ export async function createMercadoPagoPreference(input: { orderId: string; orde
     },
     requestOptions: { idempotencyKey: `psc-preference-${input.orderId}` },
   });
-  const checkoutUrl = accessToken.startsWith("APP_USR-") ? result.sandbox_init_point : result.init_point;
+  const checkoutUrl = result.init_point ?? result.sandbox_init_point;
   if (!result.id || !checkoutUrl) throw new Error("O gateway não retornou uma URL de checkout.");
   return { preferenceId: result.id, checkoutUrl };
 }

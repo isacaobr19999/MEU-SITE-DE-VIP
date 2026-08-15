@@ -93,3 +93,6 @@
 - [ ] Acompanhar o próximo Checkout Pro sandbox usando a conta compradora de teste brasileira identificada pelo usuário, sem expor suas credenciais.
 - [x] Investigar o erro ERR_TOO_MANY_REDIRECTS em sandbox.mercadopago.com.br relatado durante o checkout de teste.
 - [x] Registrar a repetição do ERR_TOO_MANY_REDIRECTS mesmo com conta compradora de teste e interromper novas tentativas sandbox no celular.
+- [x] Usar o init_point do Checkout Pro para contas vendedoras de teste e cobrir a seleção de URL com testes, evitando o loop do sandbox legado.
+- [ ] Implantar na VPS a correção que prioriza init_point no Checkout Pro para contas vendedoras de teste.
+- [ ] Validar após o deploy que um novo pedido técnico abre o Checkout Pro pelo init_point sem cair no loop do sandbox legado, ou documentar uma limitação externa remanescente.
