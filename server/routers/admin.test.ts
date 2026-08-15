@@ -26,4 +26,34 @@ describe("adminRouter", () => {
     const caller = appRouter.createCaller(userContext("user"));
     await expect(caller.admin.overview()).rejects.toMatchObject<Partial<TRPCError>>({ code: "FORBIDDEN" });
   });
+
+  it("protege a edição de produtos de usuários sem função administrativa", async () => {
+    const caller = appRouter.createCaller(userContext("user"));
+    await expect(caller.admin.updateProduct({
+      id: 1,
+      categoryId: 1,
+      name: "VIP Teste",
+      slug: "vip-teste",
+      kind: "VIP",
+      priceCents: 1000,
+      durationDays: null,
+      deliveryCommands: ["lp user {player} parent add vip"],
+      featured: false,
+      active: true,
+      position: 0,
+      serverIds: [1],
+    })).rejects.toMatchObject<Partial<TRPCError>>({ code: "FORBIDDEN" });
+  });
+
+  it("valida URLs de mídia antes de executar uma atualização de categoria", async () => {
+    const caller = appRouter.createCaller(userContext("admin"));
+    await expect(caller.admin.updateCategory({
+      id: 1,
+      name: "VIPs",
+      slug: "vips",
+      imageUrl: "arquivo-local-invalido",
+      position: 0,
+      active: true,
+    })).rejects.toMatchObject<Partial<TRPCError>>({ code: "BAD_REQUEST" });
+  });
 });

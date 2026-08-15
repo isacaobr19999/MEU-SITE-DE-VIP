@@ -31,7 +31,10 @@
 - [x] Adicionar estado de erro explícito e retry à consulta de produtos em destaque.
 - [x] Cobrir com testes os estados de loading, vazio e erro nas páginas de catálogo e pedidos.
 - [x] Implementar detalhes, filtros e operações administrativas adequadas para pedidos, jogadores, entregas e logs.
-- [ ] Adicionar edição completa de categorias, produtos, servidores e cupons no painel administrativo.
+- [x] Adicionar edição completa de categorias, produtos, servidores e cupons no painel administrativo.
+- [x] Adicionar estados de carregamento, erro, vazio e nova tentativa à tela de edição administrativa de catálogo.
+- [x] Confirmar que as consultas administrativas retornam todos os campos editáveis, incluindo imagens, e cobrir esse contrato com testes.
+- [x] Adicionar testes de contrato para produtos, servidores e cupons administrativos, incluindo descrições, imagens e vínculos de destino.
 - [ ] Cobrir os fluxos administrativos críticos com testes de autorização e operações de gestão.
 - [ ] Configurar as credenciais do Mercado Pago e executar uma compra de teste com webhook em ambiente público HTTPS.
 - [x] Criar a tarefa recorrente de manutenção de comércio após publicar a versão com o endpoint agendado.

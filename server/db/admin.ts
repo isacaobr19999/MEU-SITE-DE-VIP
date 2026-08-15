@@ -34,12 +34,16 @@ export async function getAdminOverview() {
 
 export async function listAdminProducts() {
   const db = await requireDb();
-  return db.select({ id: products.id, name: products.name, slug: products.slug, priceCents: products.priceCents, kind: products.kind, active: products.active, featured: products.featured, categoryName: categories.name, position: products.position }).from(products).innerJoin(categories, eq(products.categoryId, categories.id)).orderBy(asc(products.position), asc(products.name));
+  const [rows, assignments] = await Promise.all([
+    db.select({ id: products.id, categoryId: products.categoryId, name: products.name, slug: products.slug, shortDescription: products.shortDescription, description: products.description, imageUrl: products.imageUrl, priceCents: products.priceCents, kind: products.kind, durationDays: products.durationDays, luckPermsGroup: products.luckPermsGroup, deliveryCommands: products.deliveryCommands, active: products.active, featured: products.featured, categoryName: categories.name, position: products.position }).from(products).innerJoin(categories, eq(products.categoryId, categories.id)).orderBy(asc(products.position), asc(products.name)),
+    db.select({ productId: productServers.productId, serverId: productServers.serverId }).from(productServers),
+  ]);
+  return rows.map(row => ({ ...row, serverIds: assignments.filter(assignment => assignment.productId === row.id).map(assignment => assignment.serverId) }));
 }
 
-export async function updateCategoryRecord(id: number, input: { name: string; slug: string; description?: string; position: number; active: boolean }) {
+export async function updateCategoryRecord(id: number, input: { name: string; slug: string; description?: string; imageUrl?: string; position: number; active: boolean }) {
   const db = await requireDb();
-  await db.update(categories).set({ name: input.name, slug: input.slug, description: input.description ?? null, position: input.position, active: input.active }).where(eq(categories.id, id));
+  await db.update(categories).set({ name: input.name, slug: input.slug, description: input.description ?? null, imageUrl: input.imageUrl ?? null, position: input.position, active: input.active }).where(eq(categories.id, id));
 }
 
 export async function setProductStatus(id: number, active: boolean) {
@@ -77,13 +81,18 @@ export async function createServerRecord(input: { name: string; slug: string; ki
 
 export async function listAdminCoupons() {
   const db = await requireDb();
-  return db.select().from(coupons).orderBy(desc(coupons.createdAt));
+  const [rows, assignments] = await Promise.all([
+    db.select().from(coupons).orderBy(desc(coupons.createdAt)),
+    db.select({ couponId: couponProducts.couponId, productId: couponProducts.productId }).from(couponProducts),
+  ]);
+  return rows.map(row => ({ ...row, productIds: assignments.filter(assignment => assignment.couponId === row.id).map(assignment => assignment.productId) }));
 }
 
-export async function createCouponRecord(input: { code: string; type: "PERCENTAGE" | "FIXED"; percentageBasisPoints?: number; fixedDiscountCents?: number; startsAt?: Date | null; endsAt?: Date | null; maxUses?: number | null; maxUsesPerPlayer: number }) {
+export async function createCouponRecord(input: { code: string; description?: string; type: "PERCENTAGE" | "FIXED"; percentageBasisPoints?: number; fixedDiscountCents?: number; startsAt?: Date | null; endsAt?: Date | null; maxUses?: number | null; maxUsesPerPlayer: number }) {
   const db = await requireDb();
   const result = await db.insert(coupons).values({
     code: input.code,
+    description: input.description ?? null,
     type: input.type,
     percentageBasisPoints: input.type === "PERCENTAGE" ? input.percentageBasisPoints ?? null : null,
     fixedDiscountCents: input.type === "FIXED" ? input.fixedDiscountCents ?? null : null,
@@ -157,10 +166,10 @@ export async function updateServerRecord(id: number, input: { name: string; slug
   await db.update(servers).set(input).where(eq(servers.id, id));
 }
 
-export async function updateCouponRecord(id: number, input: { code: string; type: "PERCENTAGE" | "FIXED"; percentageBasisPoints?: number; fixedDiscountCents?: number; startsAt?: Date | null; endsAt?: Date | null; maxUses?: number | null; maxUsesPerPlayer: number; active: boolean; productIds?: number[] }) {
+export async function updateCouponRecord(id: number, input: { code: string; description?: string; type: "PERCENTAGE" | "FIXED"; percentageBasisPoints?: number; fixedDiscountCents?: number; startsAt?: Date | null; endsAt?: Date | null; maxUses?: number | null; maxUsesPerPlayer: number; active: boolean; productIds?: number[] }) {
   const db = await requireDb();
   await db.transaction(async tx => {
-    await tx.update(coupons).set({ code: input.code, type: input.type, percentageBasisPoints: input.type === "PERCENTAGE" ? input.percentageBasisPoints ?? null : null, fixedDiscountCents: input.type === "FIXED" ? input.fixedDiscountCents ?? null : null, startsAt: input.startsAt ?? null, endsAt: input.endsAt ?? null, maxUses: input.maxUses ?? null, maxUsesPerPlayer: input.maxUsesPerPlayer, active: input.active }).where(eq(coupons.id, id));
+    await tx.update(coupons).set({ code: input.code, description: input.description ?? null, type: input.type, percentageBasisPoints: input.type === "PERCENTAGE" ? input.percentageBasisPoints ?? null : null, fixedDiscountCents: input.type === "FIXED" ? input.fixedDiscountCents ?? null : null, startsAt: input.startsAt ?? null, endsAt: input.endsAt ?? null, maxUses: input.maxUses ?? null, maxUsesPerPlayer: input.maxUsesPerPlayer, active: input.active }).where(eq(coupons.id, id));
     if (input.productIds) {
       await tx.delete(couponProducts).where(eq(couponProducts.couponId, id));
       if (input.productIds.length) await tx.insert(couponProducts).values(input.productIds.map(productId => ({ couponId: id, productId })));
@@ -168,10 +177,10 @@ export async function updateCouponRecord(id: number, input: { code: string; type
   });
 }
 
-export async function updateProductRecord(id: number, input: { categoryId: number; name: string; slug: string; kind: "VIP" | "COINS" | "KIT" | "COSMETIC"; priceCents: number; durationDays?: number | null; luckPermsGroup?: string; deliveryCommands: string[]; featured: boolean; active: boolean; serverIds: number[] }) {
+export async function updateProductRecord(id: number, input: { categoryId: number; name: string; slug: string; shortDescription?: string; description?: string; imageUrl?: string; kind: "VIP" | "COINS" | "KIT" | "COSMETIC"; priceCents: number; durationDays?: number | null; luckPermsGroup?: string; deliveryCommands: string[]; featured: boolean; active: boolean; position: number; serverIds: number[] }) {
   const db = await requireDb();
   await db.transaction(async tx => {
-    await tx.update(products).set({ categoryId: input.categoryId, name: input.name, slug: input.slug, kind: input.kind, priceCents: input.priceCents, durationDays: input.durationDays ?? null, luckPermsGroup: input.luckPermsGroup ?? null, deliveryCommands: input.deliveryCommands, featured: input.featured, active: input.active }).where(eq(products.id, id));
+    await tx.update(products).set({ categoryId: input.categoryId, name: input.name, slug: input.slug, shortDescription: input.shortDescription ?? null, description: input.description ?? null, imageUrl: input.imageUrl ?? null, kind: input.kind, priceCents: input.priceCents, durationDays: input.durationDays ?? null, luckPermsGroup: input.luckPermsGroup ?? null, deliveryCommands: input.deliveryCommands, featured: input.featured, active: input.active, position: input.position }).where(eq(products.id, id));
     await tx.delete(productServers).where(eq(productServers.productId, id));
     await tx.insert(productServers).values(input.serverIds.map(serverId => ({ productId: id, serverId })));
   });
