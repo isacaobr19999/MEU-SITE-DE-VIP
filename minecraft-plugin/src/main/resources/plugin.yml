@@ -1,0 +1,14 @@
+name: PlayStorCraft
+version: ${version}
+main: com.playstorcraft.paper.PlayStorCraftPlugin
+api-version: "1.20"
+authors: [PlayStorCraft]
+softdepend: [LuckPerms]
+commands:
+  playstorcraft:
+    description: Informações e sincronização manual da loja
+    usage: /playstorcraft sync
+permissions:
+  playstorcraft.admin:
+    description: Permite sincronização manual de entregas
+    default: op

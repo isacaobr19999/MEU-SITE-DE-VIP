@@ -1,0 +1,144 @@
+# Project TODO
+
+- [x] Documentar a arquitetura, as fronteiras de segurança e as variáveis de ambiente necessárias.
+- [x] Definir os enums e as tabelas de usuários, jogadores, categorias, produtos, servidores, pedidos, pagamentos, entregas, cupons, usos de cupom e logs.
+- [x] Gerar e aplicar a migration inicial do banco de dados MySQL.
+- [x] Implementar repositórios tipados para catálogo, pedidos, pagamentos, entregas e auditoria; carrinho é persistido como estado tipado do cliente.
+- [x] Implementar validação de entradas e autorização por função para as operações administrativas.
+- [x] Criar a vitrine pública responsiva com página inicial, busca, categorias, produtos em destaque e detalhes do produto.
+- [x] Implementar carrinho persistido no cliente e criação segura de pedidos no servidor.
+- [x] Implementar histórico de pedidos e página de detalhes de pedido para clientes autenticados.
+- [x] Criar painel administrativo protegido em /admin com dashboard de métricas e navegação operacional.
+- [x] Implementar gestão administrativa de categorias, produtos, pedidos, jogadores, servidores, entregas, cupons e logs.
+- [x] Criar uma abstração de gateway de pagamento configurável por variáveis de ambiente, sem chaves embutidas.
+- [x] Implementar endpoint de webhook com verificação de assinatura, idempotência e transições de status auditáveis.
+- [x] Implementar a fila de entregas com reivindicação autenticada por servidor, locks, tentativas e conclusão idempotente.
+- [x] Implementar a API autenticada para o plugin Minecraft consultar e concluir entregas.
+- [x] Implementar processamento de duração de VIPs e expirações por tarefa periódica idempotente.
+- [x] Criar o módulo do plugin Paper PlayStorCraft com comandos, permissões, autenticação de servidor e suporte a placeholders.
+- [x] Documentar a integração com LuckPerms e o modelo de comandos de entrega sem conflito com TAB.
+- [x] Criar referência versionada permitida de variáveis de ambiente, documentação de API e guia de implantação em domínio próprio.
+- [x] Escrever e executar testes Vitest para regras de preços, cupons, estados de pedidos, webhook e idempotência de entregas.
+- [x] Verificar tipos, build, migrations, fluxos críticos e experiência em desktop e celular.
+- [x] Salvar um checkpoint final com todos os itens concluídos.
+- [x] Criar rota/página de detalhes do produto no frontend e ligar cada card do catálogo a essa página.
+- [x] Adicionar uma seção visual explícita de produtos em destaque na vitrine, separada da listagem geral.
+- [x] Persistir o carrinho no cliente com restauração ao recarregar e sincronização de estado.
+- [x] Criar rota/página de detalhes do pedido autenticada consumindo orders.byId, com itens, status e dados principais.
+- [x] Adicionar estados de erro explícitos na vitrine pública para falhas em catálogo e destinos de produto.
+- [x] Adicionar estados de erro explícitos no histórico e no detalhe de pedidos, diferenciando erro de API de recurso inexistente.
+- [x] Revalidar os estados de loading, vazio e erro antes de concluir a vitrine e as páginas de detalhes.
+- [x] Adicionar estado de erro explícito e retry à consulta de produtos em destaque.
+- [x] Cobrir com testes os estados de loading, vazio e erro nas páginas de catálogo e pedidos.
+- [x] Implementar detalhes, filtros e operações administrativas adequadas para pedidos, jogadores, entregas e logs.
+- [x] Adicionar edição completa de categorias, produtos, servidores e cupons no painel administrativo.
+- [x] Adicionar estados de carregamento, erro, vazio e nova tentativa à tela de edição administrativa de catálogo.
+- [x] Confirmar que as consultas administrativas retornam todos os campos editáveis, incluindo imagens, e cobrir esse contrato com testes.
+- [x] Adicionar testes de contrato para produtos, servidores e cupons administrativos, incluindo descrições, imagens e vínculos de destino.
+- [x] Cobrir os fluxos administrativos críticos com testes de autorização e operações de gestão.
+- [x] Configurar as credenciais do Mercado Pago e executar uma compra real de validação com webhook em ambiente público HTTPS.
+- [x] Criar a tarefa recorrente de manutenção de comércio após publicar a versão com o endpoint agendado.
+- [x] Adiar a entrega quando o jogador estiver offline e somente confirmar comandos que exigem presença após ele entrar no servidor.
+- [x] Compilar e validar o artefato JAR do módulo minecraft-plugin antes da entrega final.
+- [x] Adicionar testes para webhook: assinatura inválida, evento ignorado, aprovação e reprocessamento idempotente.
+- [x] Adicionar testes da fila para defer offline, retry e conclusão idempotente com repositórios isolados.
+- [x] Validar de ponta a ponta checkout, pagamento aprovado e webhook em HTTPS público após configurar as credenciais reais do Mercado Pago.
+- [x] Executar e validar o build de produção da aplicação web.
+- [x] Descontinuado: a implantação final utiliza VPS própria com APP_BASE_URL no domínio playstorcraft.com.br, não o domínio gerenciado temporário.
+- [x] Substituído pela configuração concluída de APP_BASE_URL=https://playstorcraft.com.br na VPS e webhook próprio.
+- [x] Substituído pela configuração concluída de DNS direto para a VPS junto ao registrador KingHost.
+- [x] Substituído pela configuração de DNS direto para a VPS; nenhum registro de verificação gerenciado foi necessário.
+- [x] Preparar a implantação da PlayStorCraft na VPS do usuário com domínio próprio, HTTPS e variáveis de ambiente seguras.
+- [x] Configurar DNS de playstorcraft.com.br para o IP público da VPS após confirmar o endereço do servidor.
+- [x] Confirmar que playstorcraft.com.br e www já apontam para a VPS 169.58.176.169.
+- [x] Duplicado: a confirmação de Ubuntu 24.04 e o inventário de Docker, Nginx e firewall foram concluídos no item seguinte.
+- [x] Confirmar por SSH que a VPS executa Ubuntu 24.04 e inventariar Docker, Node.js, Nginx e firewall.
+- [x] Instalar e configurar runtime de produção, proxy HTTPS e firewall mínimo na VPS.
+- [x] Migrar dependências de banco e autenticação gerenciadas para MySQL e JWT próprios na VPS.
+- [x] Implantar a aplicação autonomamente com Docker, Nginx, HTTPS e tarefas de manutenção.
+- [x] Criar uma tela responsiva de login e cadastro por e-mail e senha para a VPS.
+- [x] Redirecionar acionadores de login existentes para a autenticação própria sem OAuth Manus.
+- [x] Validar a criação do primeiro administrador e o acesso ao painel em produção.
+- [x] Adaptar e ativar a rotina segura de manutenção de comércio na VPS.
+- [x] Corrigir a preservação de e-mail e função administrativa após autenticação local na VPS.
+- [x] Cobrir explicitamente com Vitest cupons, estados de pedidos, assinatura inválida, evento ignorado, aprovação e reprocessamento idempotente do webhook, além de defer offline, retry e conclusão idempotente da fila.
+- [x] Validar em produção, em desktop e celular, catálogo, login/cadastro, carrinho, histórico/detalhe de pedidos e painel administrativo.
+- [x] Duplicado: a validação de login/cadastro foi concluída no item seguinte, incluindo acesso ao histórico autenticado.
+- [x] Validar em produção, em desktop e celular, a tela de login/cadastro com fluxo completo de autenticação própria.
+- [x] Validar em produção, em celular, carrinho, histórico/detalhe de pedidos e painel administrativo, registrando evidências de sucesso e estados de erro/carregamento quando aplicável.
+- [x] Duplicado: a validação móvel de /admin foi concluída no item seguinte, com métricas e navegação.
+- [x] Validar em produção, no celular, o painel administrativo principal em /admin, incluindo métricas e navegação.
+- [x] Registrar evidências em produção móvel dos estados de carregamento e, quando possível, erro ou nova tentativa para carrinho, pedidos e administração.
+- [x] Validar em produção, no celular e desktop, o fluxo completo de cadastro da autenticação própria, sem criar uma conta desnecessária.
+- [x] Validar em produção, no celular, o modo Cadastrar da tela de autenticação, confirmando campos, ação e responsividade.
+- [x] Validar em produção, sem criar conta desnecessária, a submissão de cadastro por conflito de e-mail existente no desktop e no celular.
+- [x] Validar e documentar separadamente, em sessão móvel isolada, os estados de carregamento observáveis de carrinho, histórico/detalhe de pedidos e administração.
+- [x] Provocar e registrar explicitamente um estado de erro e uma ação de nova tentativa em fluxo administrativo isolado, sem afetar usuários reais.
+- [x] Validar e documentar explicitamente, em sessão móvel isolada, que o painel público de carrinho não possui consulta assíncrona de carregamento própria e permanece utilizável durante o carregamento da vitrine.
+- [x] Corrigir a rota de carrinho inexistente identificada na validação móvel e cobrir a navegação do carrinho com teste automatizado.
+- [x] Configurar e validar o segredo de assinatura do webhook do Mercado Pago no ambiente da VPS.
+- [x] Substituído por uma compra real aprovada via PIX com a conta vendedora definitiva e webhook processado.
+- [x] Criar um produto técnico de teste, servidor e jogador de teste para validar o checkout real da PlayStorCraft sem cobrança efetiva.
+- [x] Ajustar o Checkout Pro para usar a URL de sandbox quando o Access Token de teste estiver configurado.
+- [x] Confirmar a habilitação de PIX na preferência do Mercado Pago e documentar a ativação no ambiente real por meio da compra real aprovada via PIX.
+- [x] Impedir a inicialização do OAuth Manus quando a loja estiver executando em modo auto-hospedado.
+- [x] Substituído por aprovação real vinculada ao pedido técnico, sem depender do checkout sandbox móvel bloqueado.
+- [x] Dispensado: a conta vendedora real definitiva foi confirmada pelo titular e já aprovou um pagamento real.
+- [x] Dispensado: a validação de Checkout Pro foi concluída com a conta real definitiva, sem necessidade de cartão sandbox.
+- [x] Documentar as recusas `cc_rejected_high_risk`, interromper novas cobranças sandbox e validar o webhook por testes locais assinados.
+- [x] Exigir confirmação explícita por variável de ambiente antes de executar qualquer cobrança sandbox automática e documentar esse bloqueio operacional.
+- [x] Adicionar teste local de assinatura válida do webhook Mercado Pago sem mockar a verificação criptográfica.
+- [x] Exibir uma mensagem específica para pedidos `FAILED`, sem sugerir que a confirmação e a entrega ainda estão pendentes.
+- [x] Investigar o erro relatado após pagamento, correlacionando pedido, resposta do Mercado Pago, webhook e fila de entrega.
+- [x] Confirmar na fila de entregas que o pedido afetado não gerou claim nem entrega pendente antes da aprovação do pagamento.
+- [x] Documentar e orientar o uso de conta compradora de teste separada no Checkout Pro sandbox após a confirmação da mensagem de bloqueio.
+- [x] Dispensado após a validação completa em produção com uma conta compradora normal diferente da conta vendedora.
+- [x] Investigar o erro ERR_TOO_MANY_REDIRECTS em sandbox.mercadopago.com.br relatado durante o checkout de teste.
+- [x] Registrar a repetição do ERR_TOO_MANY_REDIRECTS mesmo com conta compradora de teste e interromper novas tentativas sandbox no celular.
+- [x] Usar o init_point do Checkout Pro para contas vendedoras de teste e cobrir a seleção de URL com testes, evitando o loop do sandbox legado.
+- [x] Implantar na VPS a correção que prioriza init_point no Checkout Pro para contas vendedoras de teste.
+- [x] Validar após o deploy que um novo pedido técnico abre o Checkout Pro pelo init_point sem cair no loop do sandbox legado, ou documentar uma limitação externa remanescente.
+- [x] Confirmar manualmente que o novo Checkout Pro abre em mercadopago.com.br sem ERR_TOO_MANY_REDIRECTS após a correção de URL.
+- [x] Verificar se o Access Token em produção pertence à mesma conta vendedora de teste que a conta compradora usada no checkout.
+- [x] Condição dispensada: o titular confirmou que a conta ISACAOBR é a conta real definitiva e a compra real aprovada validou a operação.
+- [x] Validar as credenciais reais finais da conta vendedora antes de ativar vendas amplamente.
+- [x] Registrar a confirmação do titular de que a conta IsacaoBR é a conta vendedora real definitiva da PlayStorCraft.
+- [x] Registrar evidência operacional adicional de que a conta IsacaoBR está apta para operar vendas reais no Mercado Pago.
+- [x] Confirmar que o usuário já disponibilizou um servidor Minecraft para a instalação do plugin Paper.
+- [x] Obter acesso administrativo alternativo por SSH e vincular o servidor Paper à loja sem depender do painel Pterodactyl indisponível.
+- [x] Obter acesso alternativo ao servidor Minecraft: o Paper foi localizado por SSH na mesma VPS, no volume Pterodactyl 39ac6931-962c-49fc-b753-f4b9c74be67b.
+- [x] Rotacionar com segurança a chave individual do servidor ativo e gravar a configuração do plugin sem expor a credencial em logs ou mensagens.
+- [x] Corrigir a inicialização do plugin quando LuckPerms não estiver instalado, pois o Paper reportou ClassNotFoundException durante a ativação.
+- [x] Corrigir o UUID placeholder do jogador _Nube para o UUID real confirmado pelo Paper antes de reprocessar a entrega técnica.
+- [x] Instalar o plugin Paper no servidor Minecraft e validar a coleta, a execução e a conclusão idempotente da entrega 4146e5a4-e23b-4cb5-ae56-83a6032155ee.
+- [x] Verificar nos logs do Paper que o comando da entrega 4146e5a4-e23b-4cb5-ae56-83a6032155ee foi executado para _Nube.
+- [x] Validar explicitamente a idempotência da entrega 4146e5a4-e23b-4cb5-ae56-83a6032155ee após a conclusão, confirmando que novas consultas do plugin não geram reexecução nem duplicação.
+- [x] Validar o Access Token recebido contra a API do Mercado Pago sem expor o valor e solicitar o segredo de webhook faltante antes da ativação final.
+- [x] Propagar MERCADO_PAGO_PUBLIC_KEY ao contêiner da aplicação e validar a configuração final de pagamentos na VPS.
+- [x] Executar e acompanhar uma compra real autorizada de R$ 1,00, confirmando pagamento, webhook e fila de entrega.
+- [x] Validar a compra real de R$ 1,00 com uma conta compradora normal diferente da conta vendedora IsacaoBR.
+- [x] Correlacionar o pagamento real informado com o pedido, webhook e entrega gerada pela PlayStorCraft.
+- [x] Executar e acompanhar uma compra real autorizada de R$ 1,00, confirmando pagamento, webhook e fila de entrega.
+- [x] Validar a compra real de R$ 1,00 com uma conta compradora normal diferente da conta vendedora IsacaoBR.
+- [x] Correlacionar o pagamento real informado com o pedido, webhook e entrega gerada pela PlayStorCraft.
+- [x] Desativar o produto técnico de validação sem apagar pedidos, pagamentos ou auditoria histórica.
+- [ ] Cadastrar os produtos reais informados pelo usuário com preços, destinos e comandos de entrega corretos.
+- [ ] Configurar os benefícios VIP e os comandos LuckPerms correspondentes no servidor Paper.
+- [ ] Validar o catálogo real e a entrega dos benefícios VIP antes de salvar a próxima versão.
+- [x] Substituir o banner visual atual da vitrine pela imagem Banner.webp fornecida pelo usuário.
+- [x] Validar o novo banner em desktop e celular e salvar a atualização visual.
+- [x] Extrair e identificar as imagens de VIP, boost e cash do arquivo Imagens.rar.
+- [x] Associar as imagens aos sete produtos correspondentes em rascunho, sem alterar preços, comandos ou histórico.
+- [x] Validar os sete rascunhos no banco: todos possuem imagem, preço zero, nenhum comando e nenhum produto publicado para compra.
+- [ ] Validar visualmente em desktop e celular as imagens de VIP, Booster e Cash em uma interface administrativa segura antes de ativar os produtos.
+- [ ] Confirmar com o usuário os preços, durações, servidores de destino e comandos LuckPerms antes de ativar os produtos reais.
+- [ ] Receber e confirmar os nomes exatos dos grupos LuckPerms criados para Ferro, Ouro, Diamante, Esmeralda, Obsidian e Booster antes de associá-los aos rascunhos.
+- [x] Associar os grupos LuckPerms confirmados `ferro`, `ouro`, `diamante`, `esmeralda` e `obsidian` aos cinco rascunhos VIP, mantendo-os inativos.
+- [ ] Confirmar se Booster e Cash usam grupo LuckPerms, comando específico ou nenhum grupo antes de configurar esses produtos.
+- [x] Validar no Paper que LuckPerms e PlayStorCraft estão ativos e que os cinco grupos VIP podem ser usados pelos rascunhos vinculados.
+- [x] Classificar Cash como moeda do servidor e Booster como item/benefício, ambos sem grupo LuckPerms por enquanto.
+- [ ] Definir o comando de entrega do Booster e a forma de creditar Cash antes de ativar os produtos.
+- [ ] Aguardar a configuração futura dos sistemas de Booster e Cash pelo usuário antes de solicitar ou vincular comandos de entrega.
+- [ ] Publicar a versão atual da PlayStorCraft no repositório GitHub selecionado, sem credenciais, arquivos de runtime ou outros dados sensíveis.
+- [x] Sincronizar a versão atual da loja com a VPS preservando o runtime seguro e verificar a resposta pública após a atualização.
+- [x] Sincronizar a versão atual da loja com a VPS preservando o runtime seguro e verificar HTTP 200 nas rotas públicas `/` e `/cart` após a atualização.

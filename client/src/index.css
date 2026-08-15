@@ -1,0 +1,114 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+  --font-sans: "Manrope", sans-serif;
+  --font-mono: "DM Mono", monospace;
+  --radius: 0.9rem;
+  --background: oklch(0.14 0.025 245);
+  --foreground: oklch(0.95 0.01 210);
+  --card: oklch(0.18 0.03 245);
+  --card-foreground: oklch(0.95 0.01 210);
+  --popover: oklch(0.18 0.03 245);
+  --popover-foreground: oklch(0.95 0.01 210);
+  --primary: oklch(0.84 0.16 155);
+  --primary-foreground: oklch(0.18 0.025 245);
+  --secondary: oklch(0.23 0.03 245);
+  --secondary-foreground: oklch(0.88 0.015 210);
+  --muted: oklch(0.23 0.025 245);
+  --muted-foreground: oklch(0.68 0.025 220);
+  --accent: oklch(0.25 0.035 245);
+  --accent-foreground: oklch(0.95 0.01 210);
+  --destructive: oklch(0.68 0.18 25);
+  --destructive-foreground: oklch(0.98 0 0);
+  --border: oklch(0.95 0.01 210 / 12%);
+  --input: oklch(0.95 0.01 210 / 14%);
+  --ring: oklch(0.84 0.16 155);
+  --sidebar: oklch(0.17 0.03 245);
+  --sidebar-foreground: oklch(0.92 0.01 210);
+  --sidebar-primary: oklch(0.84 0.16 155);
+  --sidebar-primary-foreground: oklch(0.18 0.025 245);
+  --sidebar-accent: oklch(0.23 0.03 245);
+  --sidebar-accent-foreground: oklch(0.95 0.01 210);
+  --sidebar-border: oklch(0.95 0.01 210 / 10%);
+  --sidebar-ring: oklch(0.84 0.16 155);
+}
+
+@layer base {
+  * { @apply border-border outline-ring/50; }
+  body { @apply bg-background text-foreground antialiased; }
+  button:not(:disabled), [role="button"]:not([aria-disabled="true"]), [type="button"]:not(:disabled), [type="submit"]:not(:disabled), [type="reset"]:not(:disabled), a[href], select:not(:disabled), input[type="checkbox"]:not(:disabled), input[type="radio"]:not(:disabled) { @apply cursor-pointer; }
+}
+
+@layer components {
+  .container { width: 100%; margin-left: auto; margin-right: auto; padding-left: 1rem; padding-right: 1rem; }
+  .flex { min-height: 0; min-width: 0; }
+  @media (min-width: 640px) { .container { padding-left: 1.5rem; padding-right: 1.5rem; } }
+  @media (min-width: 1024px) { .container { max-width: 1280px; padding-left: 2rem; padding-right: 2rem; } }
+}
+
+.font-display { font-family: "Manrope", sans-serif; }
+.hero-voxel-stage { position: relative; overflow: hidden; perspective: 900px; }
+.hero-voxel-stage::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 82% 18%, rgba(45, 212, 191, .17), transparent 32%), radial-gradient(circle at 18% 84%, rgba(14, 165, 233, .14), transparent 38%); }
+.hero-glow { position: absolute; left: 50%; top: 53%; height: 168px; width: 168px; transform: translate(-50%, -50%); border-radius: 999px; background: #6ee7b7; filter: blur(70px); opacity: .33; }
+.voxel { position: absolute; left: 50%; top: 48%; width: 150px; height: 150px; transform-style: preserve-3d; transform: translate(-50%, -50%) rotateX(-23deg) rotateY(33deg); animation: voxel-float 6s ease-in-out infinite; }
+.voxel span { position: absolute; display: block; width: 150px; height: 150px; }
+.voxel-front { transform: translateZ(75px); background: linear-gradient(135deg, #0f766e, #164e63 70%); box-shadow: inset 14px 0 rgba(255,255,255,.06); }
+.voxel-side { transform: rotateY(90deg) translateZ(75px); background: linear-gradient(135deg, #0c4a6e, #082f49); }
+.voxel-top { transform: rotateX(90deg) translateZ(75px); background: linear-gradient(135deg, #a7f3d0, #2dd4bf); }
+.voxel-small { width: 74px; height: 74px; animation-delay: -2s; }
+.voxel-small span { width: 74px; height: 74px; }
+.voxel-small .voxel-front { transform: translateZ(37px); }
+.voxel-small .voxel-side { transform: rotateY(90deg) translateZ(37px); }
+.voxel-small .voxel-top { transform: rotateX(90deg) translateZ(37px); }
+.voxel-a { left: 20%; top: 30%; }
+.voxel-b { left: 76%; top: 71%; animation-delay: -4s; }
+.process-card { border: 1px solid rgba(255,255,255,.1); border-radius: 1.4rem; padding: 1.5rem; background: rgba(255,255,255,.025); }
+.process-card span { font-family: "DM Mono", monospace; font-size: .75rem; font-weight: 700; color: #6ee7b7; letter-spacing: .15em; }
+.process-card h3 { margin-top: 1rem; font-weight: 700; color: white; }
+.process-card p { margin-top: .5rem; font-size: .875rem; line-height: 1.5rem; color: #94a3b8; }
+@keyframes voxel-float { 0%, 100% { margin-top: -9px; } 50% { margin-top: 9px; } }
+@media (prefers-reduced-motion: reduce) { .voxel { animation: none; } }
+
+.admin-list { overflow: hidden; border: 1px solid rgba(255,255,255,.1); border-radius: 1rem; background: rgba(255,255,255,.025); }
+.admin-list h3 { padding: 1rem; font-size: .875rem; font-weight: 700; color: white; border-bottom: 1px solid rgba(255,255,255,.08); }
+.admin-list > div { display: flex; align-items: center; justify-content: space-between; gap: .75rem; padding: .75rem 1rem; border-bottom: 1px solid rgba(255,255,255,.06); }
+.admin-list > div:last-child { border-bottom: 0; }
+.admin-list strong { display: block; font-size: .8125rem; color: #f8fafc; }
+.admin-list small { display: block; margin-top: .125rem; color: #94a3b8; font-size: .6875rem; }

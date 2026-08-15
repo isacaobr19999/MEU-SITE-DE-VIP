@@ -1,0 +1,44 @@
+services:
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks: [playstorcraft]
+
+  app:
+    build:
+      context: ../..
+      dockerfile: deployment/vps/Dockerfile
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      SELF_HOSTED: "true"
+      PORT: 3000
+      VITE_APP_ID: playstorcraft
+      DATABASE_URL: mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@mysql:3306/${MYSQL_DATABASE}
+      JWT_SECRET: ${JWT_SECRET}
+      APP_BASE_URL: ${APP_BASE_URL}
+      MINECRAFT_API_KEY_PEPPER: ${MINECRAFT_API_KEY_PEPPER}
+      MAINTENANCE_SECRET: ${MAINTENANCE_SECRET}
+      MERCADO_PAGO_ACCESS_TOKEN: ${MERCADO_PAGO_ACCESS_TOKEN}
+      MERCADO_PAGO_PUBLIC_KEY: ${MERCADO_PAGO_PUBLIC_KEY}
+      MERCADO_PAGO_WEBHOOK_SECRET: ${MERCADO_PAGO_WEBHOOK_SECRET}
+    depends_on:
+      mysql:
+        condition: service_started
+    ports:
+      - "127.0.0.1:3000:3000"
+    networks: [playstorcraft]
+
+networks:
+  playstorcraft:
+
+volumes:
+  mysql_data:
