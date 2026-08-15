@@ -60,3 +60,5 @@
 - [x] Corrigir a preservação de e-mail e função administrativa após autenticação local na VPS.
 - [ ] Cobrir explicitamente com Vitest cupons, estados de pedidos, assinatura inválida, evento ignorado, aprovação e reprocessamento idempotente do webhook, além de defer offline, retry e conclusão idempotente da fila.
 - [ ] Validar em produção, em desktop e celular, catálogo, login/cadastro, carrinho, histórico/detalhe de pedidos e painel administrativo.
+- [x] Configurar e validar o segredo de assinatura do webhook do Mercado Pago no ambiente da VPS.
+- [ ] Configurar o Access Token de teste do Mercado Pago e executar uma cobrança de validação por PIX ou cartão.
