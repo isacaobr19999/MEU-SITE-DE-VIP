@@ -96,9 +96,17 @@
 - [x] Usar o init_point do Checkout Pro para contas vendedoras de teste e cobrir a seleção de URL com testes, evitando o loop do sandbox legado.
 - [x] Implantar na VPS a correção que prioriza init_point no Checkout Pro para contas vendedoras de teste.
 - [x] Validar após o deploy que um novo pedido técnico abre o Checkout Pro pelo init_point sem cair no loop do sandbox legado, ou documentar uma limitação externa remanescente.
-- [ ] Confirmar manualmente que o novo Checkout Pro abre em mercadopago.com.br sem ERR_TOO_MANY_REDIRECTS após a correção de URL.
+- [x] Confirmar manualmente que o novo Checkout Pro abre em mercadopago.com.br sem ERR_TOO_MANY_REDIRECTS após a correção de URL.
 - [x] Verificar se o Access Token em produção pertence à mesma conta vendedora de teste que a conta compradora usada no checkout.
-- [ ] Obter o Access Token da aplicação da conta Seller Test User brasileira correspondente e configurá-lo na VPS para o teste sandbox compatível.
-- [ ] Substituir as credenciais de teste por credenciais reais do Mercado Pago e validar a conta vendedora antes de ativar vendas.
-- [ ] Validar o Access Token recebido contra a API do Mercado Pago sem expor o valor e solicitar o segredo de webhook faltante antes da ativação final.
-- [ ] Propagar MERCADO_PAGO_PUBLIC_KEY ao contêiner da aplicação e validar a configuração final de pagamentos na VPS.
+- [x] Condição dispensada: o titular confirmou que a conta ISACAOBR é a conta real definitiva e a compra real aprovada validou a operação.
+- [x] Validar as credenciais reais finais da conta vendedora antes de ativar vendas amplamente.
+- [x] Registrar a confirmação do titular de que a conta IsacaoBR é a conta vendedora real definitiva da PlayStorCraft.
+- [x] Registrar evidência operacional adicional de que a conta IsacaoBR está apta para operar vendas reais no Mercado Pago.
+- [x] Validar o Access Token recebido contra a API do Mercado Pago sem expor o valor e solicitar o segredo de webhook faltante antes da ativação final.
+- [x] Propagar MERCADO_PAGO_PUBLIC_KEY ao contêiner da aplicação e validar a configuração final de pagamentos na VPS.
+- [x] Executar e acompanhar uma compra real autorizada de R$ 1,00, confirmando pagamento, webhook e fila de entrega.
+- [x] Validar a compra real de R$ 1,00 com uma conta compradora normal diferente da conta vendedora IsacaoBR.
+- [x] Correlacionar o pagamento real informado com o pedido, webhook e entrega gerada pela PlayStorCraft.
+- [x] Executar e acompanhar uma compra real autorizada de R$ 1,00, confirmando pagamento, webhook e fila de entrega.
+- [x] Validar a compra real de R$ 1,00 com uma conta compradora normal diferente da conta vendedora IsacaoBR.
+- [x] Correlacionar o pagamento real informado com o pedido, webhook e entrega gerada pela PlayStorCraft.

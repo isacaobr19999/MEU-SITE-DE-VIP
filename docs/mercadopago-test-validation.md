@@ -66,6 +66,18 @@ Após a repetição, o pedido continuou em `WAITING_PAYMENT`, o registro de paga
 
 Após a correção e implantação na VPS, um novo pedido técnico foi criado. Seu registro local confirma `checkoutUrl` em `https://www.mercadopago.com.br/checkout/v1/redirect`, sem o subdomínio `sandbox.mercadopago.com.br` que apresentava o loop. A preferência aguarda somente a conclusão manual da compra de teste e não criou cobrança, webhook ou entrega até o momento.
 
+## Validação comercial controlada
+
+Em 15 de agosto de 2026, uma compra real e autorizada de **R$ 1,00** foi concluída por uma conta compradora normal diferente da conta vendedora. O pedido `PSC-20260815-8BECFC11` passou para `PAID`, com pagamento `APPROVED` e identificador do Mercado Pago registrado. O proxy registrou a notificação WebHook do Mercado Pago com resposta HTTP 200, confirmando o processamento assinado no endpoint público.
+
+A fila criou uma entrega única para o pedido, inicialmente em `PENDING`, sem claim, erro ou tentativa consumida. Esse comportamento é esperado enquanto o plugin Paper não consulta a fila no servidor Minecraft; a entrega permanece segura e pronta para o próximo claim, sem duplicação.
+
+Esta validação confirma o fluxo técnico de pagamento, webhook e fila sob as credenciais atualmente instaladas. A ativação comercial ampla permanece condicionada à confirmação de que essas são as credenciais da conta vendedora final do usuário, e não de uma conta de teste usada durante o diagnóstico.
+
+O titular confirmou que a conta **IsacaoBR** configurada na VPS é sua conta vendedora real e definitiva. Com isso, as credenciais já validadas passam a ser tratadas como credenciais comerciais da PlayStorCraft.
+
+Na validação de produção, o Checkout Pro abriu o método **Pix** para o produto de R$ 1,00. A conta autenticada nessa tentativa era a própria conta vendedora configurada na loja, e o Mercado Pago desabilitou a criação do Pix. Isso é o comportamento esperado para impedir auto pagamento; a compra controlada deve ser concluída usando uma segunda conta normal, distinta da conta vendedora.
+
 Na tentativa de pagar por esse novo endereço, o Mercado Pago voltou a informar que uma das partes é de teste. Como o redirecionamento já foi corrigido, a investigação passa a verificar se o Access Token configurado na VPS pertence à mesma conta vendedora de teste da conta compradora usada pelo usuário.
 
 A consulta autenticada ao token configurado na VPS identificou uma conta brasileira diferente das contas **Seller Test User** exibidas pelo usuário. Portanto, a conta compradora de teste está correta, mas o token atual não pertence ao vendedor de teste correspondente. Essa incompatibilidade explica a mensagem de que uma das partes é de teste. Para concluir o teste, a VPS deverá receber as credenciais da aplicação criada dentro da conta marcada como **Vendedor** nas Contas de teste; não devem ser usadas as credenciais da conta normal.
