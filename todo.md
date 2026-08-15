@@ -125,5 +125,5 @@
 - [ ] Cadastrar os produtos reais informados pelo usuário com preços, destinos e comandos de entrega corretos.
 - [ ] Configurar os benefícios VIP e os comandos LuckPerms correspondentes no servidor Paper.
 - [ ] Validar o catálogo real e a entrega dos benefícios VIP antes de salvar a próxima versão.
-- [ ] Substituir o banner visual atual da vitrine pela imagem Banner.webp fornecida pelo usuário.
-- [ ] Validar o novo banner em desktop e celular e salvar a atualização visual.
+- [x] Substituir o banner visual atual da vitrine pela imagem Banner.webp fornecida pelo usuário.
+- [x] Validar o novo banner em desktop e celular e salvar a atualização visual.

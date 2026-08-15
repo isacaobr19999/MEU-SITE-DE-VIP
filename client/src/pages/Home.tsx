@@ -174,12 +174,9 @@ export default function Home() {
             <p className="mt-7 max-w-lg text-lg leading-8 text-slate-300">VIPs, coins e itens digitais entregues com segurança no servidor certo. Escolha seu benefício e continue sua aventura.</p>
             <div className="mt-9 flex flex-wrap items-center gap-3"><Button onClick={() => document.getElementById("loja")?.scrollIntoView({ behavior: "smooth" })} className="h-12 rounded-xl bg-emerald-300 px-6 font-bold text-slate-950 hover:bg-emerald-200">Explorar a loja <ChevronRight size={18} /></Button><div className="flex items-center gap-2 px-3 text-xs text-slate-400"><ShieldCheck size={16} className="text-emerald-300" /> Pagamento verificado no servidor</div></div>
           </div>
-          <div className="hero-voxel-stage min-h-[360px] rounded-[2rem] border border-white/10 bg-slate-950/40 p-5 lg:min-h-[430px]">
-            <div className="hero-glow" />
-            <div className="voxel voxel-main"><span className="voxel-top" /><span className="voxel-front" /><span className="voxel-side" /></div>
-            <div className="voxel voxel-small voxel-a"><span className="voxel-top" /><span className="voxel-front" /><span className="voxel-side" /></div>
-            <div className="voxel voxel-small voxel-b"><span className="voxel-top" /><span className="voxel-front" /><span className="voxel-side" /></div>
-            <div className="absolute bottom-6 left-6 rounded-2xl border border-white/10 bg-slate-950/80 p-4 backdrop-blur"><p className="font-mono text-[10px] font-bold tracking-[.16em] text-emerald-300">ENTREGA AUTOMÁTICA</p><p className="mt-1 text-sm font-semibold text-white">Seu benefício, no mundo certo.</p></div>
+          <div className="hero-voxel-stage relative aspect-video overflow-hidden rounded-[2rem] border border-white/10 bg-slate-950/40 shadow-[0_20px_70px_rgba(0,0,0,.28)]">
+            <img src="/manus-storage/PlayStorCraft-Banner_468fb2a4.webp" alt="Banner PlayStorCraft com guerreiro e cidade fantástica" className="absolute inset-0 h-full w-full object-cover object-center" />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/30 via-transparent to-transparent" aria-hidden="true" />
           </div>
         </section>
 
