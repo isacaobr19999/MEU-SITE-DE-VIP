@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createOrderForUser, getOrderForUser, listOrdersForUser } from "../db/orders";
-import { getCheckoutOrderForUser, getSavedCheckout, saveCheckoutPreference } from "../db/payments";
+import { completeComplimentaryOrderForUser, getCheckoutOrderForUser, getSavedCheckout, saveCheckoutPreference } from "../db/payments";
 import { protectedProcedure, router } from "../_core/trpc";
 import { createMercadoPagoPreference } from "../services/mercadoPago";
 
@@ -22,14 +22,15 @@ export const ordersRouter = router({
   }),
   checkout: protectedProcedure.input(z.object({ orderId: z.string().uuid() })).mutation(async ({ ctx, input }) => {
     try {
-      const existing = await getSavedCheckout(input.orderId);
-      if (existing) return existing;
       const checkout = await getCheckoutOrderForUser(ctx.user.id, input.orderId);
       if (!checkout) throw new Error("Pedido não localizado");
       if (!["WAITING_PAYMENT", "PENDING"].includes(checkout.order.status)) throw new Error("Este pedido não pode mais ser pago");
+      if (checkout.order.totalCents === 0) return completeComplimentaryOrderForUser(ctx.user.id, checkout.order.id);
+      const existing = await getSavedCheckout(input.orderId);
+      if (existing) return { ...existing, complimentary: false };
       const preference = await createMercadoPagoPreference({ orderId: checkout.order.id, orderNumber: checkout.order.orderNumber, totalCents: checkout.order.totalCents, items: checkout.items.map(item => ({ productId: item.productId, productName: item.productName, quantity: item.quantity, unitPriceCents: item.unitPriceCents })) });
       await saveCheckoutPreference({ orderId: checkout.order.id, amountCents: checkout.order.totalCents, ...preference });
-      return preference;
+      return { ...preference, complimentary: false };
     } catch (error) {
       throw new TRPCError({ code: "PRECONDITION_FAILED", message: error instanceof Error ? error.message : "Não foi possível iniciar o checkout" });
     }

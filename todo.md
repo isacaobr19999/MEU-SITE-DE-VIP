@@ -203,3 +203,7 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Confirmar que a chave e o pepper do servidor permanecem consistentes após reconstruções da aplicação.
 - [x] Validar a consulta automática de entregas e a recuperação da API após reinício, sem HTTP 401 ou 502 persistente.
 - [x] Publicar a correção de comunicação do plugin em novo checkpoint.
+- [x] Diagnosticar o erro unit_price invalid retornado pelo Mercado Pago ao iniciar checkout com cupom.
+- [x] Corrigir a preferência de pagamento com desconto e tratar pedidos com total gratuito sem enviar preço inválido ao gateway.
+- [x] Cobrir com testes os cupons percentual, fixo, desconto total e o valor cobrado pelo gateway.
+- [x] Publicar e validar o checkout com cupom na VPS.

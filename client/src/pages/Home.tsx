@@ -77,6 +77,7 @@ export default function Home() {
   const checkoutPayment = trpc.orders.checkout.useMutation({
     onSuccess: result => {
       setCart([]);
+      if (result.complimentary) toast.success("Cupom aplicado: seu pedido ficou gratuito e já foi enviado para entrega.");
       window.location.assign(result.checkoutUrl);
     },
     onError: error => toast.error(error.message),

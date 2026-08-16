@@ -24,6 +24,31 @@ export async function saveCheckoutPreference(input: { orderId: string; amountCen
   await db.insert(payments).values({ id: randomUUID(), orderId: input.orderId, provider: "mercado_pago", method: "OTHER", status: "PENDING", amountCents: input.amountCents, idempotencyKey, gatewayPayload: { preferenceId: input.preferenceId, checkoutUrl: input.checkoutUrl } }).onDuplicateKeyUpdate({ set: { gatewayPayload: { preferenceId: input.preferenceId, checkoutUrl: input.checkoutUrl } } });
 }
 
+/** Finaliza pedidos totalmente cobertos por cupom sem enviar um preço zero ao gateway. */
+export async function completeComplimentaryOrderForUser(userId: number, orderId: string) {
+  const db = await requireDb();
+  return db.transaction(async tx => {
+    const [order] = await tx.select().from(orders).where(and(eq(orders.id, orderId), eq(orders.userId, userId))).limit(1);
+    if (!order) throw new Error("Pedido não localizado");
+    if (order.totalCents !== 0) throw new Error("Este pedido ainda possui valor a pagar");
+    if (!["WAITING_PAYMENT", "PENDING", "PAID", "PROCESSING", "COMPLETED"].includes(order.status)) throw new Error("Este pedido não pode mais ser processado");
+
+    const now = new Date();
+    await tx.update(payments).set({ status: "CANCELLED" }).where(and(eq(payments.orderId, order.id), eq(payments.provider, "mercado_pago"), eq(payments.status, "PENDING")));
+    await tx.insert(payments).values({ id: randomUUID(), orderId: order.id, provider: "coupon", method: "OTHER", status: "APPROVED", amountCents: 0, idempotencyKey: `coupon-complete:${order.id}`, gatewayPayload: { reason: "coupon_covered_total" }, paidAt: now }).onDuplicateKeyUpdate({ set: { status: "APPROVED", paidAt: now, gatewayPayload: { reason: "coupon_covered_total" } } });
+
+    if (!["PAID", "PROCESSING", "COMPLETED"].includes(order.status)) {
+      await tx.update(orders).set({ status: "PAID", paidAt: now }).where(eq(orders.id, order.id));
+    }
+    const items = await tx.select().from(orderItems).where(eq(orderItems.orderId, order.id));
+    for (const item of items) {
+      const commandTemplates = item.luckPermsGroup ? [...item.deliveryCommands, `@luckperms:add:${item.luckPermsGroup}`] : item.deliveryCommands;
+      await tx.insert(deliveries).values({ id: randomUUID(), orderId: order.id, orderItemId: item.id, playerId: order.playerId, serverId: item.serverId, status: "PENDING", commandTemplates, idempotencyKey: `delivery:${order.id}:${item.id}` }).onDuplicateKeyUpdate({ set: { status: "PENDING", nextAttemptAt: now } });
+    }
+    return { preferenceId: `coupon-${order.id}`, checkoutUrl: `/orders/${order.id}`, complimentary: true };
+  });
+}
+
 type GatewayPayment = { id?: number; status?: string; status_detail?: string; payment_type_id?: string; transaction_amount?: number; external_reference?: string; date_approved?: string; date_created?: string };
 
 export function mapMercadoPagoStatus(status?: string) {
