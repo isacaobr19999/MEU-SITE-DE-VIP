@@ -13,3 +13,7 @@ A validação do backend foi ajustada para aceitar caminhos relativos seguros in
 ## Validação pós-correção
 
 Em produção, o salvamento sem alterações do produto `1.000 Cash` foi concluído com a confirmação visual `Produto atualizado.`. O salvamento de categoria também foi confirmado com `Categoria atualizada.`. A central de operações carregou pedidos, entregas, jogadores, disponibilidade de servidores, categorias, cupons e auditoria; o botão `Detalhes` abriu corretamente o pedido técnico de VIP, incluindo item, duração e valor.
+
+## Correção de duração comercial
+
+O banco confirmou que os produtos permanentes usam duração nula e que o `Booster 2×` usa 15 dias. A validação anterior aceitava somente 7, 30, 90 e 365 dias; por isso o painel bloqueava qualquer produto que trouxesse outro prazo comercial. A validação agora aceita durações inteiras de 1 a 3.650 dias, e os formulários administrativos incluem explicitamente 15 dias entre as opções padrão.

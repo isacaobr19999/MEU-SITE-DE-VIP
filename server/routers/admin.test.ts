@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { describe, expect, it } from "vitest";
 import { appRouter } from "../routers";
-import { adminMediaUrl } from "./admin";
+import { adminDurationDays, adminMediaUrl } from "./admin";
 import type { TrpcContext } from "../_core/context";
 
 function userContext(role: "user" | "admin"): TrpcContext {
@@ -63,5 +63,13 @@ describe("adminRouter", () => {
     expect(adminMediaUrl.safeParse("https://cdn.example.com/vip.webp").success).toBe(true);
     expect(adminMediaUrl.safeParse("//cdn.example.com/vip.webp").success).toBe(false);
     expect(adminMediaUrl.safeParse("javascript:alert(1)").success).toBe(false);
+  });
+
+  it("aceita durações comerciais inteiras, incluindo o Booster de 15 dias", () => {
+    expect(adminDurationDays.safeParse(15).success).toBe(true);
+    expect(adminDurationDays.safeParse(1).success).toBe(true);
+    expect(adminDurationDays.safeParse(3650).success).toBe(true);
+    expect(adminDurationDays.safeParse(0).success).toBe(false);
+    expect(adminDurationDays.safeParse(1.5).success).toBe(false);
   });
 });

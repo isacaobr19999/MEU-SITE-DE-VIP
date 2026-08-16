@@ -165,3 +165,5 @@
 - [x] Auditar todas as páginas e ações do painel administrativo para identificar botões, tabelas e formulários inoperantes.
 - [x] Corrigir os fluxos administrativos de catálogo, pedidos, jogadores, entregas, cupons, servidores e registros operacionais.
 - [x] Validar em produção as operações administrativas corrigidas e publicar a atualização na VPS.
+- [x] Corrigir o formulário administrativo que envia duração `1` para produtos permanentes ou com prazo inválido.
+- [x] Validar em produção o salvamento de produtos permanentes e com duração de VIP após a correção.
