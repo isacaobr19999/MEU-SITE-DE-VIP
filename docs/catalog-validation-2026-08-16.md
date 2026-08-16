@@ -23,3 +23,7 @@ Com autorização explícita do titular, foi criada uma entrega sintética sem p
 ## Diagnóstico do painel
 
 A indisponibilidade relatada no painel não foi reproduzida na infraestrutura: o DNS de `panel.playstorcraft.com.br` resolve para a VPS, HTTPS retorna HTTP 200 e a página de login do Pterodactyl é entregue pelo Nginx. O serviço do painel não aparece como uma unidade systemd independente, mas o Nginx está ativo e servindo a aplicação. O bloqueio observado no navegador é a exigência de autenticação do painel, não uma falha de DNS ou HTTPS.
+
+## Banner público — revalidação
+
+Após a revalidação atual, a URL `/store-assets/PlayStorCraft-Banner.webp` respondeu `200 image/webp` e serviu um arquivo WebP válido de 237.010 bytes. A abertura visual da página inicial publicada exibiu novamente a arte completa do PlayStorCraft no estágio principal, sem texto alternativo nem falha de carregamento.

@@ -171,3 +171,6 @@
 - [x] Validar em produção o salvamento de produto com preço informado pelo administrador após a correção.
 - [x] Corrigir o editor de VIP para não exigir comandos manuais quando a concessão LuckPerms é derivada automaticamente do grupo e da duração.
 - [x] Validar em produção o salvamento de um VIP com preço zero simulado e sem comando manual, preservando preço e entrega automática.
+- [x] Corrigir o banner principal da vitrine pública que está exibindo texto alternativo em vez da imagem na VPS.
+- [x] Validar o carregamento visual e HTTP do banner corrigido na página inicial publicada.
+- [x] Versionar a URL do banner público para forçar a atualização em navegadores que tenham uma resposta antiga em cache.
