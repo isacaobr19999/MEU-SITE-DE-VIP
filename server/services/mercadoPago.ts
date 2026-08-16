@@ -23,7 +23,9 @@ export async function createMercadoPagoPreference(input: { orderId: string; orde
       back_urls: { success: `${appBaseUrl}/orders/${input.orderId}`, pending: `${appBaseUrl}/orders/${input.orderId}`, failure: `${appBaseUrl}/orders/${input.orderId}` },
       notification_url: `${appBaseUrl}/api/webhooks/mercadopago`,
       metadata: { order_id: input.orderId, order_number: input.orderNumber },
-      items: input.items.map(item => ({ id: String(item.productId), title: item.productName, quantity: item.quantity, unit_price: item.unitPriceCents / 100, currency_id: "BRL" })),
+      items: input.totalCents < input.items.reduce((sum, item) => sum + item.unitPriceCents * item.quantity, 0)
+        ? [{ id: `order-${input.orderId}`, title: `Compra PlayStorCraft — ${input.orderNumber}`, quantity: 1, unit_price: input.totalCents / 100, currency_id: "BRL" }]
+        : input.items.map(item => ({ id: String(item.productId), title: item.productName, quantity: item.quantity, unit_price: item.unitPriceCents / 100, currency_id: "BRL" })),
     },
     requestOptions: { idempotencyKey: `psc-preference-${input.orderId}` },
   });

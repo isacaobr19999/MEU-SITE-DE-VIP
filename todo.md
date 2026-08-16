@@ -192,3 +192,10 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Remover ou substituir toda referência restante a UUID no checkout, incluindo texto, placeholder, validação e versão publicada.
 - [x] Validar o modal de checkout em desktop e celular após a atualização.
 - [x] Publicar a correção visual do checkout em novo checkpoint.
+- [x] Investigar por que o desconto do cupom não reduz corretamente o valor final do pedido.
+- [x] Corrigir cálculo e aplicação de cupons percentuais e de valor fixo antes do pagamento.
+- [x] Exibir valor original, cupom, desconto e valor final no pedido e checkout.
+- [x] Reforçar validações de cupom expirado, inexistente, desativado e limites de uso.
+- [x] Implementar exclusão de cupons com confirmação e impedir reutilização após exclusão.
+- [x] Adicionar testes completos do fluxo de cupom e validar o pagamento com valor descontado.
+- [x] Publicar a correção do sistema de cupons em novo checkpoint.

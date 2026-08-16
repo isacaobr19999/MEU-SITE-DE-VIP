@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createCategoryRecord, createProductRecord, listAdminCategories } from "../db/adminCatalog";
-import { cancelOrderRecord, createCouponRecord, createServerRecord, getAdminOrderDetail, getAdminOverview, getAdminProductPriceCents, listAdminCoupons, listAdminDeliveries, listAdminLogs, listAdminOrders, listAdminPlayers, listAdminProducts, listAdminServers, listAdminUsers, listPlayerHistory, retryDeliveryRecord, setAdminRole, setProductStatus, updateCategoryRecord, updateCouponRecord, updateProductRecord, updateServerRecord, writeAdminAuditLog } from "../db/admin";
+import { cancelOrderRecord, createCouponRecord, createServerRecord, deleteCouponRecord, getAdminOrderDetail, getAdminOverview, getAdminProductPriceCents, listAdminCoupons, listAdminDeliveries, listAdminLogs, listAdminOrders, listAdminPlayers, listAdminProducts, listAdminServers, listAdminUsers, listPlayerHistory, retryDeliveryRecord, setAdminRole, setProductStatus, updateCategoryRecord, updateCouponRecord, updateProductRecord, updateServerRecord, writeAdminAuditLog } from "../db/admin";
 import { adminProcedure, router } from "../_core/trpc";
 
 const slug = z.string().trim().toLowerCase().regex(/^[a-z0-9-]+$/).min(3).max(160);
@@ -89,6 +89,15 @@ export const adminRouter = router({
     await updateCouponRecord(input.id, input);
     await audit(ctx, "coupon.updated", "coupon", String(input.id));
     return { success: true };
+  }),
+  deleteCoupon: adminProcedure.input(z.object({ id: z.number().int().positive() })).mutation(async ({ ctx, input }) => {
+    try {
+      const result = await deleteCouponRecord(input.id);
+      await audit(ctx, result.deactivated ? "coupon.deactivated" : "coupon.deleted", "coupon", String(input.id), { preservedHistory: result.deactivated });
+      return { success: true, ...result };
+    } catch (error) {
+      throw new TRPCError({ code: "BAD_REQUEST", message: error instanceof Error ? error.message : "Não foi possível excluir o cupom" });
+    }
   }),
   createServer: adminProcedure.input(z.object({ name: z.string().trim().min(2).max(96), slug: slug.max(48), kind: z.enum(["SURVIVAL", "SKYBLOCK", "BEDWARS", "GLOBAL"]) })).mutation(async ({ ctx, input }) => {
     const pepper = process.env.MINECRAFT_API_KEY_PEPPER;

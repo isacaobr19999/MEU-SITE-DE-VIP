@@ -160,5 +160,10 @@ export async function getOrderForUser(userId: number, orderId: string) {
   const order = await db.select().from(orders).where(and(eq(orders.id, orderId), eq(orders.userId, userId))).limit(1);
   if (!order[0]) return undefined;
   const items = await db.select().from(orderItems).where(eq(orderItems.orderId, orderId));
-  return { ...order[0], items };
+  let couponCode: string | null = null;
+  if (order[0].couponId) {
+    const [coupon] = await db.select({ code: coupons.code }).from(coupons).where(eq(coupons.id, order[0].couponId)).limit(1);
+    couponCode = coupon?.code ?? null;
+  }
+  return { ...order[0], couponCode, items };
 }

@@ -1,6 +1,8 @@
 import { and, asc, count, desc, eq, gte, inArray, sql } from "drizzle-orm";
 import { randomBytes } from "node:crypto";
-import { adminUsers, categories, couponProducts, coupons, deliveries, logs, orderItems, orders, players, productServers, products, servers, users } from "../../drizzle/schema";
+import { adminUsers, categories,   couponProducts,
+  couponUsage,
+ coupons, deliveries, logs, orderItems, orders, players, productServers, products, servers, users } from "../../drizzle/schema";
 import { hashSecret } from "../services/secretHash";
 import { requireDb } from "../db";
 
@@ -151,7 +153,7 @@ export async function listOrderItemsForAdmin(orderId: string) {
 
 export async function getAdminOrderDetail(id: string) {
   const db = await requireDb();
-  const [order] = await db.select({ id: orders.id, orderNumber: orders.orderNumber, status: orders.status, totalCents: orders.totalCents, discountCents: orders.discountCents, createdAt: orders.createdAt, paidAt: orders.paidAt, playerName: players.username, playerUuid: players.uuid, playerId: players.id }).from(orders).innerJoin(players, eq(orders.playerId, players.id)).where(eq(orders.id, id)).limit(1);
+  const [order] = await db.select({ id: orders.id, orderNumber: orders.orderNumber, status: orders.status, subtotalCents: orders.subtotalCents, totalCents: orders.totalCents, discountCents: orders.discountCents, couponCode: coupons.code, createdAt: orders.createdAt, paidAt: orders.paidAt, playerName: players.username, playerUuid: players.uuid, playerId: players.id }).from(orders).innerJoin(players, eq(orders.playerId, players.id)).leftJoin(coupons, eq(orders.couponId, coupons.id)).where(eq(orders.id, id)).limit(1);
   if (!order) return undefined;
   const items = await listOrderItemsForAdmin(id);
   return { ...order, items };
@@ -177,6 +179,22 @@ export async function retryDeliveryRecord(id: string) {
 export async function updateServerRecord(id: number, input: { name: string; slug: string; kind: "SURVIVAL" | "SKYBLOCK" | "BEDWARS" | "GLOBAL"; active: boolean }) {
   const db = await requireDb();
   await db.update(servers).set(input).where(eq(servers.id, id));
+}
+
+export async function deleteCouponRecord(id: number) {
+  const db = await requireDb();
+  return db.transaction(async tx => {
+    const [usage] = await tx.select({ value: count() }).from(couponUsage).where(eq(couponUsage.couponId, id));
+    if (usage.value > 0) {
+      const result = await tx.update(coupons).set({ active: false }).where(eq(coupons.id, id));
+      if (result[0].affectedRows !== 1) throw new Error("Cupom não localizado.");
+      return { deleted: false, deactivated: true };
+    }
+    await tx.delete(couponProducts).where(eq(couponProducts.couponId, id));
+    const result = await tx.delete(coupons).where(eq(coupons.id, id));
+    if (result[0].affectedRows !== 1) throw new Error("Cupom não localizado.");
+    return { deleted: true, deactivated: false };
+  });
 }
 
 export async function updateCouponRecord(id: number, input: { code: string; description?: string; type: "PERCENTAGE" | "FIXED"; percentageBasisPoints?: number; fixedDiscountCents?: number; startsAt?: Date | null; endsAt?: Date | null; maxUses?: number | null; maxUsesPerPlayer: number; active: boolean; productIds?: number[] }) {

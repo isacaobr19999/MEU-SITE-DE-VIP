@@ -31,23 +31,24 @@ describe("preferência Mercado Pago", () => {
 
   it("usa o checkout padrão para credencial da conta vendedora de teste", async () => {
     process.env.MERCADO_PAGO_ACCESS_TOKEN = "APP_USR-teste";
-    await expect(createMercadoPagoPreference(input)).resolves.toEqual({
-      preferenceId: "pref-1",
-      checkoutUrl: "https://www.mercadopago.com.br/checkout/producao",
-    });
+    await expect(createMercadoPagoPreference(input)).resolves.toEqual({ preferenceId: "pref-1", checkoutUrl: "https://www.mercadopago.com.br/checkout/producao" });
   });
 
   it("usa o checkout de produção para credencial de produção", async () => {
     process.env.MERCADO_PAGO_ACCESS_TOKEN = "PROD-credential";
-    await expect(createMercadoPagoPreference(input)).resolves.toEqual({
-      preferenceId: "pref-1",
-      checkoutUrl: "https://www.mercadopago.com.br/checkout/producao",
-    });
+    await expect(createMercadoPagoPreference(input)).resolves.toEqual({ preferenceId: "pref-1", checkoutUrl: "https://www.mercadopago.com.br/checkout/producao" });
   });
 
   it("usa a URL sandbox apenas quando o gateway não retorna init_point", async () => {
     process.env.MERCADO_PAGO_ACCESS_TOKEN = "APP_USR-teste";
     mocks.createPreference.mockResolvedValue({ id: "pref-1", sandbox_init_point: "https://sandbox.mercadopago.com.br/checkout/teste" });
     await expect(createMercadoPagoPreference(input)).resolves.toEqual({ preferenceId: "pref-1", checkoutUrl: "https://sandbox.mercadopago.com.br/checkout/teste" });
+  });
+
+  it("envia ao gateway um item consolidado com o total final quando há desconto", async () => {
+    process.env.MERCADO_PAGO_ACCESS_TOKEN = "PROD-credential";
+    await createMercadoPagoPreference({ ...input, totalCents: 80 });
+    const body = mocks.createPreference.mock.calls[0][0].body;
+    expect(body.items).toEqual([{ id: `order-${input.orderId}`, title: `Compra PlayStorCraft — ${input.orderNumber}`, quantity: 1, unit_price: 0.8, currency_id: "BRL" }]);
   });
 });

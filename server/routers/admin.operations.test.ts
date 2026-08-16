@@ -4,6 +4,7 @@ import type { TrpcContext } from "../_core/context";
 const mocks = vi.hoisted(() => ({
   cancelOrderRecord: vi.fn(),
   createCouponRecord: vi.fn(),
+  deleteCouponRecord: vi.fn(),
   retryDeliveryRecord: vi.fn(),
   setAdminRole: vi.fn(),
   writeAdminAuditLog: vi.fn(),
@@ -18,6 +19,7 @@ vi.mock("../db/adminCatalog", () => ({
 vi.mock("../db/admin", () => ({
   cancelOrderRecord: mocks.cancelOrderRecord,
   createCouponRecord: mocks.createCouponRecord,
+  deleteCouponRecord: mocks.deleteCouponRecord,
   createServerRecord: vi.fn(),
   getAdminOrderDetail: vi.fn(),
   getAdminOverview: vi.fn(),
@@ -93,6 +95,23 @@ describe("operações administrativas críticas", () => {
     const input = { code: "PLAY10", type: "PERCENTAGE" as const, percentageBasisPoints: 1000, maxUsesPerPlayer: 1, active: true };
 
     await expect(adminRouter.createCaller(adminContext()).createCoupon(input)).rejects.toMatchObject({ code: "CONFLICT", message: "Já existe um cupom com esse código. Escolha outro código." });
+  });
+
+  it("exclui um cupom sem uso e registra a auditoria", async () => {
+    mocks.deleteCouponRecord.mockResolvedValue({ deleted: true, deactivated: false });
+    mocks.writeAdminAuditLog.mockResolvedValue(undefined);
+
+    await expect(adminRouter.createCaller(adminContext()).deleteCoupon({ id: 31 })).resolves.toEqual({ success: true, deleted: true, deactivated: false });
+    expect(mocks.deleteCouponRecord).toHaveBeenCalledWith(31);
+    expect(mocks.writeAdminAuditLog).toHaveBeenCalledWith("admin-42", "coupon.deleted", "coupon", "31", { preservedHistory: false });
+  });
+
+  it("desativa um cupom usado para preservar histórico e impedir novos usos", async () => {
+    mocks.deleteCouponRecord.mockResolvedValue({ deleted: false, deactivated: true });
+    mocks.writeAdminAuditLog.mockResolvedValue(undefined);
+
+    await expect(adminRouter.createCaller(adminContext()).deleteCoupon({ id: 32 })).resolves.toEqual({ success: true, deleted: false, deactivated: true });
+    expect(mocks.writeAdminAuditLog).toHaveBeenCalledWith("admin-42", "coupon.deactivated", "coupon", "32", { preservedHistory: true });
   });
 
   it("impede que o administrador remova sua própria permissão", async () => {
