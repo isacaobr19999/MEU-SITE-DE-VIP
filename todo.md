@@ -189,3 +189,6 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Implementar resolução automática do UUID pelo servidor Paper, preservando segurança e compatibilidade com contas offline.
 - [x] Atualizar testes do checkout e validar o fluxo de pedido e entrega sem UUID manual.
 - [x] Publicar a correção do checkout na VPS em novo checkpoint.
+- [x] Remover ou substituir toda referência restante a UUID no checkout, incluindo texto, placeholder, validação e versão publicada.
+- [x] Validar o modal de checkout em desktop e celular após a atualização.
+- [x] Publicar a correção visual do checkout em novo checkpoint.
