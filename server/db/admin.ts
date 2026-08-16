@@ -41,6 +41,12 @@ export async function listAdminProducts() {
   return rows.map(row => ({ ...row, serverIds: assignments.filter(assignment => assignment.productId === row.id).map(assignment => assignment.serverId) }));
 }
 
+export async function getAdminProductPriceCents(id: number) {
+  const db = await requireDb();
+  const [product] = await db.select({ priceCents: products.priceCents }).from(products).where(eq(products.id, id)).limit(1);
+  return product?.priceCents;
+}
+
 export async function updateCategoryRecord(id: number, input: { name: string; slug: string; description?: string; imageUrl?: string; position: number; active: boolean }) {
   const db = await requireDb();
   await db.update(categories).set({ name: input.name, slug: input.slug, description: input.description ?? null, imageUrl: input.imageUrl ?? null, position: input.position, active: input.active }).where(eq(categories.id, id));

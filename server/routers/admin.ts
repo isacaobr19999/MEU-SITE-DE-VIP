@@ -1,13 +1,17 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createCategoryRecord, createProductRecord, listAdminCategories } from "../db/adminCatalog";
-import { cancelOrderRecord, createCouponRecord, createServerRecord, getAdminOrderDetail, getAdminOverview, listAdminCoupons, listAdminDeliveries, listAdminLogs, listAdminOrders, listAdminPlayers, listAdminProducts, listAdminServers, listAdminUsers, listPlayerHistory, retryDeliveryRecord, setAdminRole, setProductStatus, updateCategoryRecord, updateCouponRecord, updateProductRecord, updateServerRecord, writeAdminAuditLog } from "../db/admin";
+import { cancelOrderRecord, createCouponRecord, createServerRecord, getAdminOrderDetail, getAdminOverview, getAdminProductPriceCents, listAdminCoupons, listAdminDeliveries, listAdminLogs, listAdminOrders, listAdminPlayers, listAdminProducts, listAdminServers, listAdminUsers, listPlayerHistory, retryDeliveryRecord, setAdminRole, setProductStatus, updateCategoryRecord, updateCouponRecord, updateProductRecord, updateServerRecord, writeAdminAuditLog } from "../db/admin";
 import { adminProcedure, router } from "../_core/trpc";
 
 const slug = z.string().trim().toLowerCase().regex(/^[a-z0-9-]+$/).min(3).max(160);
 export const adminMediaUrl = z.string().trim().max(1024).refine(value => (value.startsWith("/") && !value.startsWith("//")) || /^https?:\/\/[^\s]+$/i.test(value), { message: "Informe uma URL HTTPS/HTTP ou um caminho relativo iniciado por /." });
 export const adminDurationDays = z.number().int().min(1).max(3650);
-const productInput = z.object({ categoryId: z.number().int().positive(), name: z.string().trim().min(2).max(160), slug, kind: z.enum(["VIP", "COINS", "KIT", "COSMETIC"]), priceCents: z.number().int().min(1).max(100_000_000), durationDays: adminDurationDays.nullable().optional(), luckPermsGroup: z.string().trim().max(96).optional(), deliveryCommands: z.array(z.string().trim().min(1).max(255)).min(1).max(16), featured: z.boolean().default(false), serverIds: z.array(z.number().int().positive()).min(1).max(16) });
+const productInput = z.object({ categoryId: z.number().int().positive(), name: z.string().trim().min(2).max(160), slug, kind: z.enum(["VIP", "COINS", "KIT", "COSMETIC"]), priceCents: z.number().int().min(1).max(100_000_000), durationDays: adminDurationDays.nullable().optional(), luckPermsGroup: z.string().trim().max(96).optional(), deliveryCommands: z.array(z.string().trim().min(1).max(255)).max(16).default([]), featured: z.boolean().default(false), serverIds: z.array(z.number().int().positive()).min(1).max(16) }).superRefine((value, issue) => {
+  if (!value.deliveryCommands.length && !value.luckPermsGroup) issue.addIssue({ code: "custom", path: ["deliveryCommands"], message: "Informe um comando de entrega ou um grupo LuckPerms." });
+});
+export const adminProductUpdatePriceCents = z.number().int().min(0).max(100_000_000);
+const productUpdateInput = productInput.safeExtend({ priceCents: adminProductUpdatePriceCents });
 const productContentInput = z.object({ shortDescription: z.string().trim().max(280).optional(), description: z.string().trim().max(8000).optional(), imageUrl: adminMediaUrl.optional(), position: z.number().int().min(0).max(9999).default(0) });
 const couponInput = z.object({ code: z.string().trim().toUpperCase().regex(/^[A-Z0-9_-]+$/).min(3).max(48), description: z.string().trim().max(280).optional(), type: z.enum(["PERCENTAGE", "FIXED"]), percentageBasisPoints: z.number().int().min(1).max(10_000).optional(), fixedDiscountCents: z.number().int().min(1).max(100_000_000).optional(), startsAt: z.date().nullable().optional(), endsAt: z.date().nullable().optional(), maxUses: z.number().int().min(1).nullable().optional(), maxUsesPerPlayer: z.number().int().min(1).max(100).default(1), active: z.boolean().default(true), productIds: z.array(z.number().int().positive()).optional() }).superRefine((value, issue) => { if (value.type === "PERCENTAGE" && !value.percentageBasisPoints) issue.addIssue({ code: "custom", message: "Informe o percentual de desconto", path: ["percentageBasisPoints"] }); if (value.type === "FIXED" && !value.fixedDiscountCents) issue.addIssue({ code: "custom", message: "Informe o valor fixo de desconto", path: ["fixedDiscountCents"] }); });
 
@@ -42,14 +46,17 @@ export const adminRouter = router({
     await audit(ctx, "category.updated", "category", String(input.id));
     return { success: true };
   }),
-  createProduct: adminProcedure.input(productInput.extend(productContentInput.shape)).mutation(async ({ ctx, input }) => {
+  createProduct: adminProcedure.input(productInput.safeExtend(productContentInput.shape)).mutation(async ({ ctx, input }) => {
     const id = await createProductRecord(input);
     await audit(ctx, "product.created", "product", String(id), { name: input.name });
     return { id };
   }),
-  updateProduct: adminProcedure.input(productInput.extend(productContentInput.shape).extend({ id: z.number().int().positive(), active: z.boolean() })).mutation(async ({ ctx, input }) => {
-    await updateProductRecord(input.id, input);
-    await audit(ctx, "product.updated", "product", String(input.id));
+  updateProduct: adminProcedure.input(productUpdateInput.safeExtend(productContentInput.shape).safeExtend({ id: z.number().int().positive(), active: z.boolean() })).mutation(async ({ ctx, input }) => {
+    const previousPriceCents = input.priceCents === 0 ? await getAdminProductPriceCents(input.id) : undefined;
+    if (input.priceCents === 0 && !previousPriceCents) throw new TRPCError({ code: "NOT_FOUND", message: "Produto não localizado para preservar o preço existente." });
+    const priceCents = input.priceCents === 0 ? previousPriceCents! : input.priceCents;
+    await updateProductRecord(input.id, { ...input, priceCents });
+    await audit(ctx, "product.updated", "product", String(input.id), { preservedPrice: input.priceCents === 0 });
     return { success: true };
   }),
   setProductStatus: adminProcedure.input(z.object({ id: z.number().int().positive(), active: z.boolean() })).mutation(async ({ ctx, input }) => {

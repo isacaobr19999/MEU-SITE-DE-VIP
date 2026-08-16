@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { describe, expect, it } from "vitest";
 import { appRouter } from "../routers";
-import { adminDurationDays, adminMediaUrl } from "./admin";
+import { adminDurationDays, adminMediaUrl, adminProductUpdatePriceCents } from "./admin";
 import type { TrpcContext } from "../_core/context";
 
 function userContext(role: "user" | "admin"): TrpcContext {
@@ -71,5 +71,11 @@ describe("adminRouter", () => {
     expect(adminDurationDays.safeParse(3650).success).toBe(true);
     expect(adminDurationDays.safeParse(0).success).toBe(false);
     expect(adminDurationDays.safeParse(1.5).success).toBe(false);
+  });
+
+  it("permite que a atualização preserve o preço existente quando o formulário envia zero por engano", () => {
+    expect(adminProductUpdatePriceCents.safeParse(0).success).toBe(true);
+    expect(adminProductUpdatePriceCents.safeParse(3990).success).toBe(true);
+    expect(adminProductUpdatePriceCents.safeParse(-1).success).toBe(false);
   });
 });

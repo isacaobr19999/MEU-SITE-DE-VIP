@@ -17,3 +17,11 @@ Em produção, o salvamento sem alterações do produto `1.000 Cash` foi conclu�
 ## Correção de duração comercial
 
 O banco confirmou que os produtos permanentes usam duração nula e que o `Booster 2×` usa 15 dias. A validação anterior aceitava somente 7, 30, 90 e 365 dias; por isso o painel bloqueava qualquer produto que trouxesse outro prazo comercial. A validação agora aceita durações inteiras de 1 a 3.650 dias, e os formulários administrativos incluem explicitamente 15 dias entre as opções padrão.
+
+## Proteção de preço
+
+O editor exige o preenchimento do preço antes de submeter um produto vazio. Para o cenário relatado em que a conversão envia `priceCents` igual a zero, a atualização agora preserva o preço comercial já armazenado e registra essa proteção na auditoria, impedindo que um benefício ativo seja convertido acidentalmente em produto gratuito.
+
+## Entrega automática de VIP
+
+O catálogo passou a permitir que um produto VIP com grupo LuckPerms configurado seja salvo sem comandos manuais. O pagamento já acrescenta a diretiva interna de concessão do grupo, e a rotina de expiração enfileira a revogação correspondente; o editor agora informa essa automação em vez de bloquear o formulário por um campo de comando vazio.

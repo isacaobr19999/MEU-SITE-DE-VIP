@@ -167,3 +167,7 @@
 - [x] Validar em produção as operações administrativas corrigidas e publicar a atualização na VPS.
 - [x] Corrigir o formulário administrativo que envia duração `1` para produtos permanentes ou com prazo inválido.
 - [x] Validar em produção o salvamento de produtos permanentes e com duração de VIP após a correção.
+- [x] Corrigir a conversão de moeda brasileira no editor de produtos para impedir o envio de `priceCents` igual a zero.
+- [x] Validar em produção o salvamento de produto com preço informado pelo administrador após a correção.
+- [x] Corrigir o editor de VIP para não exigir comandos manuais quando a concessão LuckPerms é derivada automaticamente do grupo e da duração.
+- [x] Validar em produção o salvamento de um VIP com preço zero simulado e sem comando manual, preservando preço e entrega automática.
