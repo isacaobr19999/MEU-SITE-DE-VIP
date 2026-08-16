@@ -5,8 +5,9 @@ import { cancelOrderRecord, createCouponRecord, createServerRecord, getAdminOrde
 import { adminProcedure, router } from "../_core/trpc";
 
 const slug = z.string().trim().toLowerCase().regex(/^[a-z0-9-]+$/).min(3).max(160);
+export const adminMediaUrl = z.string().trim().max(1024).refine(value => (value.startsWith("/") && !value.startsWith("//")) || /^https?:\/\/[^\s]+$/i.test(value), { message: "Informe uma URL HTTPS/HTTP ou um caminho relativo iniciado por /." });
 const productInput = z.object({ categoryId: z.number().int().positive(), name: z.string().trim().min(2).max(160), slug, kind: z.enum(["VIP", "COINS", "KIT", "COSMETIC"]), priceCents: z.number().int().min(1).max(100_000_000), durationDays: z.union([z.literal(7), z.literal(30), z.literal(90), z.literal(365)]).nullable().optional(), luckPermsGroup: z.string().trim().max(96).optional(), deliveryCommands: z.array(z.string().trim().min(1).max(255)).min(1).max(16), featured: z.boolean().default(false), serverIds: z.array(z.number().int().positive()).min(1).max(16) });
-const productContentInput = z.object({ shortDescription: z.string().trim().max(280).optional(), description: z.string().trim().max(8000).optional(), imageUrl: z.string().url().max(1024).optional(), position: z.number().int().min(0).max(9999).default(0) });
+const productContentInput = z.object({ shortDescription: z.string().trim().max(280).optional(), description: z.string().trim().max(8000).optional(), imageUrl: adminMediaUrl.optional(), position: z.number().int().min(0).max(9999).default(0) });
 const couponInput = z.object({ code: z.string().trim().toUpperCase().regex(/^[A-Z0-9_-]+$/).min(3).max(48), description: z.string().trim().max(280).optional(), type: z.enum(["PERCENTAGE", "FIXED"]), percentageBasisPoints: z.number().int().min(1).max(10_000).optional(), fixedDiscountCents: z.number().int().min(1).max(100_000_000).optional(), startsAt: z.date().nullable().optional(), endsAt: z.date().nullable().optional(), maxUses: z.number().int().min(1).nullable().optional(), maxUsesPerPlayer: z.number().int().min(1).max(100).default(1), active: z.boolean().default(true), productIds: z.array(z.number().int().positive()).optional() }).superRefine((value, issue) => { if (value.type === "PERCENTAGE" && !value.percentageBasisPoints) issue.addIssue({ code: "custom", message: "Informe o percentual de desconto", path: ["percentageBasisPoints"] }); if (value.type === "FIXED" && !value.fixedDiscountCents) issue.addIssue({ code: "custom", message: "Informe o valor fixo de desconto", path: ["fixedDiscountCents"] }); });
 
 function audit(ctx: { user: { openId: string } }, action: string, entityType: string, entityId?: string, metadata?: Record<string, unknown>) {
@@ -30,12 +31,12 @@ export const adminRouter = router({
   coupons: adminProcedure.query(listAdminCoupons),
   logs: adminProcedure.query(listAdminLogs),
   users: adminProcedure.query(listAdminUsers),
-  createCategory: adminProcedure.input(z.object({ name: z.string().trim().min(2).max(96), slug: slug.max(96), description: z.string().trim().max(2000).optional(), imageUrl: z.string().url().max(1024).optional(), position: z.number().int().min(0).max(9999).default(0) })).mutation(async ({ ctx, input }) => {
+  createCategory: adminProcedure.input(z.object({ name: z.string().trim().min(2).max(96), slug: slug.max(96), description: z.string().trim().max(2000).optional(), imageUrl: adminMediaUrl.optional(), position: z.number().int().min(0).max(9999).default(0) })).mutation(async ({ ctx, input }) => {
     const id = await createCategoryRecord(input);
     await audit(ctx, "category.created", "category", String(id), { name: input.name });
     return { id };
   }),
-  updateCategory: adminProcedure.input(z.object({ id: z.number().int().positive(), name: z.string().trim().min(2).max(96), slug: slug.max(96), description: z.string().trim().max(2000).optional(), imageUrl: z.string().url().max(1024).optional(), position: z.number().int().min(0).max(9999), active: z.boolean() })).mutation(async ({ ctx, input }) => {
+  updateCategory: adminProcedure.input(z.object({ id: z.number().int().positive(), name: z.string().trim().min(2).max(96), slug: slug.max(96), description: z.string().trim().max(2000).optional(), imageUrl: adminMediaUrl.optional(), position: z.number().int().min(0).max(9999), active: z.boolean() })).mutation(async ({ ctx, input }) => {
     await updateCategoryRecord(input.id, input);
     await audit(ctx, "category.updated", "category", String(input.id));
     return { success: true };

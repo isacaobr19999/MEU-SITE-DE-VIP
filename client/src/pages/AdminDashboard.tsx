@@ -56,12 +56,13 @@ function AdminContent() {
   const [couponType, setCouponType] = useState<"PERCENTAGE" | "FIXED">("PERCENTAGE");
   const [couponValue, setCouponValue] = useState("");
 
-  const createCategory = trpc.admin.createCategory.useMutation({ onSuccess: () => { toast.success("Categoria criada."); setCategoryName(""); setCategorySlug(""); utils.admin.categories.invalidate(); utils.catalog.categories.invalidate(); } });
-  const createServer = trpc.admin.createServer.useMutation({ onSuccess: result => { setGeneratedKey(result.apiKey); toast.success("Servidor criado. Copie a chave agora."); setServerName(""); setServerSlug(""); utils.admin.servers.invalidate(); } });
-  const createProduct = trpc.admin.createProduct.useMutation({ onSuccess: () => { toast.success("Produto publicado."); setProductName(""); setProductSlug(""); setProductPrice(""); utils.admin.products.invalidate(); utils.catalog.products.invalidate(); } });
-  const createCoupon = trpc.admin.createCoupon.useMutation({ onSuccess: () => { toast.success("Cupom criado."); setCouponCode(""); setCouponValue(""); utils.admin.coupons.invalidate(); } });
-  const productStatus = trpc.admin.setProductStatus.useMutation({ onSuccess: () => { utils.admin.products.invalidate(); utils.catalog.products.invalidate(); } });
-  const roleChange = trpc.admin.setUserRole.useMutation({ onSuccess: () => { toast.success("Acesso atualizado."); utils.admin.users.invalidate(); } });
+  const reportMutationError = (error: { message: string }) => toast.error(error.message || "Não foi possível concluir a ação. Tente novamente.");
+  const createCategory = trpc.admin.createCategory.useMutation({ onSuccess: () => { toast.success("Categoria criada."); setCategoryName(""); setCategorySlug(""); utils.admin.categories.invalidate(); utils.catalog.categories.invalidate(); }, onError: reportMutationError });
+  const createServer = trpc.admin.createServer.useMutation({ onSuccess: result => { setGeneratedKey(result.apiKey); toast.success("Servidor criado. Copie a chave agora."); setServerName(""); setServerSlug(""); utils.admin.servers.invalidate(); }, onError: reportMutationError });
+  const createProduct = trpc.admin.createProduct.useMutation({ onSuccess: () => { toast.success("Produto publicado."); setProductName(""); setProductSlug(""); setProductPrice(""); utils.admin.products.invalidate(); utils.catalog.products.invalidate(); }, onError: reportMutationError });
+  const createCoupon = trpc.admin.createCoupon.useMutation({ onSuccess: () => { toast.success("Cupom criado."); setCouponCode(""); setCouponValue(""); utils.admin.coupons.invalidate(); }, onError: reportMutationError });
+  const productStatus = trpc.admin.setProductStatus.useMutation({ onSuccess: () => { toast.success("Status do produto atualizado."); utils.admin.products.invalidate(); utils.catalog.products.invalidate(); }, onError: reportMutationError });
+  const roleChange = trpc.admin.setUserRole.useMutation({ onSuccess: () => { toast.success("Acesso atualizado."); utils.admin.users.invalidate(); }, onError: reportMutationError });
 
   if (loading) return <div className="grid min-h-80 place-items-center"><Loader2 className="animate-spin text-emerald-300" /></div>;
   if (!user) return <div className="grid min-h-screen place-items-center bg-[#07111d] p-6 text-center text-white"><div><ShieldCheck className="mx-auto text-emerald-300" size={32} /><h1 className="mt-4 text-2xl font-bold">Acesso administrativo</h1><p className="mt-2 text-sm text-slate-400">Entre com uma conta autorizada para administrar a PlayStorCraft.</p><Button onClick={startLogin} className="mt-6 bg-emerald-300 text-slate-950 hover:bg-emerald-200">Entrar</Button></div></div>;
@@ -69,7 +70,15 @@ function AdminContent() {
 
   function handleCategory(event: FormEvent) { event.preventDefault(); createCategory.mutate({ name: categoryName, slug: categorySlug }); }
   function handleServer(event: FormEvent) { event.preventDefault(); createServer.mutate({ name: serverName, slug: serverSlug, kind: serverKind }); }
-  function handleProduct(event: FormEvent) { event.preventDefault(); createProduct.mutate({ categoryId: Number(productCategory), name: productName, slug: productSlug, kind: productKind, priceCents: Math.round(Number(productPrice.replace(",", ".")) * 100), durationDays: productDuration ? Number(productDuration) as 7 | 30 | 90 | 365 : null, luckPermsGroup: productGroup.trim() || undefined, deliveryCommands: [productCommand], featured: productFeatured, position: 0, serverIds: [Number(productServer)] }); }
+  function handleProduct(event: FormEvent) {
+    event.preventDefault();
+    const priceCents = Math.round(Number(productPrice.replace(",", ".")) * 100);
+    const deliveryCommands = productCommand.split("\n").map(command => command.trim()).filter(Boolean);
+    if (!Number.isInteger(priceCents) || priceCents < 1) return toast.error("Informe um preço válido maior que zero.");
+    if (!productCategory || !productServer) return toast.error("Selecione a categoria e o servidor de destino.");
+    if (!deliveryCommands.length) return toast.error("Informe ao menos um comando de entrega.");
+    createProduct.mutate({ categoryId: Number(productCategory), name: productName.trim(), slug: productSlug.trim().toLowerCase(), kind: productKind, priceCents, durationDays: productDuration ? Number(productDuration) as 7 | 30 | 90 | 365 : null, luckPermsGroup: productGroup.trim() || undefined, deliveryCommands, featured: productFeatured, position: 0, serverIds: [Number(productServer)] });
+  }
   function handleCoupon(event: FormEvent) { event.preventDefault(); const raw = Number(couponValue.replace(",", ".")); createCoupon.mutate({ code: couponCode, type: couponType, percentageBasisPoints: couponType === "PERCENTAGE" ? Math.round(raw * 100) : undefined, fixedDiscountCents: couponType === "FIXED" ? Math.round(raw * 100) : undefined, maxUsesPerPlayer: 1 }); }
 
   return <div className="min-h-full bg-[#07111d] text-slate-100"><div className="mx-auto max-w-7xl space-y-6"><header className="flex flex-col justify-between gap-5 rounded-[1.6rem] border border-white/10 bg-gradient-to-r from-emerald-300/10 via-slate-950/30 to-cyan-400/10 p-6 sm:flex-row sm:items-end"><div><p className="font-mono text-[10px] font-bold tracking-[.16em] text-emerald-300">CENTRO DE CONTROLE</p><h1 className="mt-2 text-3xl font-black tracking-tight text-white">Administração PlayStorCraft</h1><p className="mt-2 text-sm text-slate-400">Operações, catálogo e entregas centralizados em uma única área segura.</p></div><div className="flex flex-wrap gap-2"><a href="#catalogo" className="rounded-xl bg-white/5 px-3 py-2 text-xs font-bold text-slate-200 hover:bg-white/10">Catálogo</a><a href="#operacao" className="rounded-xl bg-white/5 px-3 py-2 text-xs font-bold text-slate-200 hover:bg-white/10">Operação</a><a href="#seguranca" className="rounded-xl bg-emerald-300 px-3 py-2 text-xs font-bold text-slate-950 hover:bg-emerald-200">Segurança</a></div></header>

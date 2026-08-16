@@ -29,11 +29,12 @@ function AdminOperationsContent() {
   const [selectedPlayer, setSelectedPlayer] = useState<number | null>(null);
   const orderDetail = trpc.admin.orderDetail.useQuery({ id: selectedOrder ?? "00000000-0000-0000-0000-000000000000" }, { enabled: Boolean(selectedOrder) });
   const playerHistory = trpc.admin.playerHistory.useQuery({ playerId: selectedPlayer ?? 0 }, { enabled: Boolean(selectedPlayer) });
-  const cancelOrder = trpc.admin.cancelOrder.useMutation({ onSuccess: () => { toast.success("Pedido cancelado."); utils.admin.orders.invalidate(); utils.admin.overview.invalidate(); } });
-  const retryDelivery = trpc.admin.retryDelivery.useMutation({ onSuccess: () => { toast.success("Entrega recolocada na fila."); utils.admin.deliveries.invalidate(); utils.admin.overview.invalidate(); } });
-  const updateServer = trpc.admin.updateServer.useMutation({ onSuccess: () => { toast.success("Servidor atualizado."); utils.admin.servers.invalidate(); } });
-  const updateCoupon = trpc.admin.updateCoupon.useMutation({ onSuccess: () => { toast.success("Cupom atualizado."); utils.admin.coupons.invalidate(); } });
-  const updateCategory = trpc.admin.updateCategory.useMutation({ onSuccess: () => { toast.success("Categoria atualizada."); utils.admin.categories.invalidate(); utils.catalog.categories.invalidate(); } });
+  const reportMutationError = (error: { message: string }) => toast.error(error.message || "Não foi possível concluir a ação. Tente novamente.");
+  const cancelOrder = trpc.admin.cancelOrder.useMutation({ onSuccess: () => { toast.success("Pedido cancelado."); utils.admin.orders.invalidate(); utils.admin.overview.invalidate(); }, onError: reportMutationError });
+  const retryDelivery = trpc.admin.retryDelivery.useMutation({ onSuccess: () => { toast.success("Entrega recolocada na fila."); utils.admin.deliveries.invalidate(); utils.admin.overview.invalidate(); }, onError: reportMutationError });
+  const updateServer = trpc.admin.updateServer.useMutation({ onSuccess: () => { toast.success("Servidor atualizado."); utils.admin.servers.invalidate(); }, onError: reportMutationError });
+  const updateCoupon = trpc.admin.updateCoupon.useMutation({ onSuccess: () => { toast.success("Cupom atualizado."); utils.admin.coupons.invalidate(); }, onError: reportMutationError });
+  const updateCategory = trpc.admin.updateCategory.useMutation({ onSuccess: () => { toast.success("Categoria atualizada."); utils.admin.categories.invalidate(); utils.catalog.categories.invalidate(); }, onError: reportMutationError });
 
   const visibleOrders = useMemo(() => orders.data?.filter(order => (orderStatus === "ALL" || order.status === orderStatus) && `${order.orderNumber} ${order.playerName}`.toLowerCase().includes(query.toLowerCase())) ?? [], [orders.data, orderStatus, query]);
   const visibleDeliveries = useMemo(() => deliveries.data?.filter(delivery => deliveryStatus === "ALL" || delivery.status === deliveryStatus) ?? [], [deliveries.data, deliveryStatus]);

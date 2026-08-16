@@ -162,3 +162,6 @@
 - [x] Obter confirmação explícita do titular de que os onze produtos devem permanecer no `Servidor de validação` e aceitar os comandos LuckPerms auditados para os VIPs.
 - [x] Validar em viewport móvel a responsividade do acesso administrativo protegido; a sessão sem autenticação exibiu corretamente o gate `Entre para continuar`, enquanto o catálogo e imagens foram validados no painel autenticado em desktop e na vitrine pública móvel.
 - [x] Sincronizar o checkpoint final com a VPS preservando o runtime seguro e validar a loja e o Paper após a atualização.
+- [x] Auditar todas as páginas e ações do painel administrativo para identificar botões, tabelas e formulários inoperantes.
+- [x] Corrigir os fluxos administrativos de catálogo, pedidos, jogadores, entregas, cupons, servidores e registros operacionais.
+- [x] Validar em produção as operações administrativas corrigidas e publicar a atualização na VPS.

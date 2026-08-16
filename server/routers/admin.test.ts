@@ -1,6 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { describe, expect, it } from "vitest";
 import { appRouter } from "../routers";
+import { adminMediaUrl } from "./admin";
 import type { TrpcContext } from "../_core/context";
 
 function userContext(role: "user" | "admin"): TrpcContext {
@@ -55,5 +56,12 @@ describe("adminRouter", () => {
       position: 0,
       active: true,
     })).rejects.toMatchObject<Partial<TRPCError>>({ code: "BAD_REQUEST" });
+  });
+
+  it("aceita caminhos relativos seguros e URLs HTTPS para imagens administrativas", () => {
+    expect(adminMediaUrl.safeParse("/store-assets/vip_cash.webp").success).toBe(true);
+    expect(adminMediaUrl.safeParse("https://cdn.example.com/vip.webp").success).toBe(true);
+    expect(adminMediaUrl.safeParse("//cdn.example.com/vip.webp").success).toBe(false);
+    expect(adminMediaUrl.safeParse("javascript:alert(1)").success).toBe(false);
   });
 });
