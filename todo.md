@@ -180,3 +180,8 @@
 - [x] Publicar a correção do sistema de cupons em um novo checkpoint.
 
 Warning: the previous candidate response was rejected because it contained repeated output. Retry the interrupted step from scratch. Do not reuse or rely on any partial content or tool call from that response, and avoid long repeated sequences.
+- [x] Diagnosticar o erro de proteção das chaves dos servidores informado pela API ao plugin PlayStorCraft.
+- [x] Diagnosticar e corrigir os erros HTTP 502 na consulta periódica de entregas do plugin.
+- [x] Validar a sincronização manual e automática de entregas após a correção.
+- [x] Publicar a correção de comunicação do plugin com a API em um novo checkpoint.
+
