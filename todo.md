@@ -213,3 +213,10 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Redesenhar login, cadastro, histórico/detalhes de pedidos e painel administrativo preservando seus fluxos existentes.
 - [x] Validar em desktop e celular as páginas e estados de carregamento, erro, sucesso, confirmação e interação.
 - [x] Publicar a reformulação visual completa em novo checkpoint e documentar os arquivos e melhorias realizadas.
+- [x] Auditar a estrutura atual e definir o contrato seguro para Discord, bot e telemetria futura do servidor Paper.
+- [x] Criar configuração por variáveis de ambiente para convite, comunidade Discord e autenticação da ponte do bot, sem segredos no código.
+- [x] Implementar uma API pública de status da comunidade e uma API autenticada para atualizações do bot e do Paper.
+- [x] Adicionar área Discord, botão de convite e atalhos responsivos preservando a identidade visual da loja.
+- [x] Cobrir a integração com testes, validar as telas em desktop e celular e documentar a ativação.
+- [x] Publicar a integração Discord em novo checkpoint e validar o domínio de produção.
+- [x] Implementar a ponte escolhida: o bot envia atualizações assinadas de Discord e Paper para a API do site, sem token do bot no frontend.

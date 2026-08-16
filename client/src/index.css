@@ -132,6 +132,8 @@
 .admin-workspace input:not([type="checkbox"]):focus, .admin-workspace textarea:focus, .admin-workspace select:focus { border-color: rgba(110,231,183,.62); outline: none; box-shadow: 0 0 0 4px rgba(110,231,183,.07); }
 .admin-workspace table tbody tr { transition: background-color .16s ease; }
 .admin-workspace table tbody tr:hover { background: rgba(255,255,255,.025); }
+.discord-community-section { background: radial-gradient(circle at 14% 42%, rgba(99,102,241,.13), transparent 27rem), radial-gradient(circle at 88% 18%, rgba(16,185,129,.08), transparent 24rem), rgba(6,17,29,.68); }
+.discord-status-card { border: 1px solid rgba(165,180,252,.18); background: linear-gradient(145deg, rgba(22,28,61,.78), rgba(8,21,36,.9)); box-shadow: inset 0 1px rgba(255,255,255,.045), 0 22px 55px rgba(0,0,0,.2); }
 .process-card { position: relative; overflow: hidden; border: 1px solid rgba(148,163,184,.14); border-radius: 1.45rem; padding: 1.45rem; background: linear-gradient(145deg, rgba(16,35,54,.74), rgba(8,19,32,.68)); box-shadow: inset 0 1px rgba(255,255,255,.025); }
 .process-card::after { content: ""; position: absolute; right: -1.7rem; top: -1.7rem; width: 5.5rem; height: 5.5rem; border-radius: 999px; background: radial-gradient(circle, rgba(110,231,183,.12), transparent 68%); }
 .process-card span { font-family: "DM Mono", monospace; font-size: .7rem; font-weight: 700; color: #6ee7b7; letter-spacing: .15em; }

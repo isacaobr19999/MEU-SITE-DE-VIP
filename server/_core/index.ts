@@ -9,6 +9,7 @@ import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { mercadoPagoWebhook } from "../webhooks/mercadoPago";
 import { claimMinecraftDeliveries, completeMinecraftDelivery, deferMinecraftDelivery, failMinecraftDelivery, syncMinecraftPlayerRoute } from "../minecraft";
+import { updateCommunityStatusRoute } from "../community";
 import { commerceMaintenance } from "../scheduled/commerceMaintenance";
 import { serveStatic, setupVite } from "./vite";
 
@@ -50,6 +51,7 @@ async function startServer() {
   app.post("/api/minecraft/deliveries/complete", completeMinecraftDelivery);
   app.post("/api/minecraft/deliveries/fail", failMinecraftDelivery);
   app.post("/api/minecraft/deliveries/defer", deferMinecraftDelivery);
+  app.post("/api/integrations/discord/status", updateCommunityStatusRoute);
   app.post("/api/scheduled/commerce-maintenance", commerceMaintenance);
   // tRPC API
   app.use(

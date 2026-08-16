@@ -17,6 +17,7 @@ const orderStatuses = ["PENDING", "WAITING_PAYMENT", "PAID", "PROCESSING", "COMP
 const paymentStatuses = ["PENDING", "PROCESSING", "APPROVED", "REJECTED", "CANCELLED", "REFUNDED", "FAILED"] as const;
 const productKinds = ["VIP", "COINS", "KIT", "COSMETIC"] as const;
 const serverKinds = ["SURVIVAL", "SKYBLOCK", "BEDWARS", "GLOBAL"] as const;
+const communityServerStatuses = ["UNKNOWN", "ONLINE", "OFFLINE", "MAINTENANCE"] as const;
 
 /** Identidade de usuários autenticados e papéis de acesso. */
 export const users = mysqlTable("users", {
@@ -84,6 +85,25 @@ export const servers = mysqlTable(
   },
   table => [uniqueIndex("servers_slug_unique").on(table.slug), index("servers_kind_active_idx").on(table.kind, table.active)]
 );
+
+/** Snapshot público atualizado pelo bot; nunca contém token ou credencial do Discord. */
+export const communityStatus = mysqlTable("community_status", {
+  id: int("id").primaryKey(),
+  discordGuildId: varchar("discordGuildId", { length: 32 }),
+  discordName: varchar("discordName", { length: 100 }),
+  discordIconUrl: varchar("discordIconUrl", { length: 1024 }),
+  discordInviteUrl: varchar("discordInviteUrl", { length: 512 }),
+  discordMemberCount: int("discordMemberCount"),
+  discordOnlineCount: int("discordOnlineCount"),
+  discordOnline: boolean("discordOnline").default(false).notNull(),
+  minecraftStatus: mysqlEnum("minecraftStatus", communityServerStatuses).default("UNKNOWN").notNull(),
+  minecraftPlayersOnline: int("minecraftPlayersOnline"),
+  minecraftPlayersMax: int("minecraftPlayersMax"),
+  minecraftMotd: varchar("minecraftMotd", { length: 280 }),
+  minecraftVersion: varchar("minecraftVersion", { length: 96 }),
+  sourceUpdatedAt: timestamp("sourceUpdatedAt"),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
 
 export const products = mysqlTable(
   "products",
