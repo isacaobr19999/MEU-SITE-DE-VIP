@@ -185,3 +185,7 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Validar a sincronização manual e automática de entregas após a correção.
 - [x] Publicar a correção de comunicação do plugin com a API em um novo checkpoint.
 
+- [x] Remover a exigência de UUID no checkout e permitir que o jogador informe somente o nome Minecraft.
+- [x] Implementar resolução automática do UUID pelo servidor Paper, preservando segurança e compatibilidade com contas offline.
+- [x] Atualizar testes do checkout e validar o fluxo de pedido e entrega sem UUID manual.
+- [x] Publicar a correção do checkout na VPS em novo checkpoint.

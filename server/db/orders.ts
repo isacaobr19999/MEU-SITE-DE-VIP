@@ -16,7 +16,7 @@ import { requireDb } from "../db";
 
 export type NewOrderInput = {
   username: string;
-  uuid: string;
+  uuid?: string;
   couponCode?: string;
   idempotencyKey: string;
   items: Array<{ productId: number; serverId: number }>;
@@ -38,21 +38,15 @@ export async function createOrderForUser(userId: number, input: NewOrderInput) {
       return { order: previous[0], reused: true };
     }
 
-    const byUuid = await tx.select().from(players).where(eq(players.uuid, input.uuid)).limit(1);
+    const byUuid = input.uuid ? await tx.select().from(players).where(eq(players.uuid, input.uuid)).limit(1) : [];
+    const byUsername = await tx.select().from(players).where(eq(players.username, input.username)).limit(1);
     let playerId: number;
-    if (byUuid[0]) {
-      const player = byUuid[0];
-      if (player.userId !== null && player.userId !== userId) {
-        throw new Error("Este jogador já está vinculado a outra conta");
-      }
-      await tx.update(players).set({ userId, username: input.username, lastSeenAt: new Date() }).where(eq(players.id, player.id));
-      playerId = player.id;
-    } else {
-      const sameUsername = await tx.select({ id: players.id }).from(players).where(eq(players.username, input.username)).limit(1);
-      if (sameUsername[0]) throw new Error("Este nome de jogador está vinculado a outro UUID");
-      const playerResult = await tx.insert(players).values({ userId, username: input.username, uuid: input.uuid, lastSeenAt: new Date() });
-      playerId = playerResult[0].insertId;
-    }
+    const player = byUuid[0] ?? byUsername[0];
+    if (!player) throw new Error("Entre no servidor pelo menos uma vez antes de comprar para sincronizar seu jogador");
+    if (player.userId !== null && player.userId !== userId) throw new Error("Este jogador já está vinculado a outra conta");
+    if (input.uuid && player.uuid !== input.uuid) throw new Error("Este nome de jogador está vinculado a outro UUID");
+    await tx.update(players).set({ userId, lastSeenAt: new Date() }).where(eq(players.id, player.id));
+    playerId = player.id;
 
     const productIds = Array.from(new Set(input.items.map(item => item.productId)));
     const selected = await tx

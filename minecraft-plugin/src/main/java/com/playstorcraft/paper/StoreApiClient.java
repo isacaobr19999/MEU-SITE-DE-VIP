@@ -20,6 +20,13 @@ final class StoreApiClient {
 
     StoreApiClient(JavaPlugin plugin) { this.plugin = plugin; }
 
+    void syncPlayer(String username, String uuid) throws IOException, InterruptedException {
+        JsonObject body = new JsonObject();
+        body.addProperty("username", username);
+        body.addProperty("uuid", uuid);
+        request("/api/minecraft/players/sync", body);
+    }
+
     List<DeliveryEnvelope> claim() throws IOException, InterruptedException {
         JsonObject body = new JsonObject();
         body.addProperty("limit", plugin.getConfig().getInt("claim-limit", 10));

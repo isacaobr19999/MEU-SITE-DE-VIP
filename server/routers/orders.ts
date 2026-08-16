@@ -7,7 +7,6 @@ import { createMercadoPagoPreference } from "../services/mercadoPago";
 
 const orderInput = z.object({
   username: z.string().trim().min(3).max(16).regex(/^[A-Za-z0-9_]+$/, "Use somente letras, números e sublinhado no nome Minecraft"),
-  uuid: z.string().uuid(),
   couponCode: z.string().trim().toUpperCase().max(48).optional(),
   idempotencyKey: z.string().uuid(),
   items: z.array(z.object({ productId: z.number().int().positive(), serverId: z.number().int().positive() })).min(1).max(12),
