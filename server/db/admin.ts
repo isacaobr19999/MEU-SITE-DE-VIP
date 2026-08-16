@@ -94,20 +94,27 @@ export async function listAdminCoupons() {
   return rows.map(row => ({ ...row, productIds: assignments.filter(assignment => assignment.couponId === row.id).map(assignment => assignment.productId) }));
 }
 
-export async function createCouponRecord(input: { code: string; description?: string; type: "PERCENTAGE" | "FIXED"; percentageBasisPoints?: number; fixedDiscountCents?: number; startsAt?: Date | null; endsAt?: Date | null; maxUses?: number | null; maxUsesPerPlayer: number }) {
+export async function createCouponRecord(input: { code: string; description?: string; type: "PERCENTAGE" | "FIXED"; percentageBasisPoints?: number; fixedDiscountCents?: number; startsAt?: Date | null; endsAt?: Date | null; maxUses?: number | null; maxUsesPerPlayer: number; active: boolean; productIds?: number[] }) {
   const db = await requireDb();
-  const result = await db.insert(coupons).values({
-    code: input.code,
-    description: input.description ?? null,
-    type: input.type,
-    percentageBasisPoints: input.type === "PERCENTAGE" ? input.percentageBasisPoints ?? null : null,
-    fixedDiscountCents: input.type === "FIXED" ? input.fixedDiscountCents ?? null : null,
-    startsAt: input.startsAt ?? null,
-    endsAt: input.endsAt ?? null,
-    maxUses: input.maxUses ?? null,
-    maxUsesPerPlayer: input.maxUsesPerPlayer,
+  return db.transaction(async tx => {
+    const result = await tx.insert(coupons).values({
+      code: input.code,
+      description: input.description ?? null,
+      type: input.type,
+      percentageBasisPoints: input.type === "PERCENTAGE" ? input.percentageBasisPoints ?? null : null,
+      fixedDiscountCents: input.type === "FIXED" ? input.fixedDiscountCents ?? null : null,
+      startsAt: input.startsAt ?? null,
+      endsAt: input.endsAt ?? null,
+      maxUses: input.maxUses ?? null,
+      maxUsesPerPlayer: input.maxUsesPerPlayer,
+      active: input.active,
+    });
+    const couponId = Number(result[0].insertId);
+    if (input.productIds?.length) {
+      await tx.insert(couponProducts).values(input.productIds.map(productId => ({ couponId, productId })));
+    }
+    return couponId;
   });
-  return result[0].insertId;
 }
 
 export async function listAdminLogs() {

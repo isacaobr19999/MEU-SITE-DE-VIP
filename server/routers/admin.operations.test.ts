@@ -3,6 +3,7 @@ import type { TrpcContext } from "../_core/context";
 
 const mocks = vi.hoisted(() => ({
   cancelOrderRecord: vi.fn(),
+  createCouponRecord: vi.fn(),
   retryDeliveryRecord: vi.fn(),
   setAdminRole: vi.fn(),
   writeAdminAuditLog: vi.fn(),
@@ -16,7 +17,7 @@ vi.mock("../db/adminCatalog", () => ({
 
 vi.mock("../db/admin", () => ({
   cancelOrderRecord: mocks.cancelOrderRecord,
-  createCouponRecord: vi.fn(),
+  createCouponRecord: mocks.createCouponRecord,
   createServerRecord: vi.fn(),
   getAdminOrderDetail: vi.fn(),
   getAdminOverview: vi.fn(),
@@ -75,6 +76,23 @@ describe("operações administrativas críticas", () => {
     await expect(adminRouter.createCaller(adminContext()).retryDelivery({ id: deliveryId })).resolves.toEqual({ success: true });
     expect(mocks.retryDeliveryRecord).toHaveBeenCalledWith(deliveryId);
     expect(mocks.writeAdminAuditLog).toHaveBeenCalledWith("admin-42", "delivery.retried", "delivery", deliveryId, undefined);
+  });
+
+  it("cria um cupom e registra a auditoria", async () => {
+    mocks.createCouponRecord.mockResolvedValue(31);
+    mocks.writeAdminAuditLog.mockResolvedValue(undefined);
+    const input = { code: "PLAY10", type: "PERCENTAGE" as const, percentageBasisPoints: 1000, maxUsesPerPlayer: 1, active: true };
+
+    await expect(adminRouter.createCaller(adminContext()).createCoupon(input)).resolves.toEqual({ id: 31 });
+    expect(mocks.createCouponRecord).toHaveBeenCalledWith(input);
+    expect(mocks.writeAdminAuditLog).toHaveBeenCalledWith("admin-42", "coupon.created", "coupon", "31", { code: "PLAY10" });
+  });
+
+  it("converte código de cupom duplicado em mensagem segura", async () => {
+    mocks.createCouponRecord.mockRejectedValue({ code: "ER_DUP_ENTRY" });
+    const input = { code: "PLAY10", type: "PERCENTAGE" as const, percentageBasisPoints: 1000, maxUsesPerPlayer: 1, active: true };
+
+    await expect(adminRouter.createCaller(adminContext()).createCoupon(input)).rejects.toMatchObject({ code: "CONFLICT", message: "Já existe um cupom com esse código. Escolha outro código." });
   });
 
   it("impede que o administrador remova sua própria permissão", async () => {

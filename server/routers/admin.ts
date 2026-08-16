@@ -75,9 +75,15 @@ export const adminRouter = router({
     return { success: true };
   }),
   createCoupon: adminProcedure.input(couponInput).mutation(async ({ ctx, input }) => {
-    const id = await createCouponRecord(input);
-    await audit(ctx, "coupon.created", "coupon", String(id), { code: input.code });
-    return { id };
+    try {
+      const id = await createCouponRecord(input);
+      await audit(ctx, "coupon.created", "coupon", String(id), { code: input.code });
+      return { id };
+    } catch (error) {
+      const code = error && typeof error === "object" && "code" in error ? String((error as { code?: unknown }).code) : "";
+      if (code === "ER_DUP_ENTRY") throw new TRPCError({ code: "CONFLICT", message: "Já existe um cupom com esse código. Escolha outro código." });
+      throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Não foi possível criar o cupom. Verifique os dados e tente novamente." });
+    }
   }),
   updateCoupon: adminProcedure.input(couponInput.safeExtend({ id: z.number().int().positive() })).mutation(async ({ ctx, input }) => {
     await updateCouponRecord(input.id, input);

@@ -174,3 +174,9 @@
 - [x] Corrigir o banner principal da vitrine pública que está exibindo texto alternativo em vez da imagem na VPS.
 - [x] Validar o carregamento visual e HTTP do banner corrigido na página inicial publicada.
 - [x] Versionar a URL do banner público para forçar a atualização em navegadores que tenham uma resposta antiga em cache.
+- [x] Diagnosticar e corrigir o cadastro de cupons no painel administrativo, incluindo formulário, validação, API e persistência.
+- [x] Criar testes automatizados para criação e validação de cupons.
+- [x] Validar o cadastro de cupons em produção na VPS após a correção.
+- [x] Publicar a correção do sistema de cupons em um novo checkpoint.
+
+Warning: the previous candidate response was rejected because it contained repeated output. Retry the interrupted step from scratch. Do not reuse or rely on any partial content or tool call from that response, and avoid long repeated sequences.
