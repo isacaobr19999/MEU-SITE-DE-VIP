@@ -30,8 +30,8 @@ function ProductCard({ product, onAdd }: { product: StoreProduct; onAdd: (produc
   return (
     <article className="store-card group relative overflow-hidden rounded-[1.6rem] border border-white/10 bg-slate-950/70 p-5 transition duration-300 hover:-translate-y-1 hover:border-emerald-300/35">
       <div className="mb-6 flex items-start justify-between gap-3">
-        <div className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-emerald-300 to-cyan-400 text-slate-950 shadow-[0_0_32px_rgba(52,211,153,.22)]">
-          <Box size={25} strokeWidth={2.4} />
+        <div className="grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-300 to-cyan-400 text-slate-950 shadow-[0_0_32px_rgba(52,211,153,.22)]">
+          {product.imageUrl ? <img src={product.imageUrl} alt="" className="h-full w-full object-cover" /> : <Box size={25} strokeWidth={2.4} />}
         </div>
         <Badge className="border border-emerald-300/20 bg-emerald-300/10 px-3 py-1 text-[10px] font-bold tracking-[.14em] text-emerald-200">{kindLabels[product.kind].toUpperCase()}</Badge>
       </div>
@@ -175,7 +175,7 @@ export default function Home() {
             <div className="mt-9 flex flex-wrap items-center gap-3"><Button onClick={() => document.getElementById("loja")?.scrollIntoView({ behavior: "smooth" })} className="h-12 rounded-xl bg-emerald-300 px-6 font-bold text-slate-950 hover:bg-emerald-200">Explorar a loja <ChevronRight size={18} /></Button><div className="flex items-center gap-2 px-3 text-xs text-slate-400"><ShieldCheck size={16} className="text-emerald-300" /> Pagamento verificado no servidor</div></div>
           </div>
           <div className="hero-voxel-stage relative aspect-video overflow-hidden rounded-[2rem] border border-white/10 bg-slate-950/40 shadow-[0_20px_70px_rgba(0,0,0,.28)]">
-            <img src="/manus-storage/PlayStorCraft-Banner_468fb2a4.webp" alt="Banner PlayStorCraft com guerreiro e cidade fantástica" className="absolute inset-0 h-full w-full object-cover object-center" />
+            <img src="/store-assets/PlayStorCraft-Banner.webp" alt="Banner PlayStorCraft com guerreiro e cidade fantástica" className="absolute inset-0 h-full w-full object-cover object-center" />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950/30 via-transparent to-transparent" aria-hidden="true" />
           </div>
         </section>

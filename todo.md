@@ -122,8 +122,8 @@
 - [x] Validar a compra real de R$ 1,00 com uma conta compradora normal diferente da conta vendedora IsacaoBR.
 - [x] Correlacionar o pagamento real informado com o pedido, webhook e entrega gerada pela PlayStorCraft.
 - [x] Desativar o produto técnico de validação sem apagar pedidos, pagamentos ou auditoria histórica.
-- [ ] Cadastrar os produtos reais informados pelo usuário com preços, destinos e comandos de entrega corretos.
-- [ ] Configurar os benefícios VIP e os comandos LuckPerms correspondentes no servidor Paper.
+- [x] Cadastrar os produtos reais informados pelo usuário com preços, destinos e comandos de entrega corretos.
+- [x] Configurar os benefícios VIP e os comandos LuckPerms correspondentes no servidor Paper.
 - [ ] Validar o catálogo real e a entrega dos benefícios VIP antes de salvar a próxima versão.
 - [x] Substituir o banner visual atual da vitrine pela imagem Banner.webp fornecida pelo usuário.
 - [x] Validar o novo banner em desktop e celular e salvar a atualização visual.
@@ -132,18 +132,29 @@
 - [x] Validar os sete rascunhos no banco: todos possuem imagem, preço zero, nenhum comando e nenhum produto publicado para compra.
 - [ ] Validar visualmente em desktop e celular as imagens de VIP, Booster e Cash em uma interface administrativa segura antes de ativar os produtos.
 - [ ] Confirmar com o usuário os preços, durações, servidores de destino e comandos LuckPerms antes de ativar os produtos reais.
-- [ ] Receber e confirmar os nomes exatos dos grupos LuckPerms criados para Ferro, Ouro, Diamante, Esmeralda, Obsidian e Booster antes de associá-los aos rascunhos.
+- [x] Dispensado: Booster não usa grupo LuckPerms; os grupos VIP `ferro`, `ouro`, `diamante`, `esmeralda` e `obsidian` foram confirmados e vinculados aos rascunhos correspondentes.
 - [x] Associar os grupos LuckPerms confirmados `ferro`, `ouro`, `diamante`, `esmeralda` e `obsidian` aos cinco rascunhos VIP, mantendo-os inativos.
-- [ ] Confirmar se Booster e Cash usam grupo LuckPerms, comando específico ou nenhum grupo antes de configurar esses produtos.
+- [x] Confirmar se Booster e Cash usam grupo LuckPerms, comando específico ou nenhum grupo antes de configurar esses produtos.
 - [x] Validar no Paper que LuckPerms e PlayStorCraft estão ativos e que os cinco grupos VIP podem ser usados pelos rascunhos vinculados.
 - [x] Classificar Cash como moeda do servidor e Booster como item/benefício, ambos sem grupo LuckPerms por enquanto.
 - [x] Definir o comando de entrega do Booster e a forma de creditar Cash antes de ativar os produtos.
-- [ ] Aguardar a configuração futura dos sistemas de Booster e Cash pelo usuário antes de solicitar ou vincular comandos de entrega.
+- [x] Superado: os comandos de Booster e Cash foram identificados, configurados e vinculados após a aprovação do titular.
 - [x] Inspecionar os repositórios Plugin-Booster-de-Discord-com-Minecraft-1.21.x e PlayEconomy: ambos são compatíveis com o Paper atual e os JARs, PlayMcMMo, Vault e LuckPerms já estão presentes no servidor.
 - [x] Instalar ou validar com o usuário os plugins de Booster e Cash no Paper antes de ativar produtos que dependam deles.
 - [x] Vincular os comandos confirmados de Booster e Cash aos rascunhos, mantendo os produtos inativos até os preços serem definidos.
 - [x] Criar os rascunhos Booster 1,5×/7 dias, Booster 2×/15 dias e Booster 3×/30 dias com os comandos documentados pelo plugin.
 - [x] Confirmar as quantidades de Cash de cada pacote antes de criar seus rascunhos de entrega.
+- [x] Preparar uma grade completa de preços para os cinco VIPs, três Boosters e três pacotes de Cash a partir dos valores de referência aprovados.
+- [x] Confirmar a tabela integral de preços antes de publicar produtos reais e aceitar pagamentos.
+- [x] Aplicar a tabela comercial aprovada pelo titular aos onze produtos e publicá-los somente após conferir os comandos de entrega.
+- [x] Verificar que os cinco VIPs concedem e removem os grupos LuckPerms ao fim de 30 dias antes de aceitar pagamentos por eles.
+- [x] Vincular os onze produtos aprovados ao único servidor Paper ativo antes de liberá-los para compra.
+- [x] Rotacionar preventivamente a credencial individual do servidor Paper e validar a reconexão do plugin.
+- [x] Corrigir a disponibilização pública do banner e das imagens de produtos, que retornaram HTTP 500 na VPS.
+- [x] Isolar as imagens comerciais em uma rota que não intercepte os arquivos JavaScript e CSS compilados pela aplicação.
+- [ ] Executar uma validação controlada ponta a ponta de um VIP no Paper, cobrindo concessão, registro em `vip_grants` e fila de revogação por expiração.
+- [ ] Validar em `/admin/catalog`, em desktop e celular, as imagens comerciais na interface administrativa protegida.
+- [ ] Confirmar explicitamente que o Paper atualmente autenticado é o destino aprovado dos onze produtos antes de manter a ativação comercial.
 - [x] Publicar a versão atual da PlayStorCraft no repositório GitHub selecionado, sem credenciais, arquivos de runtime ou outros dados sensíveis.
 - [x] Sincronizar a versão atual da loja com a VPS preservando o runtime seguro e verificar a resposta pública após a atualização.
 - [x] Sincronizar a versão atual da loja com a VPS preservando o runtime seguro e verificar HTTP 200 nas rotas públicas `/` e `/cart` após a atualização.
