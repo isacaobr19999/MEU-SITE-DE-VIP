@@ -199,3 +199,7 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Implementar exclusão de cupons com confirmação e impedir reutilização após exclusão.
 - [x] Adicionar testes completos do fluxo de cupom e validar o pagamento com valor descontado.
 - [x] Publicar a correção do sistema de cupons em novo checkpoint.
+- [x] Diagnosticar e corrigir a autorização do servidor Paper que retorna HTTP 401 na consulta de entregas.
+- [x] Confirmar que a chave e o pepper do servidor permanecem consistentes após reconstruções da aplicação.
+- [x] Validar a consulta automática de entregas e a recuperação da API após reinício, sem HTTP 401 ou 502 persistente.
+- [x] Publicar a correção de comunicação do plugin em novo checkpoint.
