@@ -15,9 +15,9 @@ import Login from "./Login";
 describe("Login", () => {
   it("mostra o acesso e alterna para o cadastro com requisitos de senha", () => {
     render(<Login />);
-    expect(screen.getByRole("heading", { name: "Acesse sua conta" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Sua conta de jogador" })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Cadastrar" }));
-    expect(screen.getByRole("heading", { name: "Crie sua conta" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Prepare sua conta" })).toBeInTheDocument();
     expect(screen.getByLabelText("Nome")).toBeRequired();
     expect(screen.getByLabelText("Senha")).toHaveAttribute("minLength", "10");
   });

@@ -207,3 +207,9 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Corrigir a preferência de pagamento com desconto e tratar pedidos com total gratuito sem enviar preço inválido ao gateway.
 - [x] Cobrir com testes os cupons percentual, fixo, desconto total e o valor cobrado pelo gateway.
 - [x] Publicar e validar o checkout com cupom na VPS.
+- [x] Auditar a vitrine, checkout, autenticação, pedidos e painel administrativo para mapear inconsistências visuais e de navegação.
+- [x] Definir e aplicar um sistema de design global com cores, tipografia, espaçamento, estados interativos e acessibilidade consistentes.
+- [x] Redesenhar a vitrine, catálogo, carrinho e modal de checkout com hierarquia comercial e responsividade aprimoradas.
+- [x] Redesenhar login, cadastro, histórico/detalhes de pedidos e painel administrativo preservando seus fluxos existentes.
+- [x] Validar em desktop e celular as páginas e estados de carregamento, erro, sucesso, confirmação e interação.
+- [x] Publicar a reformulação visual completa em novo checkpoint e documentar os arquivos e melhorias realizadas.

@@ -82,8 +82,8 @@ describe("páginas de comércio em runtime", () => {
 
     const cartView = render(<Home />);
 
-    expect(cartView.getAllByRole("heading", { name: "Carrinho" }).length).toBeGreaterThan(0);
-    expect(cartView.getAllByText("Seu carrinho está vazio.").length).toBeGreaterThan(0);
+    expect(cartView.getAllByRole("heading", { name: "Carrinho de benefícios" }).length).toBeGreaterThan(0);
+    expect(cartView.getAllByText("Seu inventário está vazio.").length).toBeGreaterThan(0);
     expect(cartView.getAllByText("Entrar para continuar").length).toBeGreaterThan(0);
     expect(cartView.container.querySelector(".animate-spin")).toBeInTheDocument();
   });
@@ -91,12 +91,12 @@ describe("páginas de comércio em runtime", () => {
   it("diferencia erro de produto de produto inexistente", () => {
     mocks.product.mockReturnValue({ ...queryIdle, isError: true });
     const errorView = render(<ProductDetail />);
-    expect(screen.getByText("Não foi possível carregar este produto")).toBeInTheDocument();
+    expect(screen.getByText("Não foi possível carregar este benefício")).toBeInTheDocument();
     errorView.unmount();
 
     mocks.product.mockReturnValue({ ...queryIdle, data: undefined });
     render(<ProductDetail />);
-    expect(screen.getByText("Produto não encontrado")).toBeInTheDocument();
+    expect(screen.getByText("Benefício não encontrado")).toBeInTheDocument();
   });
 
   it("exibe erro recuperável no histórico de pedidos", () => {
