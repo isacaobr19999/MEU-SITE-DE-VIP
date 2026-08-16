@@ -15,3 +15,11 @@ A causa da página em branco foi um conflito entre a rota Nginx `/assets/` usada
 A indisponibilidade residual do banner foi causada pela permissão de leitura restrita do arquivo copiado para a VPS. Após a correção das permissões, a validação visual em produção confirmou o banner renderizado, as imagens reais de Cash, Booster e VIP nos cards, todos os onze produtos, suas categorias e os preços aprovados.
 
 No painel administrativo protegido em `/admin/catalog`, os produtos publicados, preços, estados ativos e destinos foram exibidos corretamente. A edição do pacote `1.000 Cash` confirmou a URL de imagem `/store-assets/vip_cash.webp`, o comando de crédito e o destino marcado como `Servidor de validação` (SURVIVAL). Esse é o registro autenticado pelo plugin Paper; a confirmação nominal do titular ainda é necessária antes de encerrar a ativação comercial.
+
+## Teste técnico controlado do VIP
+
+Com autorização explícita do titular, foi criada uma entrega sintética sem pagamento para o jogador `_Nube` no produto VIP Ferro, direcionada ao servidor Paper autenticado. O jogador entrou no servidor, o plugin PlayStorCraft reivindicou a entrega, o Paper executou o marcador `@luckperms:add:ferro`, a entrega ficou `COMPLETED` e a tabela `vip_grants` registrou o grupo `ferro` com expiração de 30 dias. Em seguida, somente o grant sintético foi expirado, a manutenção autenticada enfileirou `@luckperms:remove:ferro`, e o Paper concluiu a revogação; o grant ficou com `revokedAt` preenchido e a entrega de remoção ficou `COMPLETED`. Nenhum pagamento ou pedido comercial foi criado.
+
+## Diagnóstico do painel
+
+A indisponibilidade relatada no painel não foi reproduzida na infraestrutura: o DNS de `panel.playstorcraft.com.br` resolve para a VPS, HTTPS retorna HTTP 200 e a página de login do Pterodactyl é entregue pelo Nginx. O serviço do painel não aparece como uma unidade systemd independente, mas o Nginx está ativo e servindo a aplicação. O bloqueio observado no navegador é a exigência de autenticação do painel, não uma falha de DNS ou HTTPS.

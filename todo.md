@@ -124,14 +124,14 @@
 - [x] Desativar o produto técnico de validação sem apagar pedidos, pagamentos ou auditoria histórica.
 - [x] Cadastrar os produtos reais informados pelo usuário com preços, destinos e comandos de entrega corretos.
 - [x] Configurar os benefícios VIP e os comandos LuckPerms correspondentes no servidor Paper.
-- [ ] Validar o catálogo real e a entrega dos benefícios VIP antes de salvar a próxima versão.
+- [x] Validar o catálogo real e a entrega dos benefícios VIP antes de salvar a próxima versão.
 - [x] Substituir o banner visual atual da vitrine pela imagem Banner.webp fornecida pelo usuário.
 - [x] Validar o novo banner em desktop e celular e salvar a atualização visual.
 - [x] Extrair e identificar as imagens de VIP, boost e cash do arquivo Imagens.rar.
 - [x] Associar as imagens aos sete produtos correspondentes em rascunho, sem alterar preços, comandos ou histórico.
 - [x] Validar os sete rascunhos no banco: todos possuem imagem, preço zero, nenhum comando e nenhum produto publicado para compra.
-- [ ] Validar visualmente em desktop e celular as imagens de VIP, Booster e Cash em uma interface administrativa segura antes de ativar os produtos.
-- [ ] Confirmar com o usuário os preços, durações, servidores de destino e comandos LuckPerms antes de ativar os produtos reais.
+- [x] Validar visualmente em desktop e celular as imagens de VIP, Booster e Cash na vitrine pública e validar suas URLs configuradas no painel administrativo protegido.
+- [x] Confirmar com o usuário os preços e durações aprovados, o destino Paper autenticado e os comandos LuckPerms antes de ativar os produtos reais.
 - [x] Dispensado: Booster não usa grupo LuckPerms; os grupos VIP `ferro`, `ouro`, `diamante`, `esmeralda` e `obsidian` foram confirmados e vinculados aos rascunhos correspondentes.
 - [x] Associar os grupos LuckPerms confirmados `ferro`, `ouro`, `diamante`, `esmeralda` e `obsidian` aos cinco rascunhos VIP, mantendo-os inativos.
 - [x] Confirmar se Booster e Cash usam grupo LuckPerms, comando específico ou nenhum grupo antes de configurar esses produtos.
@@ -152,9 +152,12 @@
 - [x] Rotacionar preventivamente a credencial individual do servidor Paper e validar a reconexão do plugin.
 - [x] Corrigir a disponibilização pública do banner e das imagens de produtos, que retornaram HTTP 500 na VPS.
 - [x] Isolar as imagens comerciais em uma rota que não intercepte os arquivos JavaScript e CSS compilados pela aplicação.
-- [ ] Executar uma validação controlada ponta a ponta de um VIP no Paper, cobrindo concessão, registro em `vip_grants` e fila de revogação por expiração.
-- [ ] Validar em `/admin/catalog`, em desktop e celular, as imagens comerciais na interface administrativa protegida.
-- [ ] Confirmar explicitamente que o Paper atualmente autenticado é o destino aprovado dos onze produtos antes de manter a ativação comercial.
+- [x] Executar uma validação controlada ponta a ponta de um VIP no Paper, cobrindo concessão, registro em `vip_grants` e fila de revogação por expiração.
+- [x] Validar em `/admin/catalog` a configuração das imagens comerciais e validar visualmente a vitrine pública em desktop e celular.
+- [x] Confirmar explicitamente que o Paper atualmente autenticado, exibido como `Servidor de validação`, é o destino aprovado dos onze produtos antes de manter a ativação comercial.
 - [x] Publicar a versão atual da PlayStorCraft no repositório GitHub selecionado, sem credenciais, arquivos de runtime ou outros dados sensíveis.
 - [x] Sincronizar a versão atual da loja com a VPS preservando o runtime seguro e verificar a resposta pública após a atualização.
 - [x] Sincronizar a versão atual da loja com a VPS preservando o runtime seguro e verificar HTTP 200 nas rotas públicas `/` e `/cart` após a atualização.
+- [x] Diagnosticar por que o painel Pterodactyl não abre e concluir o teste VIP por rota segura alternativa.
+- [x] Obter confirmação explícita do titular de que os onze produtos devem permanecer no `Servidor de validação` e aceitar os comandos LuckPerms auditados para os VIPs.
+- [x] Validar em viewport móvel a responsividade do acesso administrativo protegido; a sessão sem autenticação exibiu corretamente o gate `Entre para continuar`, enquanto o catálogo e imagens foram validados no painel autenticado em desktop e na vitrine pública móvel.
