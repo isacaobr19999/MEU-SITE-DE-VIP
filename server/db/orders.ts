@@ -10,6 +10,7 @@ import {
   players,
   productServers,
   products,
+  servers,
 } from "../../drizzle/schema";
 import { calculateCouponDiscount } from "../domain/commerce";
 import { requireDb } from "../db";
@@ -65,7 +66,11 @@ export async function createOrderForUser(userId: number, input: NewOrderInput) {
     if (selected.length !== productIds.length) throw new Error("Um ou mais produtos não estão disponíveis");
     const productById = new Map(selected.map(product => [product.id, product]));
 
-    const destinationRows = await tx.select().from(productServers).where(inArray(productServers.productId, productIds));
+    const destinationRows = await tx
+      .select({ productId: productServers.productId, serverId: productServers.serverId })
+      .from(productServers)
+      .innerJoin(servers, eq(productServers.serverId, servers.id))
+      .where(and(inArray(productServers.productId, productIds), eq(servers.active, true)));
     const allowedDestinations = new Set(destinationRows.map(row => `${row.productId}:${row.serverId}`));
     for (const item of input.items) {
       if (!allowedDestinations.has(`${item.productId}:${item.serverId}`)) {

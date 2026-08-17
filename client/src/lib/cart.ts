@@ -35,3 +35,9 @@ export function addCartItem(items: CartItem[], product: StoreProduct, serverId: 
   if (existing) return items.map(item => item === existing ? { ...item, quantity: item.quantity + 1 } : item);
   return [...items, { ...product, serverId, serverName, quantity: 1 }];
 }
+
+/** Remove itens persistidos que não pertencem mais ao catálogo público ativo. */
+export function removeUnavailableCartItems(items: CartItem[], availableProducts: Pick<StoreProduct, "id">[]) {
+  const availableIds = new Set(availableProducts.map(product => product.id));
+  return items.filter(item => availableIds.has(item.id));
+}

@@ -301,3 +301,8 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Preparar validação real do checkout com produtos publicados, sem inventar produtos, preços ou avaliações; pré-condição verificada no banco e confirmada como bloqueada até o cadastro de produtos comerciais legítimos.
 - [x] Adicionar atualização automática e segura dos indicadores da página `/status`, com reconsulta a cada 30 segundos enquanto a página está aberta, pausa em segundo plano e atualização manual.
 - [x] Revisar consistência das regras públicas, catálogo e fluxo de checkout em desktop e mobile; regras/status/login/vitrine validados e checkout permanece bloqueado de forma segura porque o catálogo atual possui 0 produtos.
+
+- [x] Auditar dados comerciais confirmados e ativos disponíveis para montar o catálogo sem inventar preços, benefícios ou comandos; VPS confirmou 11 produtos ativos com preços, durações, destinos e comandos previamente aprovados.
+- [x] Preparar o catálogo e a pré-publicação para produtos VIP, Cash e Booster, mantendo itens incompletos como rascunho; categoria técnica inativa foi ocultada e textos públicos de Booster foram normalizados sem alterar regras comerciais.
+- [x] Validar a configuração comercial e o checkout com produtos reais somente após haver informações confirmadas para cada item; catálogo, carrinho, identificação do jogador e bloqueios antes do pedido foram validados sem criar cobrança adicional.
+- [x] Investigar e corrigir a abertura do painel de carrinho na vitrine publicada, preservando produtos, valores e o bloqueio antes do pagamento; rota `/cart` validada, itens técnicos persistidos são removidos e servidores inativos são rejeitados no backend.

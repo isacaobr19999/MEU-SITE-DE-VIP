@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { StoreHeader } from "@/components/StoreHeader";
 import { DiscordCommunity } from "@/components/DiscordCommunity";
-import { addCartItem, readCart, writeCart, type CartItem, type StoreProduct } from "@/lib/cart";
+import { addCartItem, readCart, removeUnavailableCartItems, writeCart, type CartItem, type StoreProduct } from "@/lib/cart";
 import { STORE_ROUTES } from "@/lib/storeRoutes";
 import { trpc } from "@/lib/trpc";
 import { Link, useLocation } from "wouter";
@@ -75,6 +75,7 @@ export default function Home() {
   const productQuery = useMemo(() => ({ query: search.trim() || undefined, categorySlug: category }), [search, category]);
   const categories = trpc.catalog.categories.useQuery();
   const products = trpc.catalog.products.useQuery(productQuery);
+  const availableProducts = trpc.catalog.products.useQuery({});
   const featured = trpc.catalog.products.useQuery({ featuredOnly: true });
   const checkoutPayment = trpc.orders.checkout.useMutation({
     onSuccess: result => {
@@ -98,6 +99,10 @@ export default function Home() {
   const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   useEffect(() => { writeCart(cart); }, [cart]);
+  useEffect(() => {
+    if (!availableProducts.data) return;
+    setCart(current => removeUnavailableCartItems(current, availableProducts.data));
+  }, [availableProducts.data]);
   useEffect(() => {
     if (location === STORE_ROUTES.CART) setCartOpen(true);
   }, [location]);
