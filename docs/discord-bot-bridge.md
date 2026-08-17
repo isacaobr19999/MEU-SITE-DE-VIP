@@ -38,3 +38,9 @@ O site expõe uma rota privada para receber o resumo já calculado pelo bot. O t
 ## Segurança
 
 Não envie o token do bot Discord para o site. Configure no processo do bot a mesma variável `DISCORD_BOT_BRIDGE_SECRET` registrada no runtime da PlayStorCraft. A rota rejeita atualizações sem o cabeçalho correto e a interface pública expõe apenas dados próprios para a comunidade.
+
+## Ativação quando o acesso ao Discord estiver disponível
+
+Enquanto o acesso ao Portal do Desenvolvedor do Discord não estiver disponível, a loja continua operando normalmente e a comunidade pode publicar regras, novidades e o link de convite pelo painel administrativo em `/admin/community`.
+
+Quando a conta Discord puder ser acessada novamente, o processo do bot deve receber o token somente pelo runtime da VPS e manter a chave `DISCORD_BOT_BRIDGE_SECRET` somente no runtime. O bot deve usar a conexão em tempo real do Discord para calcular os totais da comunidade e enviar o resumo à ponte privada. O convite salvo pelo painel não é apagado caso o bot envie uma atualização parcial sem esse campo.

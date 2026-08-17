@@ -18,6 +18,7 @@ const paymentStatuses = ["PENDING", "PROCESSING", "APPROVED", "REJECTED", "CANCE
 const productKinds = ["VIP", "COINS", "KIT", "COSMETIC"] as const;
 const serverKinds = ["SURVIVAL", "SKYBLOCK", "BEDWARS", "GLOBAL"] as const;
 const communityServerStatuses = ["UNKNOWN", "ONLINE", "OFFLINE", "MAINTENANCE"] as const;
+const communityPostKinds = ["RULE", "NEWS"] as const;
 
 /** Identidade de usuários autenticados e papéis de acesso. */
 export const users = mysqlTable("users", {
@@ -104,6 +105,28 @@ export const communityStatus = mysqlTable("community_status", {
   sourceUpdatedAt: timestamp("sourceUpdatedAt"),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
+
+/** Conteúdo editorial publicado no site, administrado exclusivamente por contas autorizadas. */
+export const communityPosts = mysqlTable(
+  "community_posts",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    slug: varchar("slug", { length: 160 }).notNull(),
+    kind: mysqlEnum("kind", communityPostKinds).notNull(),
+    title: varchar("title", { length: 160 }).notNull(),
+    summary: varchar("summary", { length: 280 }),
+    body: text("body").notNull(),
+    published: boolean("published").default(false).notNull(),
+    publishedAt: timestamp("publishedAt"),
+    position: int("position").default(0).notNull(),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+    updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  },
+  table => [
+    uniqueIndex("community_posts_slug_unique").on(table.slug),
+    index("community_posts_public_idx").on(table.kind, table.published, table.position, table.publishedAt),
+  ]
+);
 
 export const products = mysqlTable(
   "products",

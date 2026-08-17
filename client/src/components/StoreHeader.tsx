@@ -16,6 +16,8 @@ export function StoreHeader({ itemCount = 0, onCart }: { itemCount?: number; onC
       <nav className="store-header__nav" aria-label="Navegação principal">
         <a href="/#loja">Benefícios</a>
         <a href="/#discord">Discord</a>
+        <Link href="/rules">Regras</Link>
+        <Link href="/news">Novidades</Link>
         <a href="/#como-funciona">Como funciona</a>
         {isAuthenticated ? <Link href="/orders">Pedidos</Link> : null}
         {user?.role === "admin" ? <Link href="/admin">Operação</Link> : null}

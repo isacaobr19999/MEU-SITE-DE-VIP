@@ -220,3 +220,9 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Cobrir a integração com testes, validar as telas em desktop e celular e documentar a ativação.
 - [x] Publicar a integração Discord em novo checkpoint e validar o domínio de produção.
 - [x] Implementar a ponte escolhida: o bot envia atualizações assinadas de Discord e Paper para a API do site, sem token do bot no frontend.
+- [x] Adicionar configuração administrativa para convite Discord, regras e notícias públicas da comunidade.
+- [x] Criar páginas públicas responsivas de regras e novidades com conteúdo gerenciável pelo painel administrativo.
+- [ ] Preparar e implantar um serviço persistente de bot Discord que publique telemetria assinada na ponte da loja, sem expor tokens.
+- [x] Validar os fluxos em desktop e celular, testar as APIs e publicar a atualização na VPS.
+- [x] Diagnosticar a indisponibilidade de acesso relatada, distinguindo a loja disponível do Portal do Discord inacessível na sessão atual.
+- [x] Manter a ativação do bot Discord pendente até o usuário conseguir acessar sua conta no Discord, sem solicitar ou expor credenciais.

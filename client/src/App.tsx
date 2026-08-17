@@ -12,6 +12,8 @@ import OrderDetail from "./pages/OrderDetail";
 import OrderHistory from "./pages/OrderHistory";
 import ProductDetail from "./pages/ProductDetail";
 import Login from "./pages/Login";
+import AdminCommunity from "./pages/AdminCommunity";
+import { NewsPage, RulesPage } from "./pages/CommunityContent";
 import { STORE_ROUTES } from "./lib/storeRoutes";
 
 function Router() {
@@ -24,6 +26,9 @@ function Router() {
       <Route path={"/admin"} component={AdminDashboard} />
       <Route path={"/admin/catalog"} component={AdminCatalog} />
       <Route path={"/admin/operations"} component={AdminOperations} />
+      <Route path={"/admin/community"} component={AdminCommunity} />
+      <Route path={"/rules"} component={RulesPage} />
+      <Route path={"/news"} component={NewsPage} />
       <Route path={"/products/:slug"} component={ProductDetail} />
       <Route path={"/orders"} component={OrderHistory} />
       <Route path={"/orders/:id"} component={OrderDetail} />

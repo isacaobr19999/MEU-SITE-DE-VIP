@@ -43,22 +43,30 @@ export async function getPublicCommunityStatus() {
 
 export async function upsertCommunityStatus(input: CommunityStatusInput) {
   const db = await requireDb();
+  const [current] = await db.select().from(communityStatus).where(eq(communityStatus.id, 1)).limit(1);
   const values = {
     id: 1,
-    discordGuildId: input.discord.guildId ?? null,
-    discordName: input.discord.name ?? null,
-    discordIconUrl: input.discord.iconUrl ?? null,
-    discordInviteUrl: input.discord.inviteUrl ?? null,
-    discordMemberCount: input.discord.memberCount ?? null,
-    discordOnlineCount: input.discord.onlineCount ?? null,
+    discordGuildId: input.discord.guildId ?? current?.discordGuildId ?? null,
+    discordName: input.discord.name ?? current?.discordName ?? null,
+    discordIconUrl: input.discord.iconUrl ?? current?.discordIconUrl ?? null,
+    discordInviteUrl: input.discord.inviteUrl ?? current?.discordInviteUrl ?? null,
+    discordMemberCount: input.discord.memberCount ?? current?.discordMemberCount ?? null,
+    discordOnlineCount: input.discord.onlineCount ?? current?.discordOnlineCount ?? null,
     discordOnline: input.discord.online,
     minecraftStatus: input.minecraft.status,
-    minecraftPlayersOnline: input.minecraft.playersOnline ?? null,
-    minecraftPlayersMax: input.minecraft.playersMax ?? null,
-    minecraftMotd: input.minecraft.motd ?? null,
-    minecraftVersion: input.minecraft.version ?? null,
-    sourceUpdatedAt: input.sourceUpdatedAt ?? null,
+    minecraftPlayersOnline: input.minecraft.playersOnline ?? current?.minecraftPlayersOnline ?? null,
+    minecraftPlayersMax: input.minecraft.playersMax ?? current?.minecraftPlayersMax ?? null,
+    minecraftMotd: input.minecraft.motd ?? current?.minecraftMotd ?? null,
+    minecraftVersion: input.minecraft.version ?? current?.minecraftVersion ?? null,
+    sourceUpdatedAt: input.sourceUpdatedAt ?? current?.sourceUpdatedAt ?? null,
   };
   await db.insert(communityStatus).values(values).onDuplicateKeyUpdate({ set: values });
+  return getPublicCommunityStatus();
+}
+
+export async function updateCommunityInvite(inviteUrl: string | null) {
+  const db = await requireDb();
+  const defaults = { id: 1, discordInviteUrl: inviteUrl, discordOnline: false, minecraftStatus: "UNKNOWN" as const };
+  await db.insert(communityStatus).values(defaults).onDuplicateKeyUpdate({ set: { discordInviteUrl: inviteUrl } });
   return getPublicCommunityStatus();
 }
