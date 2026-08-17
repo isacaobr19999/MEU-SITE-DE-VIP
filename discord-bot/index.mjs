@@ -7,6 +7,8 @@ const bridgeSecret = process.env.DISCORD_BOT_BRIDGE_SECRET?.trim();
 const bridgeUrl = process.env.PLAYSTORCRAFT_BRIDGE_URL?.trim() || "http://app:3000/api/integrations/discord/status";
 const inviteUrl = process.env.DISCORD_INVITE_URL?.trim();
 const inviteChannelId = process.env.DISCORD_INVITE_CHANNEL_ID?.trim();
+const statusChannelId = process.env.DISCORD_STATUS_CHANNEL_ID?.trim();
+const publicStatusUrl = process.env.PLAYSTORCRAFT_PUBLIC_STATUS_URL?.trim();
 const managedInviteEnabled = process.env.DISCORD_MANAGED_INVITE === "true";
 const managedInvitePath = "/bot/data/community-invite.json";
 const presenceEnabled = process.env.DISCORD_ENABLE_PRESENCE !== "false";
@@ -27,6 +29,7 @@ if (!token || !bridgeSecret) {
   let publishing = false;
   let lastPublishedAt = 0;
   let managedInviteUrl;
+  let lastMinecraftMessage = "";
 
   async function readManagedInvite() {
     if (!managedInviteEnabled) return undefined;
@@ -68,6 +71,28 @@ if (!token || !bridgeSecret) {
     };
   }
 
+  async function publishMinecraftStatus(guild) {
+    if (!statusChannelId || !publicStatusUrl) return;
+    const channel = await guild.channels.fetch(statusChannelId).catch(() => null);
+    if (!channel || !channel.isTextBased() || typeof channel.send !== "function") return;
+    const response = await fetch(publicStatusUrl);
+    if (!response.ok) throw new Error(`O status público respondeu HTTP ${response.status}`);
+    const body = await response.json();
+    const status = body?.result?.data?.json ?? body?.result?.data ?? body?.data;
+    const minecraft = status?.minecraft ?? {
+      status: status?.minecraftStatus,
+      onlinePlayers: status?.minecraftPlayersOnline,
+      maxPlayers: status?.minecraftPlayersMax,
+    };
+    if (!minecraft.status) return;
+    const online = minecraft.status === "ONLINE";
+    const message = `${online ? "🟢" : "🔴"} **Servidor Minecraft: ${online ? "ONLINE" : "OFFLINE"}**\\n👥 Jogadores: **${Number(minecraft.onlinePlayers ?? 0)}/${Number(minecraft.maxPlayers ?? 0)}**\\n🌐 PlayCraftBR — status atualizado automaticamente pela PlayStorCraft.`;
+    if (message === lastMinecraftMessage) return;
+    await channel.send({ content: message });
+    lastMinecraftMessage = message;
+    console.info(`[Discord bot] Status do Paper publicado no canal ${statusChannelId}.`);
+  }
+
   async function publishStatus() {
     const guild = guildId
       ? await client.guilds.fetch(guildId).catch(() => null)
@@ -98,6 +123,7 @@ if (!token || !bridgeSecret) {
       body: JSON.stringify(payload),
     });
     if (!response.ok) throw new Error(`A ponte respondeu HTTP ${response.status}`);
+    await publishMinecraftStatus(guild);
     console.info(`[Discord bot] Status publicado: ${guild.name} (${inviteCounts.memberCount ?? guild.memberCount} membros, ${onlineCount ?? "—"} online).`);
   }
 

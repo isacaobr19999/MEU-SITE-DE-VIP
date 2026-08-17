@@ -19,3 +19,16 @@ A auditoria identificou um bloco adicional de canais Minecraft criado anteriorme
  O canal vazio `regras` foi removido com confirmação; os canais oficiais de regras permanecem preservados.
  Foram removidos os canais vazios `changelog`, `geral`, `midia`, `comandos`, `status-servidor`, `ip-servidor` e `denuncias`. A categoria adicional de comunidade ficou sem canais; sua remoção será confirmada por uma nova leitura da estrutura, sem tocar na categoria principal `🌍 COMUNIDADE` nem nos canais essenciais.
  A categoria vazia `💬 COMUNIDADE` foi removida com confirmação. A categoria principal `🌍 COMUNIDADE` e os canais públicos essenciais permanecem intactos.
+ A consulta direta de cargos pela sessão web retornou 401; a configuração de cargos e permissões será feita pela interface administrativa autenticada do Discord, sem expor tokens.
+
+## Auditoria de cargos
+
+A configuração do servidor já possui cargos funcionais para `Bot`, `Dono`, `Ticket Tool`, `ProBot`, `Dyno`, `Carl-bot`, `Admin`, `Mod`, `Ajudante`, `Vips`, `Membro`, `Novatos`, `Loja`, `Eventos` e `Mutados`. Não criei cargos duplicados; essa hierarquia atende à comunidade Minecraft e preserva as permissões dos bots existentes.
+
+## Configuração operacional final — 17/08/2026
+
+- O bot PlayStorCraft#3693 recebeu somente a permissão global adicional de enviar mensagens, mantendo criar convite instantâneo; nenhuma permissão de administrador ou gerenciamento foi concedida.
+- No canal `🟢・status-do-servidor` (`1538821276683079801`), o override específico do bot foi salvo com `View Channel` e `Send Messages` permitidos (`allow=3072`), enquanto o bloqueio geral permanece aplicado aos demais membros.
+- O bot foi reiniciado e publicou com sucesso o status do Paper no canal: `Status do Paper publicado no canal 1538821276683079801`; também atualizou a ponte com 7 membros e 4 online.
+- Foram publicadas orientações iniciais nos canais `📜-regra`, `🧭-como-entrar` e `🎫・abrir-ticket`, com regras Minecraft, instruções de acesso e fluxo de suporte.
+- Não foram expostos tokens ou credenciais neste registro.
