@@ -226,3 +226,4 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Validar os fluxos em desktop e celular, testar as APIs e publicar a atualização na VPS.
 - [x] Diagnosticar a indisponibilidade de acesso relatada, distinguindo a loja disponível do Portal do Discord inacessível na sessão atual.
 - [x] Manter a ativação do bot Discord pendente até o usuário conseguir acessar sua conta no Discord, sem solicitar ou expor credenciais.
+- [x] Retomar a ativação prática do Discord, diagnosticar o bloqueio de acesso ao portal e conectar o bot de forma segura quando a conta estiver disponível; bot conectado ao PlayCraftBR, convite público publicado e status exibido na loja.

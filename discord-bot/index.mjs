@@ -12,7 +12,7 @@ function keepDisabledServiceAlive() {
   setInterval(() => console.info("[Discord bot] Serviço em espera por credenciais."), 6 * 60 * 60 * 1000);
 }
 
-if (!token || !guildId || !bridgeSecret) {
+if (!token || !bridgeSecret) {
   keepDisabledServiceAlive();
 } else {
   const intents = [GatewayIntentBits.Guilds];
@@ -23,7 +23,9 @@ if (!token || !guildId || !bridgeSecret) {
   let lastPublishedAt = 0;
 
   async function publishStatus() {
-    const guild = await client.guilds.fetch(guildId).catch(() => null);
+    const guild = guildId
+      ? await client.guilds.fetch(guildId).catch(() => null)
+      : client.guilds.cache.first() ?? null;
     if (!guild) {
       console.warn("[Discord bot] O servidor configurado não está disponível para este bot.");
       return;
