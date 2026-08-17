@@ -239,3 +239,15 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Aplicar a reorganização no Discord preservando membros e conteúdos existentes até confirmação de ações destrutivas.
 - [x] Validar a integração entre Discord, loja PlayStorCraft e telemetria do servidor Paper após a reorganização.
 - [x] Registrar e publicar a versão final da reorganização do servidor Discord.
+
+- [ ] Criar ou revisar cargos Minecraft para equipe, moderadores, VIPs, jogadores e notificações.
+- [ ] Ajustar permissões dos canais por categoria sem interromper o bot Discord.
+- [ ] Publicar mensagens iniciais fixadas em boas-vindas, regras, como entrar, loja, tickets e status.
+- [ ] Configurar publicação automática do status do Paper no canal de status do Discord.
+- [ ] Validar cargos, permissões, mensagens, status automático e integração da loja em produção.
+- [ ] Salvar e publicar o checkpoint final da configuração operacional do Discord.
+
+- [x] Mapear e registrar os canais antigos ou duplicados candidatos à remoção no PlayCraftBR.
+- [x] Remover somente os canais confirmados como antigos ou duplicados, preservando canais essenciais, membros, cargos e integração.
+- [x] Validar a navegação limpa, o bot Discord, o status Paper e os canais essenciais após a limpeza.
+- [x] Publicar o checkpoint da limpeza final do servidor Discord.
