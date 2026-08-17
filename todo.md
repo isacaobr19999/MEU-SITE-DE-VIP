@@ -251,3 +251,14 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Remover somente os canais confirmados como antigos ou duplicados, preservando canais essenciais, membros, cargos e integração.
 - [x] Validar a navegação limpa, o bot Discord, o status Paper e os canais essenciais após a limpeza.
 - [x] Publicar o checkpoint da limpeza final do servidor Discord.
+
+- [ ] Definir e aplicar matriz final de permissões por categoria, preservando o acesso mínimo do bot.
+- [ ] Configurar fluxo completo de tickets e mensagens de atendimento.
+- [ ] Configurar seleção de cargos VIP, jogador e notificações sem duplicar cargos existentes.
+- [ ] Configurar anúncios operacionais do servidor, loja e eventos.
+- [ ] Validar a configuração total do Discord com a loja PlayStorCraft e a telemetria Paper.
+- [ ] Salvar e publicar o checkpoint da configuração total do Discord.
+
+- [ ] Configurar o Ticket Tool como responsável pelo fluxo de tickets do PlayCraftBR, com categorias e permissões controladas.
+- [x] Configurar o Carl-bot como responsável pela seleção de cargos de jogador, VIP e notificações, sem duplicar cargos existentes; painel criado no `#get-roles` com `👤 Membro`, `⭐ Vips`, `🛒 Loja` e `🎉 Eventos`.
+- [ ] Validar a integração dos painéis Ticket Tool e Carl-bot com a matriz final de permissões do Discord.

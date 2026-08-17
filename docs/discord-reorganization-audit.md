@@ -32,3 +32,9 @@ A configuração do servidor já possui cargos funcionais para `Bot`, `Dono`, `T
 - O bot foi reiniciado e publicou com sucesso o status do Paper no canal: `Status do Paper publicado no canal 1538821276683079801`; também atualizou a ponte com 7 membros e 4 online.
 - Foram publicadas orientações iniciais nos canais `📜-regra`, `🧭-como-entrar` e `🎫・abrir-ticket`, com regras Minecraft, instruções de acesso e fluxo de suporte.
 - Não foram expostos tokens ou credenciais neste registro.
+
+## Auditoria para configuração total — 17/08/2026
+
+A estrutura atual contém as categorias `📌 INÍCIO`, `WHITELIST`, `🌍 COMUNIDADE` e `💰 ECONOMIA / LOJA`, além de áreas de eventos e voz. Os canais essenciais estão presentes: regras, anúncios, como entrar, verificação, pegar cargos, boas-vindas, status do servidor, whitelist, tickets, comunidade, reportes e loja. Muitos canais aparecem como limitados/privados para a conta comum, enquanto `🟢・status-do-servidor` está acessível ao bot e à comunidade.
+
+A matriz operacional definida é: informações e comunidade com leitura para membros; anúncios, regras, boas-vindas, status e loja com publicação restrita à equipe/bot; whitelist e tickets com acesso controlado; modlogs e áreas de staff somente para equipe; e `PlayStorCraft#3693` com o mínimo necessário para criar convites e publicar status. A configuração deve preservar os cargos existentes e não remover históricos.
