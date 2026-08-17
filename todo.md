@@ -306,3 +306,9 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Preparar o catálogo e a pré-publicação para produtos VIP, Cash e Booster, mantendo itens incompletos como rascunho; categoria técnica inativa foi ocultada e textos públicos de Booster foram normalizados sem alterar regras comerciais.
 - [x] Validar a configuração comercial e o checkout com produtos reais somente após haver informações confirmadas para cada item; catálogo, carrinho, identificação do jogador e bloqueios antes do pedido foram validados sem criar cobrança adicional.
 - [x] Investigar e corrigir a abertura do painel de carrinho na vitrine publicada, preservando produtos, valores e o bloqueio antes do pagamento; rota `/cart` validada, itens técnicos persistidos são removidos e servidores inativos são rejeitados no backend.
+
+- [x] Confirmar o produto comercial ativo de menor valor e preparar uma compra controlada com jogador elegível; 1.000 Cash por R$ 4,90 e jogador `_Nube` confirmados.
+- [x] Criar pedido controlado e abrir o Checkout Pro sem concluir cobrança sem nova ação do titular; pedido PSC-20260817-F63F07F4 criado e Checkout Pro aberto.
+- [x] Após confirmação do pagamento, validar webhook, pedido e entrega no Paper sem repetir comandos; etapa dispensada porque o titular cancelou antes do pagamento.
+
+- [x] Cancelar o pedido de teste PSC-20260817-F63F07F4 solicitado pelo titular e confirmar que não há cobrança ou entrega pendente; status CANCELLED, 1 registro de pagamento pendente sem aprovação e 0 entregas.
