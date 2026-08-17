@@ -232,3 +232,10 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Integrar e validar o status ao vivo do servidor Paper na área de comunidade da loja.
 - [x] Rotacionar a credencial do bot Discord recusada externamente e restaurar sua conexão segura na VPS.
 - [x] Conceder somente a permissão de criar convite ao bot e automatizar a geração de um convite sem expiração.
+
+- [x] Auditar a estrutura atual do PlayCraftBR antes da reorganização completa.
+- [x] Definir a nova arquitetura do Discord voltada para Minecraft, incluindo categorias, canais, cargos e permissões.
+- [x] Preparar conteúdos iniciais de regras, boas-vindas, informações do servidor, loja, suporte e notícias.
+- [x] Aplicar a reorganização no Discord preservando membros e conteúdos existentes até confirmação de ações destrutivas.
+- [x] Validar a integração entre Discord, loja PlayStorCraft e telemetria do servidor Paper após a reorganização.
+- [x] Registrar e publicar a versão final da reorganização do servidor Discord.
