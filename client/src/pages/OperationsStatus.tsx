@@ -15,7 +15,7 @@ function StatusBadge({ tone, children }: { tone: Tone; children: React.ReactNode
 }
 
 export default function OperationsStatus() {
-  const query = trpc.community.operations.useQuery();
+  const query = trpc.community.operations.useQuery(undefined, { refetchInterval: 30_000, refetchIntervalInBackground: false, refetchOnWindowFocus: true, staleTime: 15_000 });
   const data = query.data;
   const minecraft = data?.community?.minecraftStatus ?? "UNKNOWN";
   const deliveryTone: Tone = data?.operations.deliveries.status === "ATTENTION" ? "attention" : "good";
@@ -30,7 +30,7 @@ export default function OperationsStatus() {
         <div className="pointer-events-none absolute -right-16 -top-20 h-64 w-64 rounded-full bg-emerald-300/10 blur-3xl" />
         <div className="relative flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl"><div className="mb-5 inline-flex items-center gap-2 rounded-full border border-emerald-300/20 bg-emerald-300/[.08] px-3 py-1.5 text-[10px] font-bold tracking-[.15em] text-emerald-100"><Activity size={14} /> CENTRAL OPERACIONAL</div><h1 className="font-display text-4xl font-extrabold tracking-tight text-white sm:text-5xl">Status da PlayStorCraft</h1><p className="mt-4 text-base leading-7 text-slate-300">Acompanhe a comunidade, o servidor Minecraft e a operação de pedidos em um só lugar.</p></div>
-          <Button onClick={() => query.refetch()} variant="outline" className="w-full rounded-xl border-white/10 text-slate-200 hover:bg-white/[.06] sm:w-auto"><RefreshCw size={16} className={query.isFetching ? "animate-spin" : ""} /> Atualizar status</Button>
+          <div className="flex w-full flex-col gap-3 sm:w-auto sm:items-end"><Button onClick={() => query.refetch()} variant="outline" className="w-full rounded-xl border-white/10 text-slate-200 hover:bg-white/[.06] sm:w-auto"><RefreshCw size={16} className={query.isFetching ? "animate-spin" : ""} /> Atualizar status</Button><p className="text-center text-xs text-slate-500 sm:text-right">Atualização automática a cada 30 segundos enquanto esta página estiver aberta.</p></div>
         </div>
       </section>
 

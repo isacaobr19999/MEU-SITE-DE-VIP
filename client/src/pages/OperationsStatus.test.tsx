@@ -28,6 +28,7 @@ describe("OperationsStatus", () => {
     expect(screen.getByText("Operação monitorada")).toBeInTheDocument();
     expect(screen.getByText("Distribuição no servidor")).toBeInTheDocument();
     expect(screen.getByText("3/20")).toBeInTheDocument();
+    expect(mocks.operations).toHaveBeenCalledWith(undefined, expect.objectContaining({ refetchInterval: 30_000, refetchIntervalInBackground: false, refetchOnWindowFocus: true }));
   });
 
   it("mostra uma falha recuperável quando o status não pode ser carregado", () => {
