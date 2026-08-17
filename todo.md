@@ -298,6 +298,6 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Criar página unificada de status para Paper, Discord, pagamentos e entregas automáticas em `/status`, com consulta pública segura e atualização manual.
 - [x] Revisar catálogo, checkout, login e área Discord em viewport mobile e corrigir problemas encontrados; login, vitrine, regras e status validados, com checkout condicionado à existência de produtos publicados.
 
-- [ ] Preparar validação real do checkout com produtos publicados, sem inventar produtos, preços ou avaliações.
+- [x] Preparar validação real do checkout com produtos publicados, sem inventar produtos, preços ou avaliações; pré-condição verificada no banco e confirmada como bloqueada até o cadastro de produtos comerciais legítimos.
 - [x] Adicionar atualização automática e segura dos indicadores da página `/status`, com reconsulta a cada 30 segundos enquanto a página está aberta, pausa em segundo plano e atualização manual.
 - [x] Revisar consistência das regras públicas, catálogo e fluxo de checkout em desktop e mobile; regras/status/login/vitrine validados e checkout permanece bloqueado de forma segura porque o catálogo atual possui 0 produtos.
