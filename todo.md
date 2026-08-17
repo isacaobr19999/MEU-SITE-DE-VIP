@@ -266,3 +266,7 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Publicar FAQ objetiva no canal #🎫・abrir-ticket com orientações de nick, compras, entregas, evidências e encerramento; mensagem verificada no Discord.
 - [x] Revisar cargos duplicados Mod/Moderador e Admin/Administrador com plano não destrutivo e sem remover membros automaticamente; cargos oficiais definidos para novas permissões.
 - [x] Registrar procedimento operacional de atendimento, fechamento e arquivamento de tickets para a equipe em `docs/discord-ticket-operations.md`.
+
+- [x] Auditar membros vinculados aos cargos duplicados Mod/Admin sem remover cargos ou membros automaticamente; a gravação confirmou `Admin` e `Mod` com 0 membros.
+- [x] Fixar a FAQ publicada no canal #🎫・abrir-ticket e confirmar a mensagem fixada; confirmação visual recebida.
+- [x] Formalizar rotina semanal para revisar tickets fechados e chamados sem resposta em `docs/discord-ticket-operations.md`.

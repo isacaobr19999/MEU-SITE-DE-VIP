@@ -55,3 +55,18 @@ A revisão de duplicados deve ser não destrutiva: primeiro identificar membros,
 ## Referência de validação
 
 A configuração validada inclui o painel Ticket Tool em `#🎫・abrir-ticket`, a categoria `🧰 SUPORTE (INGRESSOS)`, os cargos `Ajudante`, `Moderador` e `Administrador`, além de teste privado com criação e encerramento de `#ticket-0001`.
+
+
+## Rotina semanal de acompanhamento
+
+Uma vez por semana, um administrador deve revisar os tickets fechados e identificar chamados sem resposta ou sem atualização. A revisão deve registrar a quantidade de tickets abertos, encerrados, reabertos e pendentes, além dos assuntos recorrentes que possam exigir melhoria na loja ou no servidor.
+
+Na mesma revisão, deve-se conferir quais membros ainda possuem os cargos duplicados `Mod` ou `Admin`. A migração para `Moderador` ou `Administrador` deve ser feita individualmente, com confirmação do membro e verificação das permissões resultantes. Até a conclusão da migração, os cargos duplicados permanecem preservados e não recebem novas permissões.
+
+Nenhuma rotina semanal deve apagar tickets, cargos, membros ou mensagens automaticamente. Ações destrutivas exigem confirmação do proprietário e registro no canal privado de logs.
+
+### Registro semanal sugerido
+
+| Data | Tickets abertos | Tickets encerrados | Pendentes sem resposta | Cargos duplicados revisados | Ação necessária |
+|---|---:|---:|---:|---:|---|
+| ____/____/______ | ____ | ____ | ____ | ____ | ____________________ |
