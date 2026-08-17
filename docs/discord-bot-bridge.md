@@ -44,3 +44,12 @@ Não envie o token do bot Discord para o site. Configure no processo do bot a me
 Enquanto o acesso ao Portal do Desenvolvedor do Discord não estiver disponível, a loja continua operando normalmente e a comunidade pode publicar regras, novidades e o link de convite pelo painel administrativo em `/admin/community`.
 
 Quando a conta Discord puder ser acessada novamente, o processo do bot deve receber o token somente pelo runtime da VPS e manter a chave `DISCORD_BOT_BRIDGE_SECRET` somente no runtime. O bot deve usar a conexão em tempo real do Discord para calcular os totais da comunidade e enviar o resumo à ponte privada. O convite salvo pelo painel não é apagado caso o bot envie uma atualização parcial sem esse campo.
+
+O serviço `discord-bot` já acompanha a implantação da VPS e permanece em espera sem abrir conexão enquanto faltarem as variáveis abaixo. Quando o acesso for recuperado, basta registrar os valores no runtime privado e reiniciar apenas esse serviço.
+
+| Variável | Finalidade |
+|---|---|
+| `DISCORD_BOT_TOKEN` | Token privado do bot, gerado no Portal do Desenvolvedor do Discord. |
+| `DISCORD_GUILD_ID` | Identificador numérico do servidor Discord da PlayStorCraft. |
+| `DISCORD_BOT_BRIDGE_SECRET` | Chave compartilhada exclusivamente entre o bot e a ponte privada da loja. |
+| `DISCORD_ENABLE_PRESENCE` | Mantém a contagem de membros online; requer habilitar o intent de presenças no portal do Discord. |

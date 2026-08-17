@@ -38,6 +38,23 @@ services:
       - "127.0.0.1:3000:3000"
     networks: [playstorcraft]
 
+  discord-bot:
+    build:
+      context: ../..
+      dockerfile: deployment/vps/discord-bot.Dockerfile
+    restart: unless-stopped
+    environment:
+      DISCORD_BOT_TOKEN: ${DISCORD_BOT_TOKEN:-}
+      DISCORD_GUILD_ID: ${DISCORD_GUILD_ID:-}
+      DISCORD_BOT_BRIDGE_SECRET: ${DISCORD_BOT_BRIDGE_SECRET:-}
+      DISCORD_ENABLE_PRESENCE: ${DISCORD_ENABLE_PRESENCE:-true}
+      DISCORD_STATUS_INTERVAL_MS: ${DISCORD_STATUS_INTERVAL_MS:-90000}
+      PLAYSTORCRAFT_BRIDGE_URL: http://app:3000/api/integrations/discord/status
+    depends_on:
+      app:
+        condition: service_started
+    networks: [playstorcraft]
+
 networks:
   playstorcraft:
 
