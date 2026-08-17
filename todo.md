@@ -275,3 +275,7 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Atualizar a FAQ com orientações sobre produtos, pagamentos, VIP, Cash e entregas; conteúdo publicado e fixado no canal de tickets.
 - [x] Criar checklist mensal de auditoria de cargos, permissões, bots e canais em `docs/discord-ticket-operations.md`.
 - [x] Auditar itens removíveis e remover somente cargos duplicados vazios ou canais redundantes comprovados, preservando membros, histórico e integrações; `Admin` e `Mod` removidos após confirmação de 0 membros.
+
+- [x] Revisar permissões atuais de Ticket Tool, Carl-bot, Dyno, ProBot e bot PlayStorCraft com princípio de menor privilégio; matriz registrada sem ampliação de escopo.
+- [x] Preparar seção de atualização de produtos na FAQ sem inventar produtos, preços ou benefícios; regra registrada na documentação operacional.
+- [x] Criar e publicar modelo de registro de auditoria no canal privado de logs; mensagem autorizada publicada em `📊-logs`.

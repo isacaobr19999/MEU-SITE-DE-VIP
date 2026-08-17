@@ -84,3 +84,22 @@ Nenhuma rotina semanal deve apagar tickets, cargos, membros ou mensagens automat
 | Tickets | Revisar chamados sem resposta e encerrados | Fechar pelo Ticket Tool; não apagar manualmente o histórico |
 
 A auditoria deve registrar data, responsável, itens analisados e alterações realizadas. Qualquer remoção deve ser executada somente depois de confirmar que o item está vazio, redundante e sem dependências de bots, integrações ou histórico relevante.
+
+
+## Matriz de permissões e registros
+
+| Bot | Função confirmada | Permissões a manter | Permissões a evitar |
+|---|---|---|---|
+| PlayStorCraft | Convite e telemetria Paper | Criar convite; enviar mensagens apenas nos canais necessários | Administrador, gerenciar cargos, banir, apagar mensagens em massa |
+| Ticket Tool | Abrir e encerrar tickets | Ver canais, enviar mensagens, gerenciar canais de tickets conforme o painel | Administrador e acesso a áreas privadas sem necessidade |
+| Carl-bot | Reaction roles | Ler canais, enviar mensagens e adicionar reações no `#get-roles` | Gerenciar servidor ou administrar membros |
+| Dyno | Moderação existente | Manter somente as permissões realmente usadas pela configuração atual | Ampliar permissões sem auditoria |
+| ProBot | Recursos existentes | Manter somente as permissões usadas no servidor | Substituir ou duplicar Ticket Tool/Carl-bot |
+
+### Atualização segura da FAQ
+
+Quando um produto novo for publicado, a equipe deve atualizar somente os trechos de produtos, pagamentos, VIP, Cash e entrega, usando os nomes e regras oficiais cadastrados na loja. Nunca inserir preço, benefício, comando ou prazo que não tenha sido confirmado no catálogo e no servidor Paper.
+
+### Registro de auditoria no canal privado
+
+Cada auditoria deve registrar a data, o responsável, os bots revisados, as permissões verificadas, os cargos ou canais analisados, as alterações executadas e a confirmação de que membros, histórico e integrações foram preservados. Remoções devem indicar o motivo e a evidência de que o item estava vazio e redundante.

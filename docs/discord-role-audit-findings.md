@@ -10,3 +10,8 @@ Os quadros finais mostram `Eventos`, `Mutados`, `Red`, `Purple`, `Green`, `Pink`
 ## Gravação de remoção — 17/08/2026
 
 A nova gravação mostra a tela `Cargos do servidor` com **27 cargos**, contra os 29 cargos registrados anteriormente. Os cargos `Admin` e `Mod` não aparecem mais na lista. Permanecem `Bot — 3 Membros`, `Dono — 1 Membro`, `Ticket Tool — 1 Membro`, `ProBot — 1 Membro`, `Dyno — 1 Membro`, `carl-bot — 1 Membro`, `Ajudante — 0 Membro`, `Vips — 0 Membro`, `Membro — 0 Membro` e `Novatos — 0 Membro`. A gravação confirma a remoção dos dois cargos vazios e a preservação dos cargos de bots, equipe e comunidade.
+
+
+## Revisão de bots e registro de auditoria — 17/08/2026
+
+A matriz de menor privilégio foi aplicada como critério operacional: PlayStorCraft permanece limitado a convite e mensagens de telemetria; Ticket Tool atua no fluxo de tickets; Carl-bot atua no `#get-roles`; Dyno e ProBot permanecem sem ampliação de escopo. O modelo de auditoria foi publicado no canal privado `📊-logs`, sem credenciais ou dados pessoais, para uso nas próximas revisões.
