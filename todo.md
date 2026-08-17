@@ -293,3 +293,7 @@ Warning: the previous candidate response was rejected because it contained repea
 
 - [x] Remover a categoria vazia 📋 INFORMAÇÕES, sem tocar na categoria 🎮 MINECRAFT com login-no-servidor; confirmação do usuário recebida.
 - [x] Confirmar após a remoção que tickets, logs, eventos, loja, comunidade, staff e telemetria permanecem disponíveis; estrutura preservada conforme captura e auditoria anterior.
+
+- [x] Auditar e alinhar regras públicas da loja com `📜-regra` e `⚖️-regras-do-mercado`, sem alterar regras de negócio sem confirmação; aviso de alinhamento publicado em `/rules`.
+- [x] Criar página unificada de status para Paper, Discord, pagamentos e entregas automáticas em `/status`, com consulta pública segura e atualização manual.
+- [x] Revisar catálogo, checkout, login e área Discord em viewport mobile e corrigir problemas encontrados; login, vitrine, regras e status validados, com checkout condicionado à existência de produtos publicados.

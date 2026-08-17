@@ -18,6 +18,7 @@ export function StoreHeader({ itemCount = 0, onCart }: { itemCount?: number; onC
         <a href="/#discord">Discord</a>
         <Link href="/rules">Regras</Link>
         <Link href="/news">Novidades</Link>
+        <Link href="/status">Status</Link>
         <a href="/#como-funciona">Como funciona</a>
         {isAuthenticated ? <Link href="/orders">Pedidos</Link> : null}
         {user?.role === "admin" ? <Link href="/admin">Operação</Link> : null}

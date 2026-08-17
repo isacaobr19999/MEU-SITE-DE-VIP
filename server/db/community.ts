@@ -1,5 +1,5 @@
-import { eq } from "drizzle-orm";
-import { communityStatus } from "../../drizzle/schema";
+import { count, eq, inArray } from "drizzle-orm";
+import { communityStatus, deliveries, orders } from "../../drizzle/schema";
 import { requireDb } from "../db";
 
 export type CommunityStatusInput = {
@@ -74,6 +74,25 @@ export async function upsertCommunityStatus(input: CommunityStatusInput) {
   };
   await db.insert(communityStatus).values(values).onDuplicateKeyUpdate({ set: values });
   return getPublicCommunityStatus();
+}
+
+export async function getPublicOperationsStatus() {
+  const db = await requireDb();
+  const [pendingOrders, settledOrders, pendingDeliveries, failedDeliveries] = await Promise.all([
+    db.select({ value: count() }).from(orders).where(inArray(orders.status, ["PENDING", "WAITING_PAYMENT", "PAID", "PROCESSING"])),
+    db.select({ value: count() }).from(orders).where(inArray(orders.status, ["PAID", "PROCESSING", "COMPLETED"])),
+    db.select({ value: count() }).from(deliveries).where(inArray(deliveries.status, ["PENDING", "RETRYING", "CLAIMED", "PROCESSING"])),
+    db.select({ value: count() }).from(deliveries).where(inArray(deliveries.status, ["FAILED"])),
+  ]);
+  const pendingOrderCount = Number(pendingOrders[0]?.value ?? 0);
+  const settledOrderCount = Number(settledOrders[0]?.value ?? 0);
+  const pendingDeliveryCount = Number(pendingDeliveries[0]?.value ?? 0);
+  const failedDeliveryCount = Number(failedDeliveries[0]?.value ?? 0);
+  return {
+    refreshedAt: new Date().toISOString(),
+    payments: { status: "MONITORED" as const, pendingOrders: pendingOrderCount, settledOrders: settledOrderCount },
+    deliveries: { status: failedDeliveryCount > 0 ? "ATTENTION" as const : "OPERATIONAL" as const, pending: pendingDeliveryCount, failed: failedDeliveryCount },
+  };
 }
 
 export async function updateCommunityInvite(inviteUrl: string | null) {
