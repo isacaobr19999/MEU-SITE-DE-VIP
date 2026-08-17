@@ -270,3 +270,8 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Auditar membros vinculados aos cargos duplicados Mod/Admin sem remover cargos ou membros automaticamente; a gravação confirmou `Admin` e `Mod` com 0 membros.
 - [x] Fixar a FAQ publicada no canal #🎫・abrir-ticket e confirmar a mensagem fixada; confirmação visual recebida.
 - [x] Formalizar rotina semanal para revisar tickets fechados e chamados sem resposta em `docs/discord-ticket-operations.md`.
+
+- [x] Dispensado pelo usuário: não implementar monitoramento automático de tickets; manter a rotina manual semanal documentada.
+- [x] Atualizar a FAQ com orientações sobre produtos, pagamentos, VIP, Cash e entregas; conteúdo publicado e fixado no canal de tickets.
+- [x] Criar checklist mensal de auditoria de cargos, permissões, bots e canais em `docs/discord-ticket-operations.md`.
+- [x] Auditar itens removíveis e remover somente cargos duplicados vazios ou canais redundantes comprovados, preservando membros, histórico e integrações; `Admin` e `Mod` removidos após confirmação de 0 membros.

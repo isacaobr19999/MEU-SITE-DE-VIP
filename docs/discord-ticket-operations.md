@@ -70,3 +70,17 @@ Nenhuma rotina semanal deve apagar tickets, cargos, membros ou mensagens automat
 | Data | Tickets abertos | Tickets encerrados | Pendentes sem resposta | Cargos duplicados revisados | Ação necessária |
 |---|---:|---:|---:|---:|---|
 | ____/____/______ | ____ | ____ | ____ | ____ | ____________________ |
+
+
+## Checklist mensal manual de auditoria
+
+| Área | Verificação | Ação permitida |
+|---|---|---|
+| Cargos | Conferir `Admin`, `Mod`, `Administrador`, `Moderador` e cargos de bots | Manter cargos vazios; migrar membros somente após conferência individual |
+| Permissões | Confirmar que suporte vê tickets e que a comunidade não vê áreas privadas | Corrigir apenas overrides comprovadamente incorretos |
+| Bots | Confirmar Ticket Tool, Carl-bot, Dyno, ProBot e bot PlayStorCraft | Não remover bot ativo nem retirar permissões essenciais sem teste |
+| Canais | Procurar canais vazios, duplicados ou sem finalidade | Remover apenas canal comprovadamente redundante, sem histórico ou integração |
+| FAQ | Conferir regras, produtos, pagamentos, VIP/Cash e entregas | Atualizar e manter a mensagem fixada |
+| Tickets | Revisar chamados sem resposta e encerrados | Fechar pelo Ticket Tool; não apagar manualmente o histórico |
+
+A auditoria deve registrar data, responsável, itens analisados e alterações realizadas. Qualquer remoção deve ser executada somente depois de confirmar que o item está vazio, redundante e sem dependências de bots, integrações ou histórico relevante.
