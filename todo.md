@@ -312,3 +312,7 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Após confirmação do pagamento, validar webhook, pedido e entrega no Paper sem repetir comandos; etapa dispensada porque o titular cancelou antes do pagamento.
 
 - [x] Cancelar o pedido de teste PSC-20260817-F63F07F4 solicitado pelo titular e confirmar que não há cobrança ou entrega pendente; status CANCELLED, 1 registro de pagamento pendente sem aprovação e 0 entregas.
+
+- [x] Analisar a auditoria externa enviada e classificar os achados por criticidade, evidência e impacto comercial.
+- [x] Confrontar os achados críticos com a configuração e a operação atuais, sem alterar dados de produção.
+- [x] Entregar um plano de correção priorizado para a PlayStorCraft em `docs/response-to-external-audit-2026-08-17.md`.
