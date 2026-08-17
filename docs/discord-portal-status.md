@@ -25,3 +25,11 @@ O cliente Discord autenticado do titular também confirmou que o servidor PlayCr
 As configurações do convite público foram abertas no cliente Discord. O convite será configurado sem expiração e sem limite de usos antes da publicação na loja.
 
 O Discord gerou o convite público `https://discord.gg/HvqJB9sn`, que foi publicado no status de comunidade da loja. A API pública retornou o link e a URL do convite respondeu com redirecionamento válido do Discord.
+
+Como o intent de presença não ficou disponível no Portal Discord, o bot passará a obter a contagem aproximada de membros online no endpoint oficial desse convite público. Assim, o contador público permanece funcional sem ampliar permissões do bot. O convite será renovado antes de expirar; o cliente Discord não disponibilizou a opção sem expiração durante esta sessão.
+
+Em 17 de agosto de 2026, o Discord recusou a credencial anterior do bot. Após nova autorização explícita do titular, a credencial foi rotacionada, enviada por receptor temporário de uso único e gravada somente no runtime privado da VPS. O bot reconectou como PlayStorCraft, publicou 7 membros e 4 membros online via contagem pública do convite. O plugin PlayStorCraftStatus também foi ativado no Paper e publicou o estado ONLINE, a capacidade e a versão do servidor pela rota autenticada da loja.
+
+O cliente Discord confirmou que o convite vigente expira em sete dias e apresenta o controle de edição de convite. A loja já usa esse convite válido, e a contagem online é atualizada pelo endpoint público desse mesmo convite.
+
+Após nova autorização explícita, o bot recebeu exclusivamente a permissão **Criar convite** no PlayCraftBR. O serviço persistente criou e armazenou um novo convite sem expiração e sem limite de usos no volume privado do bot, publicou-o automaticamente na comunidade da loja e o endpoint oficial do Discord confirmou `expires_at: null`. Não há token ou segredo registrado neste documento.

@@ -10,10 +10,10 @@ export type CommunityStatusInput = {
     inviteUrl?: string;
     memberCount?: number;
     onlineCount?: number;
-    online: boolean;
+    online?: boolean;
   };
   minecraft: {
-    status: "UNKNOWN" | "ONLINE" | "OFFLINE" | "MAINTENANCE";
+    status?: "UNKNOWN" | "ONLINE" | "OFFLINE" | "MAINTENANCE";
     playersOnline?: number;
     playersMax?: number;
     motd?: string;
@@ -21,6 +21,12 @@ export type CommunityStatusInput = {
   };
   sourceUpdatedAt?: Date;
 };
+
+const MINECRAFT_STATUS_TTL_MS = 3 * 60 * 1000;
+
+export function isMinecraftStatusFresh(updatedAt: Date | null | undefined, now = Date.now()) {
+  return Boolean(updatedAt && now - updatedAt.getTime() <= MINECRAFT_STATUS_TTL_MS);
+}
 
 export async function getPublicCommunityStatus() {
   const db = await requireDb();
@@ -36,9 +42,14 @@ export async function getPublicCommunityStatus() {
     minecraftPlayersMax: communityStatus.minecraftPlayersMax,
     minecraftMotd: communityStatus.minecraftMotd,
     minecraftVersion: communityStatus.minecraftVersion,
+    minecraftUpdatedAt: communityStatus.minecraftUpdatedAt,
     updatedAt: communityStatus.updatedAt,
   }).from(communityStatus).where(eq(communityStatus.id, 1)).limit(1);
-  return row ?? null;
+  if (!row) return null;
+  if (row.minecraftStatus === "ONLINE" && !isMinecraftStatusFresh(row.minecraftUpdatedAt)) {
+    return { ...row, minecraftStatus: "OFFLINE" as const, minecraftPlayersOnline: 0 };
+  }
+  return row;
 }
 
 export async function upsertCommunityStatus(input: CommunityStatusInput) {
@@ -52,12 +63,13 @@ export async function upsertCommunityStatus(input: CommunityStatusInput) {
     discordInviteUrl: input.discord.inviteUrl ?? current?.discordInviteUrl ?? null,
     discordMemberCount: input.discord.memberCount ?? current?.discordMemberCount ?? null,
     discordOnlineCount: input.discord.onlineCount ?? current?.discordOnlineCount ?? null,
-    discordOnline: input.discord.online,
-    minecraftStatus: input.minecraft.status,
+    discordOnline: input.discord.online ?? current?.discordOnline ?? false,
+    minecraftStatus: input.minecraft.status ?? current?.minecraftStatus ?? "UNKNOWN",
     minecraftPlayersOnline: input.minecraft.playersOnline ?? current?.minecraftPlayersOnline ?? null,
     minecraftPlayersMax: input.minecraft.playersMax ?? current?.minecraftPlayersMax ?? null,
     minecraftMotd: input.minecraft.motd ?? current?.minecraftMotd ?? null,
     minecraftVersion: input.minecraft.version ?? current?.minecraftVersion ?? null,
+    minecraftUpdatedAt: input.minecraft.status ? input.sourceUpdatedAt ?? new Date() : current?.minecraftUpdatedAt ?? null,
     sourceUpdatedAt: input.sourceUpdatedAt ?? current?.sourceUpdatedAt ?? null,
   };
   await db.insert(communityStatus).values(values).onDuplicateKeyUpdate({ set: values });

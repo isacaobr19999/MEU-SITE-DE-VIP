@@ -14,15 +14,15 @@ export const communityStatusInput = z.object({
     inviteUrl: httpsUrl.optional(),
     memberCount: optionalNonNegativeInt,
     onlineCount: optionalNonNegativeInt,
-    online: z.boolean().default(true),
-  }).default({ online: true }),
+    online: z.boolean().optional(),
+  }).default({}),
   minecraft: z.object({
-    status: z.enum(["UNKNOWN", "ONLINE", "OFFLINE", "MAINTENANCE"]).default("UNKNOWN"),
+    status: z.enum(["UNKNOWN", "ONLINE", "OFFLINE", "MAINTENANCE"]).optional(),
     playersOnline: optionalNonNegativeInt,
     playersMax: optionalNonNegativeInt,
     motd: z.string().trim().max(280).optional(),
     version: z.string().trim().max(96).optional(),
-  }).default({ status: "UNKNOWN" }),
+  }).default({}),
   sourceUpdatedAt: z.coerce.date().optional(),
 });
 

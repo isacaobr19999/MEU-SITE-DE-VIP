@@ -227,3 +227,8 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Diagnosticar a indisponibilidade de acesso relatada, distinguindo a loja disponível do Portal do Discord inacessível na sessão atual.
 - [x] Manter a ativação do bot Discord pendente até o usuário conseguir acessar sua conta no Discord, sem solicitar ou expor credenciais.
 - [x] Retomar a ativação prática do Discord, diagnosticar o bloqueio de acesso ao portal e conectar o bot de forma segura quando a conta estiver disponível; bot conectado ao PlayCraftBR, convite público publicado e status exibido na loja.
+- [x] Configurar o convite público do PlayCraftBR sem expiração e validar o link publicado.
+- [x] Habilitar e validar a contagem de membros online do Discord no bot e na vitrine.
+- [x] Integrar e validar o status ao vivo do servidor Paper na área de comunidade da loja.
+- [x] Rotacionar a credencial do bot Discord recusada externamente e restaurar sua conexão segura na VPS.
+- [x] Conceder somente a permissão de criar convite ao bot e automatizar a geração de um convite sem expiração.

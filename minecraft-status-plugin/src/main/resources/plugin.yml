@@ -1,0 +1,6 @@
+name: PlayStorCraftStatus
+version: ${version}
+main: com.playstorcraft.status.PaperStatusPlugin
+api-version: "1.20"
+authors: [PlayStorCraft]
+description: Publica o status autenticado do Paper na comunidade PlayStorCraft.

@@ -1,0 +1,6 @@
+# URL pública da PlayStorCraft, sem barra final.
+api-base-url: "https://sua-loja.exemplo.com"
+# Reutilize a chave individual já configurada no plugin PlayStorCraft.
+server-api-key: "ALTERE_ESTA_CHAVE"
+# Intervalo de publicação em segundos.
+status-interval-seconds: 60

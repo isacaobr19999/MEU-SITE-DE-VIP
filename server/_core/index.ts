@@ -8,7 +8,7 @@ import { registerStorageProxy } from "./storageProxy";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { mercadoPagoWebhook } from "../webhooks/mercadoPago";
-import { claimMinecraftDeliveries, completeMinecraftDelivery, deferMinecraftDelivery, failMinecraftDelivery, syncMinecraftPlayerRoute } from "../minecraft";
+import { claimMinecraftDeliveries, completeMinecraftDelivery, deferMinecraftDelivery, failMinecraftDelivery, syncMinecraftPlayerRoute, updateMinecraftStatusRoute } from "../minecraft";
 import { updateCommunityStatusRoute } from "../community";
 import { commerceMaintenance } from "../scheduled/commerceMaintenance";
 import { serveStatic, setupVite } from "./vite";
@@ -47,6 +47,7 @@ async function startServer() {
   }
   app.post("/api/webhooks/mercadopago", mercadoPagoWebhook);
   app.post("/api/minecraft/players/sync", syncMinecraftPlayerRoute);
+  app.post("/api/minecraft/status", updateMinecraftStatusRoute);
   app.post("/api/minecraft/deliveries/claim", claimMinecraftDeliveries);
   app.post("/api/minecraft/deliveries/complete", completeMinecraftDelivery);
   app.post("/api/minecraft/deliveries/fail", failMinecraftDelivery);

@@ -102,6 +102,7 @@ export const communityStatus = mysqlTable("community_status", {
   minecraftPlayersMax: int("minecraftPlayersMax"),
   minecraftMotd: varchar("minecraftMotd", { length: 280 }),
   minecraftVersion: varchar("minecraftVersion", { length: 96 }),
+  minecraftUpdatedAt: timestamp("minecraftUpdatedAt"),
   sourceUpdatedAt: timestamp("sourceUpdatedAt"),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
