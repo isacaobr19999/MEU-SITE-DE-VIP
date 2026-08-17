@@ -1,0 +1,481 @@
+{
+  "total": 59,
+  "categories": 12,
+  "text": 40,
+  "voice": 7,
+  "channelsWithMessageId": 4,
+  "rows": [
+    {
+      "id": "1492891654800150728",
+      "type": "text",
+      "name": "modlogs",
+      "parent": "",
+      "messages": "empty-export",
+      "overwrites": 2
+    },
+    {
+      "id": "1492893208626331738",
+      "type": "text",
+      "name": "get-roles",
+      "parent": "",
+      "messages": "has-message-id",
+      "overwrites": 2
+    },
+    {
+      "id": "1492895480592470146",
+      "type": "category",
+      "name": "📌 INÍCIO",
+      "parent": "",
+      "messages": "empty-export",
+      "overwrites": 1
+    },
+    {
+      "id": "1492895577577357475",
+      "type": "text",
+      "name": "📜-regra",
+      "parent": "📌 INÍCIO",
+      "messages": "empty-export",
+      "overwrites": 1
+    },
+    {
+      "id": "1492895622670581932",
+      "type": "text",
+      "name": "📢-anúncios",
+      "parent": "📌 INÍCIO",
+      "messages": "empty-export",
+      "overwrites": 1
+    },
+    {
+      "id": "1492895667100844202",
+      "type": "text",
+      "name": "🧭-como-entrar",
+      "parent": "📌 INÍCIO",
+      "messages": "empty-export",
+      "overwrites": 1
+    },
+    {
+      "id": "1492895704987992075",
+      "type": "text",
+      "name": "✅-verificação",
+      "parent": "📌 INÍCIO",
+      "messages": "empty-export",
+      "overwrites": 2
+    },
+    {
+      "id": "1492895772327546961",
+      "type": "text",
+      "name": "🎭-pegar-cargos",
+      "parent": "📌 INÍCIO",
+      "messages": "empty-export",
+      "overwrites": 1
+    },
+    {
+      "id": "1492895867244515480",
+      "type": "category",
+      "name": "WHITELIST",
+      "parent": "",
+      "messages": "empty-export",
+      "overwrites": 4
+    },
+    {
+      "id": "1492895955647729756",
+      "type": "text",
+      "name": "📝-pedido-whitelist",
+      "parent": "WHITELIST",
+      "messages": "empty-export",
+      "overwrites": 5
+    },
+    {
+      "id": "1492896515809611947",
+      "type": "text",
+      "name": "🔎-status-whitelist",
+      "parent": "WHITELIST",
+      "messages": "empty-export",
+      "overwrites": 5
+    },
+    {
+      "id": "1492896653894484030",
+      "type": "category",
+      "name": "🌍 COMUNIDADE",
+      "parent": "",
+      "messages": "empty-export",
+      "overwrites": 6
+    },
+    {
+      "id": "1492896718969110670",
+      "type": "text",
+      "name": "💬-chat-geral",
+      "parent": "🌍 COMUNIDADE",
+      "messages": "empty-export",
+      "overwrites": 6
+    },
+    {
+      "id": "1492896761801605321",
+      "type": "text",
+      "name": "📸-prints-e-clipes",
+      "parent": "🌍 COMUNIDADE",
+      "messages": "empty-export",
+      "overwrites": 6
+    },
+    {
+      "id": "1492896832903184548",
+      "type": "text",
+      "name": "🧱-mostra-sua-base",
+      "parent": "🌍 COMUNIDADE",
+      "messages": "empty-export",
+      "overwrites": 6
+    },
+    {
+      "id": "1492896935298994186",
+      "type": "text",
+      "name": "💡-sugestões",
+      "parent": "🌍 COMUNIDADE",
+      "messages": "empty-export",
+      "overwrites": 6
+    },
+    {
+      "id": "1492896985454481598",
+      "type": "text",
+      "name": "🗳️-enquetes",
+      "parent": "🌍 COMUNIDADE",
+      "messages": "empty-export",
+      "overwrites": 6
+    },
+    {
+      "id": "1492897052651425822",
+      "type": "category",
+      "name": "💰 ECONOMIA / LOJA",
+      "parent": "",
+      "messages": "empty-export",
+      "overwrites": 0
+    },
+    {
+      "id": "1492897118690738296",
+      "type": "text",
+      "name": "🏪-loja-oficial",
+      "parent": "💰 ECONOMIA / LOJA",
+      "messages": "empty-export",
+      "overwrites": 0
+    },
+    {
+      "id": "1492897171786432643",
+      "type": "text",
+      "name": "📦-entregas-e-status",
+      "parent": "💰 ECONOMIA / LOJA",
+      "messages": "empty-export",
+      "overwrites": 0
+    },
+    {
+      "id": "1492897210466042016",
+      "type": "text",
+      "name": "🔁-trocas-e-mercado",
+      "parent": "💰 ECONOMIA / LOJA",
+      "messages": "empty-export",
+      "overwrites": 0
+    },
+    {
+      "id": "1492897251134279751",
+      "type": "text",
+      "name": "⚖️-regras-do-mercado",
+      "parent": "💰 ECONOMIA / LOJA",
+      "messages": "empty-export",
+      "overwrites": 0
+    },
+    {
+      "id": "1492897309850079382",
+      "type": "category",
+      "name": "🎪 EVENTOS",
+      "parent": "",
+      "messages": "empty-export",
+      "overwrites": 0
+    },
+    {
+      "id": "1492897410500919367",
+      "type": "text",
+      "name": "🎉-agenda-eventos",
+      "parent": "🎪 EVENTOS",
+      "messages": "empty-export",
+      "overwrites": 0
+    },
+    {
+      "id": "1492897449855946873",
+      "type": "text",
+      "name": "🏁-inscrições-eventos",
+      "parent": "🎪 EVENTOS",
+      "messages": "empty-export",
+      "overwrites": 0
+    },
+    {
+      "id": "1492897485738479676",
+      "type": "text",
+      "name": "🏆-resultados",
+      "parent": "🎪 EVENTOS",
+      "messages": "empty-export",
+      "overwrites": 0
+    },
+    {
+      "id": "1492897557842628648",
+      "type": "category",
+      "name": "🎙️ VOZ (BIOMAS)",
+      "parent": "",
+      "messages": "empty-export",
+      "overwrites": 0
+    },
+    {
+      "id": "1492897646103498893",
+      "type": "voice",
+      "name": "🔊 Lobby",
+      "parent": "🎙️ VOZ (BIOMAS)",
+      "messages": "empty-export",
+      "overwrites": 0
+    },
+    {
+      "id": "1492897728374771832",
+      "type": "voice",
+      "name": "💎 Sala VIP",
+      "parent": "🎙️ VOZ (BIOMAS)",
+      "messages": "empty-export",
+      "overwrites": 0
+    },
+    {
+      "id": "1492897786130075708",
+      "type": "voice",
+      "name": "🌲 Floresta",
+      "parent": "🎙️ VOZ (BIOMAS)",
+      "messages": "empty-export",
+      "overwrites": 0
+    },
+    {
+      "id": "1492897857852670103",
+      "type": "category",
+      "name": "🧰 SUPORTE (TICKETS)",
+      "parent": "",
+      "messages": "empty-export",
+      "overwrites": 0
+    },
+    {
+      "id": "1492897954426785983",
+      "type": "category",
+      "name": "🛠️ STAFF (privado)",
+      "parent": "",
+      "messages": "empty-export",
+      "overwrites": 0
+    },
+    {
+      "id": "1492898027457745199",
+      "type": "text",
+      "name": "📌-painel-staff",
+      "parent": "🛠️ STAFF (privado)",
+      "messages": "has-message-id",
+      "overwrites": 0
+    },
+    {
+      "id": "1492898082633945128",
+      "type": "text",
+      "name": "🧾-ocorrências",
+      "parent": "🛠️ STAFF (privado)",
+      "messages": "empty-export",
+      "overwrites": 0
+    },
+    {
+      "id": "1492898124145103018",
+      "type": "text",
+      "name": "🤖-comandos-bots",
+      "parent": "🛠️ STAFF (privado)",
+      "messages": "has-message-id",
+      "overwrites": 0
+    },
+    {
+      "id": "1492898167405150268",
+      "type": "text",
+      "name": "📊-logs",
+      "parent": "🛠️ STAFF (privado)",
+      "messages": "empty-export",
+      "overwrites": 0
+    },
+    {
+      "id": "1495035638439874691",
+      "type": "category",
+      "name": "📋 INFORMAÇÕES",
+      "parent": "",
+      "messages": "empty-export",
+      "overwrites": 0
+    },
+    {
+      "id": "1495035639203365035",
+      "type": "text",
+      "name": "regras",
+      "parent": "📋 INFORMAÇÕES",
+      "messages": "empty-export",
+      "overwrites": 2
+    },
+    {
+      "id": "1495035640751067238",
+      "type": "text",
+      "name": "anuncios",
+      "parent": "📋 INFORMAÇÕES",
+      "messages": "empty-export",
+      "overwrites": 2
+    },
+    {
+      "id": "1495035641677877369",
+      "type": "text",
+      "name": "changelog",
+      "parent": "📋 INFORMAÇÕES",
+      "messages": "empty-export",
+      "overwrites": 2
+    },
+    {
+      "id": "1495035642466275398",
+      "type": "category",
+      "name": "💬 COMUNIDADE",
+      "parent": "",
+      "messages": "empty-export",
+      "overwrites": 0
+    },
+    {
+      "id": "1495035643737276457",
+      "type": "text",
+      "name": "geral",
+      "parent": "💬 COMUNIDADE",
+      "messages": "empty-export",
+      "overwrites": 0
+    },
+    {
+      "id": "1495035645200957511",
+      "type": "text",
+      "name": "midia",
+      "parent": "💬 COMUNIDADE",
+      "messages": "empty-export",
+      "overwrites": 0
+    },
+    {
+      "id": "1495035646128029746",
+      "type": "text",
+      "name": "comandos",
+      "parent": "💬 COMUNIDADE",
+      "messages": "empty-export",
+      "overwrites": 0
+    },
+    {
+      "id": "1495035647159832586",
+      "type": "category",
+      "name": "🎮 MINECRAFT",
+      "parent": "",
+      "messages": "empty-export",
+      "overwrites": 0
+    },
+    {
+      "id": "1495035648309067898",
+      "type": "text",
+      "name": "status-servidor",
+      "parent": "🎮 MINECRAFT",
+      "messages": "empty-export",
+      "overwrites": 2
+    },
+    {
+      "id": "1495035649827274815",
+      "type": "text",
+      "name": "ip-servidor",
+      "parent": "🎮 MINECRAFT",
+      "messages": "empty-export",
+      "overwrites": 2
+    },
+    {
+      "id": "1495035651798601778",
+      "type": "text",
+      "name": "denuncias",
+      "parent": "🎮 MINECRAFT",
+      "messages": "empty-export",
+      "overwrites": 0
+    },
+    {
+      "id": "1495035652708765813",
+      "type": "category",
+      "name": "🔊 VOZ",
+      "parent": "",
+      "messages": "empty-export",
+      "overwrites": 0
+    },
+    {
+      "id": "1495035654105595994",
+      "type": "voice",
+      "name": "Lobby",
+      "parent": "🔊 VOZ",
+      "messages": "empty-export",
+      "overwrites": 0
+    },
+    {
+      "id": "1495035655338856520",
+      "type": "voice",
+      "name": "Survival 1",
+      "parent": "🔊 VOZ",
+      "messages": "empty-export",
+      "overwrites": 0
+    },
+    {
+      "id": "1495035656299216986",
+      "type": "voice",
+      "name": "Survival 2",
+      "parent": "🔊 VOZ",
+      "messages": "empty-export",
+      "overwrites": 0
+    },
+    {
+      "id": "1495035657465106465",
+      "type": "voice",
+      "name": "Staff",
+      "parent": "🔊 VOZ",
+      "messages": "empty-export",
+      "overwrites": 3
+    },
+    {
+      "id": "1496123854832009366",
+      "type": "text",
+      "name": "login-no-servidor",
+      "parent": "🎮 MINECRAFT",
+      "messages": "has-message-id",
+      "overwrites": 1
+    },
+    {
+      "id": "1538821081895276554",
+      "type": "text",
+      "name": "👋・boas-vindas",
+      "parent": "📌 INÍCIO",
+      "messages": "empty-export",
+      "overwrites": 1
+    },
+    {
+      "id": "1538821276683079801",
+      "type": "text",
+      "name": "🟢・status-do-servidor",
+      "parent": "📌 INÍCIO",
+      "messages": "empty-export",
+      "overwrites": 1
+    },
+    {
+      "id": "1538821398120763423",
+      "type": "text",
+      "name": "🎫・abrir-ticket",
+      "parent": "WHITELIST",
+      "messages": "empty-export",
+      "overwrites": 4
+    },
+    {
+      "id": "1538821524813774878",
+      "type": "text",
+      "name": "🐛・reportar-bug",
+      "parent": "🌍 COMUNIDADE",
+      "messages": "empty-export",
+      "overwrites": 6
+    },
+    {
+      "id": "1538821747556745277",
+      "type": "text",
+      "name": "🎁・cupons",
+      "parent": "💰 ECONOMIA / LOJA",
+      "messages": "empty-export",
+      "overwrites": 0
+    }
+  ]
+}

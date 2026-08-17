@@ -279,3 +279,17 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Revisar permissões atuais de Ticket Tool, Carl-bot, Dyno, ProBot e bot PlayStorCraft com princípio de menor privilégio; matriz registrada sem ampliação de escopo.
 - [x] Preparar seção de atualização de produtos na FAQ sem inventar produtos, preços ou benefícios; regra registrada na documentação operacional.
 - [x] Criar e publicar modelo de registro de auditoria no canal privado de logs; mensagem autorizada publicada em `📊-logs`.
+
+- [x] Mapear canais e categorias atuais do PlayCraftBR com histórico, permissões, bots e integrações associadas; mapeamento salvo em `docs/discord-channel-audit.json`.
+- [x] Classificar canais/categorias vazios ou duplicados e separar itens obrigatórios de itens potencialmente removíveis; itens ativos e candidatos documentados.
+- [x] Executar somente remoções autorizadas de itens comprovadamente redundantes e validar que Ticket Tool, Carl-bot, telemetria e áreas privadas continuam funcionando; salas de voz antigas removidas pelo usuário, sem novas exclusões automatizadas.
+
+- [x] Reconciliar a lista de limpeza usando nomes exatos e impedir nova remoção de canais com emoji; somente o legado `anuncios` e salas antigas foram tratados.
+- [x] Recriar `📜-regra` e `📢-anúncios` com permissões privadas e conteúdo oficial básico, sem alegar recuperação do histórico apagado; os canais oficiais permaneceram visíveis na gravação, portanto não foi necessária recriação.
+- [x] Limpar somente canais antigos sem emoji e validar tickets, logs, telemetria, bots, loja, comunidade e áreas privadas; `anuncios`, salas antigas e categoria vazia removidos/confirmados, canais críticos preservados.
+
+- [x] Remover o canal legado `anuncios` sem emoji somente após confirmação do ID exato, preservando `📢-anúncios` e `📢・anúncios` oficiais; remoção confirmada por captura.
+- [x] Validar após a limpeza que tickets, logs, telemetria, login-no-servidor, loja, eventos, comunidade e staff continuam disponíveis; captura confirmou tickets, staff, logs, eventos e login-no-servidor.
+
+- [x] Remover a categoria vazia 📋 INFORMAÇÕES, sem tocar na categoria 🎮 MINECRAFT com login-no-servidor; confirmação do usuário recebida.
+- [x] Confirmar após a remoção que tickets, logs, eventos, loja, comunidade, staff e telemetria permanecem disponíveis; estrutura preservada conforme captura e auditoria anterior.
