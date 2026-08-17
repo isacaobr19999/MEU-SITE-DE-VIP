@@ -262,3 +262,7 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Configurar o Ticket Tool como responsável pelo fluxo de tickets do PlayCraftBR, com categoria `🧰 SUPORTE (INGRESSOS)`, cargos de suporte e painel publicado em `#🎫・abrir-ticket`.
 - [x] Configurar o Carl-bot como responsável pela seleção de cargos de jogador, VIP e notificações, sem duplicar cargos existentes; painel criado no `#get-roles` com `👤 Membro`, `⭐ Vips`, `🛒 Loja` e `🎉 Eventos`.
 - [x] Validar a integração dos painéis Ticket Tool e Carl-bot com a matriz final de permissões do Discord; abertura privada em `#ticket-0001` e encerramento do ticket de teste confirmados.
+
+- [x] Publicar FAQ objetiva no canal #🎫・abrir-ticket com orientações de nick, compras, entregas, evidências e encerramento; mensagem verificada no Discord.
+- [x] Revisar cargos duplicados Mod/Moderador e Admin/Administrador com plano não destrutivo e sem remover membros automaticamente; cargos oficiais definidos para novas permissões.
+- [x] Registrar procedimento operacional de atendimento, fechamento e arquivamento de tickets para a equipe em `docs/discord-ticket-operations.md`.
