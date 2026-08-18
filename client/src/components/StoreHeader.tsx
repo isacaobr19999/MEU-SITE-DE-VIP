@@ -32,6 +32,7 @@ export function StoreHeader({ itemCount = 0, onCart }: { itemCount?: number; onC
         <Button onClick={goToCart} aria-label="Abrir carrinho" className="store-header__cart"><ShoppingBag size={18} /><span className="hidden sm:inline">Carrinho</span>{itemCount ? <span className="store-header__count">{itemCount}</span> : null}</Button>
       </div>
 	    {menuOpen ? <nav id="store-mobile-navigation" className="store-header__mobile-panel" aria-label="Navegação móvel">
+	      {!loading && (isAuthenticated ? <Link href="/orders" onClick={() => setMenuOpen(false)} className="store-header__mobile-account"><CircleUserRound size={17} /><span>{user?.name || "Minha conta"}</span></Link> : <button type="button" onClick={() => { setMenuOpen(false); startLogin(); }} className="store-header__mobile-login"><CircleUserRound size={17} /> Entrar ou criar conta</button>)}
 	      <a href="/#loja" onClick={() => setMenuOpen(false)}>Benefícios</a>
 	      <a href="/#discord" onClick={() => setMenuOpen(false)}>Discord</a>
 	      <Link href="/rules" onClick={() => setMenuOpen(false)}>Regras</Link>

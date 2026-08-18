@@ -346,3 +346,4 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Otimizar a entrega pública de módulos com carregamento sob demanda, cache imutável e compressão gzip, preservando rotas dinâmicas sem cache.
 - [x] Corrigir a apresentação móvel relatada, garantindo que mídia do hero, indicadores de confiança e atalhos essenciais não fiquem ocultos ou pareçam ausentes em celulares reais; hero reorganizado, arte mantida visível e indicadores compactados após a imagem.
 - [x] Corrigir as abas do cabeçalho em celular com um menu móvel acessível, evitando sobreposição e mantendo todas as rotas públicas disponíveis; menu por botão validado em 375 e 1080 pixels, com TypeScript, 4 testes e publicação na VPS concluídos.
+- [x] Adicionar um acesso explícito de entrar ou criar conta no menu móvel, sem remover carrinho, Discord ou abas de navegação; ação destacada adicionada ao painel, validada por testes e publicada na VPS.

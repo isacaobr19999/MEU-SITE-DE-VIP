@@ -107,6 +107,8 @@
 	.store-header__mobile-panel { position: absolute; top: calc(100% + .6rem); left: max(.75rem, calc((100vw - 1280px) / 2 + 2rem)); right: max(.75rem, calc((100vw - 1280px) / 2 + 2rem)); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .5rem; border: 1px solid rgba(148,163,184,.18); border-radius: 1.1rem; background: rgba(7,17,29,.97); padding: .65rem; box-shadow: 0 22px 55px rgba(0,0,0,.38), inset 0 1px rgba(255,255,255,.04); backdrop-filter: blur(20px); }
 	.store-header__mobile-panel a { display: flex; min-height: 2.7rem; align-items: center; border: 1px solid rgba(148,163,184,.12); border-radius: .72rem; background: rgba(255,255,255,.025); padding: .65rem .75rem; color: #cbd5e1; font-size: .78rem; font-weight: 750; }
 	.store-header__mobile-panel a:hover { border-color: rgba(110,231,183,.36); background: rgba(110,231,183,.07); color: #d1fae5; }
+	.store-header__mobile-login, .store-header__mobile-account { grid-column: 1 / -1; display: flex; min-height: 2.85rem; align-items: center; justify-content: center; gap: .5rem; border: 1px solid rgba(110,231,183,.42); border-radius: .72rem; background: #6ee7b7; padding: .65rem .75rem; color: #06261e !important; font-size: .8rem; font-weight: 850; box-shadow: 0 10px 24px rgba(16,185,129,.14); }
+	.store-header__mobile-login:hover, .store-header__mobile-account:hover { border-color: #a7f3d0; background: #a7f3d0; color: #06261e !important; }
 .store-header__account { display: none; align-items: center; gap: .45rem; max-width: 10rem; padding: .55rem .7rem; font-size: .78rem; font-weight: 700; color: #cbd5e1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .store-header__account:hover { color: #e2e8f0; }
 .store-header__cart { position: relative; height: 2.7rem; border-radius: .85rem; background: #f8fafc; padding: 0 1rem; color: #07111d; font-size: .8rem; font-weight: 800; box-shadow: 0 8px 22px rgba(0,0,0,.16); }
@@ -222,5 +224,5 @@
 .admin-list strong { display: block; font-size: .8125rem; color: #f8fafc; }
 .admin-list small { display: block; margin-top: .125rem; color: #94a3b8; font-size: .6875rem; }
 	@media (min-width: 1180px) { .store-header__nav, .store-header__account { display: flex; } .store-header__mobile-trigger { display: none; } }
-	@media (max-width: 390px) { .store-header__inner { gap: .55rem; } .store-header__actions { gap: .3rem; } .store-header__mobile-panel { grid-template-columns: 1fr; } }
+	@media (max-width: 390px) { .store-header__inner { gap: .55rem; } .store-header__actions { gap: .3rem; } .store-header__mobile-panel { grid-template-columns: 1fr; } .store-header__mobile-login, .store-header__mobile-account { grid-column: auto; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; } }

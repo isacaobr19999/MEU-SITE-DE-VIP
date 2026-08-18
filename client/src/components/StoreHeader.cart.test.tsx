@@ -31,6 +31,8 @@ describe("StoreHeader", () => {
 
     expect(trigger).toHaveAttribute("aria-expanded", "true");
     const navigation = screen.getByRole("navigation", { name: "Navegação móvel" });
+
+    expect(within(navigation).getByRole("button", { name: "Entrar ou criar conta" })).toBeVisible();
     expect(within(navigation).getByText("Benefícios")).toBeVisible();
     expect(within(navigation).getByText("Como funciona")).toBeVisible();
   });
