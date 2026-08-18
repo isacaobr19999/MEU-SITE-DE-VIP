@@ -344,3 +344,4 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Aprimorar cards, páginas de produto, navegação e estados de busca para melhorar clareza, acessibilidade e conversão em desktop e mobile.
 - [x] Validar a nova vitrine em desktop e celular, executar testes e publicar a atualização na VPS; catálogo real e detalhe validados em produção, layout móvel validado na prévia, TypeScript, build e 5 testes determinísticos aprovados.
 - [x] Otimizar a entrega pública de módulos com carregamento sob demanda, cache imutável e compressão gzip, preservando rotas dinâmicas sem cache.
+- [x] Corrigir a apresentação móvel relatada, garantindo que mídia do hero, indicadores de confiança e atalhos essenciais não fiquem ocultos ou pareçam ausentes em celulares reais; hero reorganizado, arte mantida visível e indicadores compactados após a imagem.

@@ -184,7 +184,8 @@
 	.product-detail-fact span, .product-detail-fact strong { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 	.product-detail-fact span { color: #64748b; font-size: .66rem; font-weight: 700; }
 	.product-detail-fact strong { margin-top: .14rem; color: #e2e8f0; font-size: .8rem; }
-	@media (max-width: 640px) { .hero-proof { min-height: 3.7rem; } .product-card__visual { height: 10rem; } .catalog-intro { padding: 1.1rem; } }
+		.hero-proof-grid { max-width: 42rem; }
+		@media (max-width: 639px) { .hero-proof-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } .hero-proof { min-height: 4.7rem; flex-direction: column; align-items: flex-start; justify-content: center; gap: .32rem; padding: .65rem; font-size: .6rem; } .hero-proof strong { font-size: .63rem; } .product-card__visual { height: 10rem; } .catalog-intro { padding: 1.1rem; } }
 .discord-community-section { background: radial-gradient(circle at 14% 42%, rgba(99,102,241,.13), transparent 27rem), radial-gradient(circle at 88% 18%, rgba(16,185,129,.08), transparent 24rem), rgba(6,17,29,.68); }
 .discord-status-card { border: 1px solid rgba(165,180,252,.18); background: linear-gradient(145deg, rgba(22,28,61,.78), rgba(8,21,36,.9)); box-shadow: inset 0 1px rgba(255,255,255,.045), 0 22px 55px rgba(0,0,0,.2); }
 .process-card { position: relative; overflow: hidden; border: 1px solid rgba(148,163,184,.14); border-radius: 1.45rem; padding: 1.45rem; background: linear-gradient(145deg, rgba(16,35,54,.74), rgba(8,19,32,.68)); box-shadow: inset 0 1px rgba(255,255,255,.025); }
