@@ -327,3 +327,8 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Escrever um guia completo de instalação, DNS, HTTPS, banco, aplicação, Paper, Discord, backups, atualizações e recuperação sem incluir segredos.
 - [x] Adicionar modelos seguros de configuração e scripts verificáveis para reduzir erros em uma nova VPS.
 - [x] Validar a documentação e enviar a atualização completa ao repositório GitHub selecionado; commit `fd81b44` publicado na branch `main`.
+
+- [x] Auditar os componentes, rotas, tabelas e formulários atuais do painel administrativo para priorizar melhorias sem alterar regras de negócio.
+- [x] Redesenhar a navegação e o resumo operacional do painel para tornar pedidos, pagamentos, entregas e alertas mais fáceis de acompanhar.
+- [x] Melhorar a usabilidade de catálogo, cupons, servidores, jogadores e registros com tabelas, filtros, estados e confirmações consistentes.
+- [x] Validar o painel administrativo aprimorado em desktop e mobile, com testes automatizados e publicação da atualização; TypeScript e 4 testes administrativos passaram, painel e filtro de catálogo foram confirmados em produção. A suíte completa executou 74 testes aprovados antes de um worker externo encerrar sob pressão de memória.

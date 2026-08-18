@@ -130,8 +130,15 @@
 .admin-workspace { background: radial-gradient(circle at 90% 5%, rgba(56,189,248,.07), transparent 28rem), radial-gradient(circle at 10% 100%, rgba(16,185,129,.06), transparent 28rem), #07111d; }
 .admin-workspace input:not([type="checkbox"]), .admin-workspace textarea, .admin-workspace select { border-color: rgba(148,163,184,.16); background-color: rgba(15,30,47,.68); color: #e2e8f0; box-shadow: inset 0 1px rgba(255,255,255,.02); }
 .admin-workspace input:not([type="checkbox"]):focus, .admin-workspace textarea:focus, .admin-workspace select:focus { border-color: rgba(110,231,183,.62); outline: none; box-shadow: 0 0 0 4px rgba(110,231,183,.07); }
-.admin-workspace table tbody tr { transition: background-color .16s ease; }
-.admin-workspace table tbody tr:hover { background: rgba(255,255,255,.025); }
+	.admin-workspace table tbody tr { transition: background-color .16s ease; }
+	.admin-workspace table tbody tr:hover { background: rgba(255,255,255,.025); }
+	.admin-shortcut { display: flex; align-items: center; gap: .75rem; border: 1px solid rgba(148,163,184,.12); border-radius: .9rem; background: rgba(255,255,255,.025); padding: .7rem; color: #cbd5e1; }
+	.admin-shortcut:hover { border-color: rgba(110,231,183,.26); background: rgba(110,231,183,.055); color: #f8fafc; transform: translateX(2px); }
+	.admin-shortcut > span:nth-child(2) { display: grid; min-width: 0; flex: 1; gap: .12rem; }
+	.admin-shortcut strong { font-size: .82rem; color: #f8fafc; }
+	.admin-shortcut small { overflow: hidden; color: #94a3b8; font-size: .68rem; text-overflow: ellipsis; white-space: nowrap; }
+	.admin-select { height: 2.5rem; width: 100%; border: 1px solid rgba(148,163,184,.16); border-radius: .75rem; background: rgba(15,30,47,.68); padding: 0 .75rem; color: #e2e8f0; font-size: .875rem; box-shadow: inset 0 1px rgba(255,255,255,.02); }
+	.admin-select:focus { border-color: rgba(110,231,183,.62); outline: none; box-shadow: 0 0 0 4px rgba(110,231,183,.07); }
 .discord-community-section { background: radial-gradient(circle at 14% 42%, rgba(99,102,241,.13), transparent 27rem), radial-gradient(circle at 88% 18%, rgba(16,185,129,.08), transparent 24rem), rgba(6,17,29,.68); }
 .discord-status-card { border: 1px solid rgba(165,180,252,.18); background: linear-gradient(145deg, rgba(22,28,61,.78), rgba(8,21,36,.9)); box-shadow: inset 0 1px rgba(255,255,255,.045), 0 22px 55px rgba(0,0,0,.2); }
 .process-card { position: relative; overflow: hidden; border: 1px solid rgba(148,163,184,.14); border-radius: 1.45rem; padding: 1.45rem; background: linear-gradient(145deg, rgba(16,35,54,.74), rgba(8,19,32,.68)); box-shadow: inset 0 1px rgba(255,255,255,.025); }
