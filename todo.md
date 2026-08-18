@@ -332,3 +332,9 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Redesenhar a navegação e o resumo operacional do painel para tornar pedidos, pagamentos, entregas e alertas mais fáceis de acompanhar.
 - [x] Melhorar a usabilidade de catálogo, cupons, servidores, jogadores e registros com tabelas, filtros, estados e confirmações consistentes.
 - [x] Validar o painel administrativo aprimorado em desktop e mobile, com testes automatizados e publicação da atualização; TypeScript e 4 testes administrativos passaram, painel e filtro de catálogo foram confirmados em produção. A suíte completa executou 74 testes aprovados antes de um worker externo encerrar sob pressão de memória.
+
+- [x] Auditar os dados de pedidos e entregas disponíveis para definir exportação CSV e métricas mensais reais.
+- [x] Implementar exportação CSV de pedidos com dados operacionais seguros, auditoria de exportação e formatação compatível com planilhas.
+- [x] Criar gráficos mensais de vendas usando dados reais e estados de vazio/carregamento claros.
+- [x] Adicionar filtros avançados, contadores e melhor organização visual à fila de entregas.
+- [x] Validar os novos fluxos em produção, desktop e mobile, com testes automatizados e checkpoint publicado; gráfico real de março a agosto, CSV de 28 pedidos e filtro de entregas sem resultados confirmados em produção.

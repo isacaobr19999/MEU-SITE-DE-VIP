@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createCategoryRecord, createProductRecord, listAdminCategories } from "../db/adminCatalog";
-import { cancelOrderRecord, createCouponRecord, createServerRecord, deleteCouponRecord, getAdminOrderDetail, getAdminOverview, getAdminProductPriceCents, listAdminCoupons, listAdminDeliveries, listAdminLogs, listAdminOrders, listAdminPlayers, listAdminProducts, listAdminServers, listAdminUsers, listPlayerHistory, retryDeliveryRecord, setAdminRole, setProductStatus, updateCategoryRecord, updateCouponRecord, updateProductRecord, updateServerRecord, writeAdminAuditLog } from "../db/admin";
+import { cancelOrderRecord, createCouponRecord, createServerRecord, deleteCouponRecord, getAdminMonthlySales, getAdminOrderDetail, getAdminOverview, getAdminProductPriceCents, listAdminCoupons, listAdminDeliveries, listAdminLogs, listAdminOrderExport, listAdminOrders, listAdminPlayers, listAdminProducts, listAdminServers, listAdminUsers, listPlayerHistory, retryDeliveryRecord, setAdminRole, setProductStatus, updateCategoryRecord, updateCouponRecord, updateProductRecord, updateServerRecord, writeAdminAuditLog } from "../db/admin";
 import { adminProcedure, router } from "../_core/trpc";
 
 const slug = z.string().trim().toLowerCase().regex(/^[a-z0-9-]+$/).min(3).max(160);
@@ -21,6 +21,15 @@ function audit(ctx: { user: { openId: string } }, action: string, entityType: st
 
 export const adminRouter = router({
   overview: adminProcedure.query(getAdminOverview),
+
+  monthlySales: adminProcedure.query(() => getAdminMonthlySales()),
+
+  exportOrders: adminProcedure.query(async ({ ctx }) => {
+    const rows = await listAdminOrderExport();
+    await audit(ctx, "orders.exported", "order_export", undefined, { rowCount: rows.length });
+    return rows;
+  }),
+
   categories: adminProcedure.query(listAdminCategories),
   products: adminProcedure.query(listAdminProducts),
   orders: adminProcedure.query(listAdminOrders),

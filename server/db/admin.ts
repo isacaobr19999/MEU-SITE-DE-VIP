@@ -64,6 +64,28 @@ export async function listAdminOrders() {
   return db.select({ id: orders.id, orderNumber: orders.orderNumber, status: orders.status, totalCents: orders.totalCents, createdAt: orders.createdAt, paidAt: orders.paidAt, playerName: players.username, playerUuid: players.uuid }).from(orders).innerJoin(players, eq(orders.playerId, players.id)).orderBy(desc(orders.createdAt)).limit(100);
 }
 
+export async function listAdminOrderExport() {
+  const db = await requireDb();
+  return db.select({ orderNumber: orders.orderNumber, status: orders.status, totalCents: orders.totalCents, discountCents: orders.discountCents, createdAt: orders.createdAt, paidAt: orders.paidAt, playerName: players.username, playerUuid: players.uuid, couponCode: coupons.code }).from(orders).innerJoin(players, eq(orders.playerId, players.id)).leftJoin(coupons, eq(orders.couponId, coupons.id)).orderBy(desc(orders.createdAt)).limit(5000);
+}
+
+export async function getAdminMonthlySales(monthCount = 6) {
+  const db = await requireDb();
+  const now = new Date();
+  const firstMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - (monthCount - 1), 1));
+  const completedStatuses = ["PAID", "PROCESSING", "COMPLETED"] as const;
+  const monthExpression = sql<string>`date_format(${orders.paidAt}, '%Y-%m')`;
+  const rows = await db.select({ month: monthExpression, salesCents: sql<number>`coalesce(sum(${orders.totalCents}), 0)`, paidOrders: count() }).from(orders).where(and(inArray(orders.status, completedStatuses), gte(orders.paidAt, firstMonth))).groupBy(monthExpression).orderBy(monthExpression);
+  const monthly = new Map(rows.map(row => [row.month, { salesCents: Number(row.salesCents ?? 0), paidOrders: Number(row.paidOrders ?? 0) }]));
+  const formatter = new Intl.DateTimeFormat("pt-BR", { month: "short" });
+  return Array.from({ length: monthCount }, (_, index) => {
+    const date = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - (monthCount - 1 - index), 1));
+    const key = `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, "0")}`;
+    const values = monthly.get(key) ?? { salesCents: 0, paidOrders: 0 };
+    return { key, label: formatter.format(date).replace(".", ""), ...values };
+  });
+}
+
 export async function listAdminPlayers() {
   const db = await requireDb();
   return db.select({ id: players.id, username: players.username, uuid: players.uuid, email: players.email, lastSeenAt: players.lastSeenAt, createdAt: players.createdAt }).from(players).orderBy(desc(players.createdAt)).limit(100);

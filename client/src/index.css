@@ -139,6 +139,24 @@
 	.admin-shortcut small { overflow: hidden; color: #94a3b8; font-size: .68rem; text-overflow: ellipsis; white-space: nowrap; }
 	.admin-select { height: 2.5rem; width: 100%; border: 1px solid rgba(148,163,184,.16); border-radius: .75rem; background: rgba(15,30,47,.68); padding: 0 .75rem; color: #e2e8f0; font-size: .875rem; box-shadow: inset 0 1px rgba(255,255,255,.02); }
 	.admin-select:focus { border-color: rgba(110,231,183,.62); outline: none; box-shadow: 0 0 0 4px rgba(110,231,183,.07); }
+	.monthly-chart { position: relative; display: grid; min-height: 15.5rem; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: .55rem; overflow: hidden; border: 1px solid rgba(148,163,184,.11); border-radius: 1.15rem; background: linear-gradient(180deg, rgba(11,29,45,.5), rgba(7,17,29,.44)); padding: 1.25rem .85rem .8rem; }
+	.monthly-chart__grid { position: absolute; inset: 1.25rem .85rem 2.65rem; background: repeating-linear-gradient(to bottom, transparent 0, transparent calc(25% - 1px), rgba(148,163,184,.10) calc(25% - 1px), rgba(148,163,184,.10) 25%); pointer-events: none; }
+	.monthly-chart__column { position: relative; z-index: 1; display: grid; grid-template-rows: auto minmax(8rem, 1fr) auto auto; min-width: 0; align-items: end; gap: .35rem; text-align: center; }
+	.monthly-chart__value { overflow: hidden; color: #cbd5e1; font-family: "DM Mono", monospace; font-size: .63rem; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+	.monthly-chart__track { display: flex; min-height: 8rem; height: 100%; align-items: end; justify-content: center; }
+	.monthly-chart__bar { width: min(70%, 2.5rem); min-height: .25rem; border: 1px solid rgba(110,231,183,.28); border-radius: .7rem .7rem .28rem .28rem; background: linear-gradient(180deg, #71efc4, #1ba87e); box-shadow: 0 0 22px rgba(52,211,153,.2); transition: filter .18s ease, transform .18s ease; }
+	.monthly-chart__bar:hover { filter: brightness(1.12); transform: translateY(-2px); }
+	.monthly-chart__label { color: #f1f5f9; font-family: "DM Mono", monospace; font-size: .67rem; font-weight: 700; text-transform: capitalize; }
+	.monthly-chart__meta { color: #64748b; font-size: .64rem; }
+	@media (max-width: 500px) { .monthly-chart { gap: .25rem; padding-left: .5rem; padding-right: .5rem; } .monthly-chart__value { font-size: .52rem; } .monthly-chart__label { font-size: .56rem; } .monthly-chart__meta { display: none; } .monthly-chart__grid { left: .5rem; right: .5rem; } }
+	.delivery-filter-card { display: grid; gap: .22rem; border: 1px solid rgba(148,163,184,.12); border-radius: .85rem; background: rgba(255,255,255,.025); padding: .65rem .75rem; text-align: left; color: #94a3b8; }
+	.delivery-filter-card:hover { border-color: rgba(110,231,183,.25); background: rgba(110,231,183,.045); }
+	.delivery-filter-card span { font-size: .68rem; font-weight: 700; }
+	.delivery-filter-card strong { color: #f8fafc; font-family: "DM Mono", monospace; font-size: 1.15rem; }
+	.delivery-filter-card--active { border-color: rgba(110,231,183,.35); background: rgba(110,231,183,.08); }
+	.delivery-filter-card--warning { border-color: rgba(251,191,36,.4); background: rgba(251,191,36,.07); color: #fcd34d; }
+	.delivery-filter-card--danger { border-color: rgba(251,113,133,.4); background: rgba(251,113,133,.07); color: #fda4af; }
+	.delivery-card { display: flex; align-items: center; justify-content: space-between; gap: .8rem; border: 1px solid; border-radius: .9rem; padding: .82rem; }
 .discord-community-section { background: radial-gradient(circle at 14% 42%, rgba(99,102,241,.13), transparent 27rem), radial-gradient(circle at 88% 18%, rgba(16,185,129,.08), transparent 24rem), rgba(6,17,29,.68); }
 .discord-status-card { border: 1px solid rgba(165,180,252,.18); background: linear-gradient(145deg, rgba(22,28,61,.78), rgba(8,21,36,.9)); box-shadow: inset 0 1px rgba(255,255,255,.045), 0 22px 55px rgba(0,0,0,.2); }
 .process-card { position: relative; overflow: hidden; border: 1px solid rgba(148,163,184,.14); border-radius: 1.45rem; padding: 1.45rem; background: linear-gradient(145deg, rgba(16,35,54,.74), rgba(8,19,32,.68)); box-shadow: inset 0 1px rgba(255,255,255,.025); }

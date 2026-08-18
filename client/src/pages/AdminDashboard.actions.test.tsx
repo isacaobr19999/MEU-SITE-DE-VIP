@@ -8,6 +8,8 @@ const mocks = vi.hoisted(() => ({
   auth: vi.fn(),
   useUtils: vi.fn(),
   overview: vi.fn(),
+  monthlySales: vi.fn(),
+  exportOrders: vi.fn(),
   categories: vi.fn(),
   products: vi.fn(),
   orders: vi.fn(),
@@ -31,6 +33,8 @@ vi.mock("@/lib/trpc", () => ({
     useUtils: mocks.useUtils,
     admin: {
       overview: { useQuery: mocks.overview },
+      monthlySales: { useQuery: mocks.monthlySales },
+      exportOrders: { useQuery: mocks.exportOrders },
       categories: { useQuery: mocks.categories },
       products: { useQuery: mocks.products },
       orders: { useQuery: mocks.orders },
@@ -63,6 +67,8 @@ beforeEach(() => {
     catalog: { categories: invalidate, products: invalidate },
   });
   mocks.overview.mockReturnValue(query({ salesTodayCents: 0, salesMonthCents: 1090, pendingOrders: 2, pendingDeliveries: 0, failedDeliveries: 0, playerCount: 1 }));
+  mocks.monthlySales.mockReturnValue(query([{ key: "2026-08", label: "ago", salesCents: 1090, paidOrders: 2 }]));
+  mocks.exportOrders.mockReturnValue({ ...query([]), isFetching: false });
   mocks.categories.mockReturnValue(query([{ id: 1, name: "Cash", slug: "cash", active: true }]));
   mocks.products.mockReturnValue(query([{ id: 7, name: "1.000 Cash", categoryName: "Cash", priceCents: 490, active: true }]));
   mocks.orders.mockReturnValue(query([{ id: "order-1", orderNumber: "PSC-1", playerName: "_Nube", totalCents: 490, status: "WAITING_PAYMENT" }]));
