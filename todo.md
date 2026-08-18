@@ -338,3 +338,9 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Criar gráficos mensais de vendas usando dados reais e estados de vazio/carregamento claros.
 - [x] Adicionar filtros avançados, contadores e melhor organização visual à fila de entregas.
 - [x] Validar os novos fluxos em produção, desktop e mobile, com testes automatizados e checkpoint publicado; gráfico real de março a agosto, CSV de 28 pedidos e filtro de entregas sem resultados confirmados em produção.
+
+- [x] Auditar a página inicial, cards de catálogo, cabeçalho e páginas de produto para priorizar uma melhoria visual sem alterar dados comerciais.
+- [x] Redesenhar a vitrine inicial com hierarquia comercial, destaques de confiança e apresentação mais forte de categorias e produtos.
+- [x] Aprimorar cards, páginas de produto, navegação e estados de busca para melhorar clareza, acessibilidade e conversão em desktop e mobile.
+- [x] Validar a nova vitrine em desktop e celular, executar testes e publicar a atualização na VPS; catálogo real e detalhe validados em produção, layout móvel validado na prévia, TypeScript, build e 5 testes determinísticos aprovados.
+- [x] Otimizar a entrega pública de módulos com carregamento sob demanda, cache imutável e compressão gzip, preservando rotas dinâmicas sem cache.

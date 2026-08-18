@@ -9,7 +9,7 @@ import { addCartItem, readCart, removeUnavailableCartItems, writeCart, type Cart
 import { STORE_ROUTES } from "@/lib/storeRoutes";
 import { trpc } from "@/lib/trpc";
 import { Link, useLocation } from "wouter";
-import { Box, ChevronRight, Loader2, Minus, PackageCheck, Plus, Search, ShieldCheck, ShoppingBag, Sparkles, X } from "lucide-react";
+import { ArrowUpRight, BadgeCheck, Box, ChevronRight, CreditCard, Gamepad2, Gem, Loader2, Minus, PackageCheck, Plus, Search, ShieldCheck, ShoppingBag, Sparkles, X } from "lucide-react";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
@@ -30,32 +30,24 @@ function ProductCard({ product, onAdd }: { product: StoreProduct; onAdd: (produc
   }
 
   return (
-    <article className="product-card group rounded-[1.6rem] p-5 transition duration-300 hover:-translate-y-1">
-      <div className="mb-6 flex items-start justify-between gap-3">
-        <div className="product-card__media grid h-12 w-12 shrink-0 place-items-center rounded-2xl text-emerald-100">
-          {product.imageUrl ? <img src={product.imageUrl} alt="" className="h-full w-full object-cover" /> : <Box size={25} strokeWidth={2.4} />}
-        </div>
-        <Badge className="border border-emerald-300/20 bg-emerald-300/10 px-3 py-1 text-[10px] font-bold tracking-[.14em] text-emerald-100">{kindLabels[product.kind].toUpperCase()}</Badge>
+    <article className="product-card product-card--store group overflow-hidden rounded-[1.6rem] transition duration-300 hover:-translate-y-1">
+      <div className="product-card__visual relative overflow-hidden">
+        {product.imageUrl ? <img src={product.imageUrl} alt="" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" /> : <div className="grid h-full place-items-center bg-gradient-to-br from-emerald-300/25 to-sky-300/15 text-emerald-100"><Box size={34} strokeWidth={2.2} /></div>}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#07111d]/90 via-[#07111d]/20 to-transparent" />
+        <div className="absolute inset-x-4 top-4 flex items-center justify-between gap-3"><Badge className="border border-emerald-200/20 bg-[#07111d]/70 px-3 py-1 text-[10px] font-bold tracking-[.14em] text-emerald-100 backdrop-blur">{kindLabels[product.kind].toUpperCase()}</Badge>{product.featured ? <span className="rounded-full bg-amber-300 px-2.5 py-1 text-[9px] font-extrabold tracking-[.12em] text-slate-950">DESTAQUE</span> : null}</div>
+        <div className="absolute inset-x-4 bottom-4 flex items-center justify-between"><span className="product-card__duration">{product.durationDays ? `${product.durationDays} dias` : "Permanente"}</span><span className="grid h-8 w-8 place-items-center rounded-full border border-white/20 bg-white/10 text-white backdrop-blur"><Gem size={15} /></span></div>
       </div>
-      <div className="space-y-2">
-        <Link href={`/products/${product.slug}`} className="text-lg font-bold tracking-tight text-white transition hover:text-emerald-200">{product.name}</Link>
-        <p className="min-h-10 text-sm leading-5 text-slate-400">{product.shortDescription || "Benefício digital entregue automaticamente no seu servidor."}</p>
-      </div>
-      <div className="mt-5 flex flex-wrap gap-2 text-xs text-slate-400">
-        {product.durationDays ? <span className="rounded-lg bg-white/5 px-2.5 py-1.5">{product.durationDays} dias</span> : <span className="rounded-lg bg-white/5 px-2.5 py-1.5">Permanente</span>}
-        <span className="rounded-lg bg-white/5 px-2.5 py-1.5">{product.categoryName}</span>
-      </div>
+      <div className="p-5">
+        <div className="space-y-2"><Link href={`/products/${product.slug}`} className="text-xl font-bold tracking-tight text-white transition hover:text-emerald-200">{product.name}</Link><p className="min-h-10 text-sm leading-5 text-slate-400">{product.shortDescription || "Benefício digital entregue automaticamente no seu servidor."}</p></div>
+        <div className="mt-5 flex flex-wrap gap-2 text-xs text-slate-400"><span className="product-chip">{product.categoryName}</span><span className="product-chip">Entrega no jogo</span></div>
       {destinations.isError ? <p className="mt-5 rounded-xl border border-rose-300/20 bg-rose-300/10 px-3 py-2 text-xs text-rose-100">Não foi possível consultar os servidores de destino.</p> : null}
       {destinations.data && destinations.data.length > 1 ? (
         <select aria-label="Servidor de destino" value={serverId ?? destinations.data[0]?.id} onChange={event => setServerId(Number(event.target.value))} className="mt-5 h-10 w-full rounded-xl border border-white/10 bg-slate-900 px-3 text-sm text-slate-200 outline-none transition focus:border-emerald-300">
           {destinations.data.map(server => <option key={server.id} value={server.id}>{server.name}</option>)}
         </select>
       ) : null}
-      <div className="mt-6 flex items-center justify-between gap-3">
-        <p className="font-mono text-lg font-bold text-emerald-200">{money.format(product.priceCents / 100)}</p>
-        <Button disabled={destinations.isLoading || destinations.isError || !destinations.data?.length} onClick={addToCart} className="h-10 rounded-xl bg-emerald-300 px-4 text-xs font-bold text-slate-950 shadow-[0_8px_22px_rgba(16,185,129,.14)] hover:bg-emerald-200">
-          {destinations.isLoading ? <Loader2 className="animate-spin" size={16} /> : <><Plus size={16} /> Adicionar</>}
-        </Button>
+        <div className="mt-6 flex items-center justify-between gap-3 border-t border-white/[.08] pt-4"><div><p className="text-[10px] font-bold tracking-[.14em] text-slate-500">A PARTIR DE</p><p className="mt-1 font-mono text-xl font-bold text-emerald-200">{money.format(product.priceCents / 100)}</p></div><Button disabled={destinations.isLoading || destinations.isError || !destinations.data?.length} onClick={addToCart} className="h-11 rounded-xl bg-emerald-300 px-4 text-xs font-bold text-slate-950 shadow-[0_10px_26px_rgba(16,185,129,.16)] hover:bg-emerald-200">{destinations.isLoading ? <Loader2 className="animate-spin" size={16} /> : <><Plus size={16} /> Adicionar</>}</Button></div>
+        <Link href={`/products/${product.slug}`} className="mt-4 inline-flex items-center gap-1 text-xs font-bold text-slate-400 transition hover:text-emerald-200">Ver detalhes <ArrowUpRight size={14} /></Link>
       </div>
     </article>
   );
@@ -156,13 +148,13 @@ export default function Home() {
       <StoreHeader itemCount={itemCount} onCart={openCart} />
 
       <main className="relative z-10">
-        <section className="container grid items-center gap-10 pb-20 pt-14 lg:grid-cols-[1.05fr_.95fr] lg:gap-16 lg:pb-28 lg:pt-24">
+        <section className="store-hero container grid items-center gap-10 pb-20 pt-14 lg:grid-cols-[1.05fr_.95fr] lg:gap-16 lg:pb-28 lg:pt-24">
           <div className="max-w-2xl">
             <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-emerald-300/20 bg-emerald-300/[.08] px-4 py-2 text-[10px] font-bold tracking-[.16em] text-emerald-100"><span className="h-1.5 w-1.5 rounded-full bg-emerald-300 shadow-[0_0_12px_currentColor]" /> RECOMPENSAS DO SERVIDOR</div>
             <h1 className="font-display max-w-xl text-[2.75rem] font-extrabold leading-[1.01] text-white sm:text-6xl lg:text-7xl">Equipe seu próximo <span className="text-emerald-300">nível</span> de aventura.</h1>
             <p className="mt-7 max-w-xl text-base leading-8 text-slate-300 sm:text-lg">VIPs, moedas e benefícios entregues no jogador certo. Compre com segurança e deixe a progressão continuar no servidor.</p>
             <div className="mt-9 flex flex-wrap items-center gap-4"><Button onClick={() => document.getElementById("loja")?.scrollIntoView({ behavior: "smooth" })} className="h-13 rounded-xl bg-emerald-300 px-6 font-bold text-slate-950 shadow-[0_14px_34px_rgba(16,185,129,.16)] hover:bg-emerald-200">Ver benefícios <ChevronRight size={18} /></Button><div className="flex items-center gap-2 text-xs font-semibold text-slate-400"><ShieldCheck size={16} className="text-emerald-300" /> Pagamento e entrega verificados</div></div>
-            <div className="mt-10 flex flex-wrap gap-2 text-xs"><span className="rounded-lg border border-white/10 bg-white/[.035] px-3 py-2 text-slate-300">Entrega vinculada ao jogador</span><span className="rounded-lg border border-white/10 bg-white/[.035] px-3 py-2 text-slate-300">PIX e cartão</span><span className="rounded-lg border border-white/10 bg-white/[.035] px-3 py-2 text-slate-300">Servidor oficial</span></div>
+            <div className="mt-10 grid max-w-xl gap-2 sm:grid-cols-3"><div className="hero-proof"><BadgeCheck size={16} /><span>Entrega vinculada<br /><strong>ao jogador</strong></span></div><div className="hero-proof"><CreditCard size={16} /><span>PIX e cartão<br /><strong>em ambiente seguro</strong></span></div><div className="hero-proof"><Gamepad2 size={16} /><span>Servidor oficial<br /><strong>benefícios verificados</strong></span></div></div>
           </div>
           <div className="hero-voxel-stage surface-panel relative aspect-[1.08] overflow-hidden rounded-[2rem] p-3 sm:aspect-video sm:p-4">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_10%,rgba(110,231,183,.24),transparent_30%),radial-gradient(circle_at_8%_90%,rgba(56,189,248,.17),transparent_30%)]" />
@@ -177,14 +169,14 @@ export default function Home() {
 
         <section id="loja" className="catalog-section py-16 sm:py-20">
           <div className="container">
-            <div className="mb-8 flex flex-col justify-between gap-5 md:flex-row md:items-end"><div><p className="section-kicker">CATÁLOGO OFICIAL</p><h2 className="font-display mt-2 text-3xl font-bold text-white sm:text-4xl">Escolha seu próximo upgrade</h2><p className="mt-2 text-sm text-slate-400">Itens seguros para continuar sua progressão.</p></div><label className="field-shell relative block w-full rounded-xl md:w-80"><Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} /><Input value={search} onChange={event => setSearch(event.target.value)} placeholder="Buscar benefícios" className="h-12 border-0 bg-transparent pl-11 text-slate-100 placeholder:text-slate-500 focus-visible:ring-0" /></label></div>
+            <div className="catalog-intro mb-8 flex flex-col justify-between gap-5 rounded-[1.6rem] p-5 md:flex-row md:items-end sm:p-7"><div><p className="section-kicker">CATÁLOGO OFICIAL</p><h2 className="font-display mt-2 max-w-xl text-3xl font-bold text-white sm:text-4xl">Escolha um benefício para a sua próxima sessão.</h2><p className="mt-3 max-w-xl text-sm leading-6 text-slate-400">Produtos organizados por objetivo, com entrega preparada para o servidor e o jogador selecionados.</p><div className="mt-5 flex flex-wrap gap-2"><span className="catalog-stat">{availableProducts.data?.length ?? 0} benefícios disponíveis</span><span className="catalog-stat">Checkout protegido</span></div></div><label className="field-shell relative block w-full rounded-xl md:w-80"><Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} /><Input value={search} onChange={event => setSearch(event.target.value)} placeholder="Buscar benefícios" className="h-12 border-0 bg-transparent pl-11 text-slate-100 placeholder:text-slate-500 focus-visible:ring-0" /></label></div>
             <div className="mb-8 flex gap-2 overflow-x-auto pb-1"><Button onClick={() => setCategory(undefined)} variant="ghost" className={`rounded-xl ${!category ? "bg-emerald-300 text-slate-950 hover:bg-emerald-200" : "bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white"}`}>Todos</Button>{categories.data?.map(item => <Button key={item.id} onClick={() => setCategory(item.slug)} variant="ghost" className={`rounded-xl whitespace-nowrap ${category === item.slug ? "bg-emerald-300 text-slate-950 hover:bg-emerald-200" : "bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white"}`}>{item.name}</Button>)}</div>
             {categories.isError ? <p className="-mt-5 mb-6 text-sm text-rose-200">As categorias não puderam ser carregadas. Você ainda pode buscar produtos.</p> : null}
             {products.isLoading ? <div className="grid min-h-64 place-items-center"><Loader2 className="animate-spin text-emerald-300" /></div> : products.isError ? <div className="rounded-[1.6rem] border border-rose-300/20 bg-rose-300/[.06] px-6 py-16 text-center"><h3 className="text-lg font-bold text-white">Não foi possível carregar o catálogo</h3><p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-400">Verifique sua conexão e tente novamente em alguns instantes.</p><Button onClick={() => products.refetch()} variant="outline" className="mt-5 border-rose-300/30 text-rose-100 hover:bg-rose-300/10">Tentar novamente</Button></div> : products.data?.length ? <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">{products.data.map(product => <ProductCard key={product.id} product={product} onAdd={addToCart} />)}</div> : <div className="rounded-[1.6rem] border border-dashed border-white/15 bg-white/[.025] px-6 py-16 text-center"><PackageCheck className="mx-auto mb-4 text-emerald-300" size={32} /><h3 className="text-lg font-bold text-white">A loja está sendo preparada</h3><p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-400">Assim que a administração publicar os produtos, eles aparecerão nesta vitrine. Você também pode ajustar os filtros ou a busca.</p></div>}
           </div>
         </section>
 
-        <section id="como-funciona" className="container py-20"><div className="grid gap-5 md:grid-cols-3"><div className="process-card"><span>01</span><h3>Escolha o benefício</h3><p>Selecione o produto e o servidor de destino para sua compra.</p></div><div className="process-card"><span>02</span><h3>Confirme o pagamento</h3><p>O pagamento será confirmado pelo gateway, nunca somente pelo navegador.</p></div><div className="process-card"><span>03</span><h3>Receba no jogo</h3><p>O servidor recebe a entrega autenticada quando seu jogador estiver online.</p></div></div></section>
+        <section id="como-funciona" className="container py-20"><div className="mb-8 text-center"><p className="section-kicker">COMO FUNCIONA</p><h2 className="font-display mt-2 text-3xl font-bold text-white">Três etapas. Um upgrade no jogo.</h2></div><div className="store-process grid gap-5 md:grid-cols-3"><div className="process-card process-card--store"><span>01</span><div className="process-card__icon"><Gem size={20} /></div><h3>Escolha o benefício</h3><p>Compare os benefícios, selecione o item e defina o servidor de destino.</p></div><div className="process-card process-card--store"><span>02</span><div className="process-card__icon"><ShieldCheck size={20} /></div><h3>Confirme o pagamento</h3><p>O pedido é criado com segurança e o pagamento é confirmado pelo gateway.</p></div><div className="process-card process-card--store"><span>03</span><div className="process-card__icon"><Gamepad2 size={20} /></div><h3>Receba no jogo</h3><p>O servidor prepara a entrega autenticada para o jogador correto.</p></div></div></section>
         <DiscordCommunity />
       </main>
 
