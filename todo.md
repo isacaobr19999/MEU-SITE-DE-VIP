@@ -326,4 +326,4 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Auditar os arquivos atuais de implantação, runtime, banco, Paper e bot para documentar uma migração de VPS reproduzível.
 - [x] Escrever um guia completo de instalação, DNS, HTTPS, banco, aplicação, Paper, Discord, backups, atualizações e recuperação sem incluir segredos.
 - [x] Adicionar modelos seguros de configuração e scripts verificáveis para reduzir erros em uma nova VPS.
-- [ ] Validar a documentação e enviar a atualização completa ao repositório GitHub selecionado.
+- [x] Validar a documentação e enviar a atualização completa ao repositório GitHub selecionado; commit `fd81b44` publicado na branch `main`.
