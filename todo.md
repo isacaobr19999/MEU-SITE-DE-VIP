@@ -345,3 +345,4 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Validar a nova vitrine em desktop e celular, executar testes e publicar a atualização na VPS; catálogo real e detalhe validados em produção, layout móvel validado na prévia, TypeScript, build e 5 testes determinísticos aprovados.
 - [x] Otimizar a entrega pública de módulos com carregamento sob demanda, cache imutável e compressão gzip, preservando rotas dinâmicas sem cache.
 - [x] Corrigir a apresentação móvel relatada, garantindo que mídia do hero, indicadores de confiança e atalhos essenciais não fiquem ocultos ou pareçam ausentes em celulares reais; hero reorganizado, arte mantida visível e indicadores compactados após a imagem.
+- [x] Corrigir as abas do cabeçalho em celular com um menu móvel acessível, evitando sobreposição e mantendo todas as rotas públicas disponíveis; menu por botão validado em 375 e 1080 pixels, com TypeScript, 4 testes e publicação na VPS concluídos.
