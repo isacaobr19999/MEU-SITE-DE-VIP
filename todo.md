@@ -316,3 +316,9 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Analisar a auditoria externa enviada e classificar os achados por criticidade, evidência e impacto comercial.
 - [x] Confrontar os achados críticos com a configuração e a operação atuais, sem alterar dados de produção.
 - [x] Entregar um plano de correção priorizado para a PlayStorCraft em `docs/response-to-external-audit-2026-08-17.md`.
+
+- [x] Substituir a apresentação pública do destino `Servidor de validação` pelo nome comercial PlayStorCraft, preservando identificadores e integrações Paper; produto e status público revalidados.
+- [x] Publicar conteúdo de confiança em regras e novidades usando apenas orientações e informações operacionais já confirmadas; duas orientações e um comunicado foram publicados.
+- [x] Reforçar cabeçalhos HTTP e políticas de cache da VPS para rotas públicas e privadas, sem comprometer pagamento, Discord ou assets estáticos; HSTS, CSP de base, políticas de defesa e `no-store` em rotas dinâmicas validados.
+- [x] Validar os fluxos públicos, checkout, autenticação e status após as correções de apresentação e infraestrutura; produto, regras, novidades, status, Nginx, app, bot e banco permaneceram operacionais.
+- [x] Corrigir a codificação UTF-8 dos conteúdos comunitários publicados, preservando os textos e os slugs já aprovados; regras e novidade revalidadas com caracteres legíveis.
