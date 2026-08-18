@@ -1,7 +1,13 @@
 # Implantação na VPS
 
-Os arquivos deste diretório implantam a aplicação e um MySQL 8.4 via Docker Compose. O Nginx do host recebe HTTP/HTTPS e encaminha apenas para `127.0.0.1:3000`; o banco não é exposto à internet.
+Este diretório contém a infraestrutura versionada da PlayStorCraft: Compose, Dockerfiles, Nginx, modelo de ambiente, backup, verificação e cabeçalhos de segurança. O Nginx recebe HTTP/HTTPS e encaminha apenas para `127.0.0.1:3000`; o banco não é exposto à internet.
 
-O arquivo `.env` é criado somente na VPS e contém senhas aleatórias do MySQL, `JWT_SECRET`, `MINECRAFT_API_KEY_PEPPER` e, posteriormente, as credenciais do Mercado Pago. Ele não deve ser versionado ou copiado para o repositório.
+| Arquivo | Uso |
+| --- | --- |
+| `docker-compose.yml` | Aplicação, MySQL 8.4 e bot Discord em redes internas. |
+| `runtime.template` | Lista de variáveis que devem ser preenchidas somente em `/root/playstorcraft-runtime`. |
+| `backup-playstorcraft.sh` | Backup local seguro de banco, assets, bot e, opcionalmente, Paper. |
+| `verify-playstorcraft.sh` | Verificação pós-instalação de serviços, HTTPS, cabeçalhos e rotas. |
+| `apply-security-headers.sh` | Aplica cabeçalhos de produção com teste e backup reversível. |
 
-Depois de iniciar os contêineres e aplicar as migrations, o certificado é emitido pelo Certbot para `playstorcraft.com.br` e `www.playstorcraft.com.br`.
+Leia o guia completo em [`../../docs/vps-migration-runbook.md`](../../docs/vps-migration-runbook.md) antes de instalar, restaurar ou trocar de VPS.

@@ -1,0 +1,45 @@
+# PlayStorCraft
+
+A **PlayStorCraft** é uma loja Minecraft auto-hospedada. O projeto reúne catálogo de VIP, Cash e Booster, checkout Mercado Pago, entrega automática no Paper, painel administrativo, integração Discord e telemetria operacional.
+
+> **Segurança primeiro:** este repositório nunca contém senhas, tokens, chaves do Paper, backups de produção ou arquivos de runtime. Use os modelos versionados apenas como referência e crie os valores reais exclusivamente na VPS.
+
+| Componente | Responsabilidade | Persistência |
+| --- | --- | --- |
+| Aplicação web | Loja, painel, pedidos, webhook e API de entregas | MySQL 8.4 |
+| Nginx + Certbot | HTTPS, proxy reverso, cabeçalhos e cache | Configuração do host |
+| Bot Discord | Convite, contagens e status da comunidade | Volume Docker próprio |
+| Paper | Executa entregas e integra LuckPerms/economia | Arquivos do servidor Minecraft |
+
+## Início rápido para uma nova VPS
+
+O procedimento detalhado, incluindo transferência de banco, assets, bot Discord e Paper, está em **[docs/vps-migration-runbook.md](docs/vps-migration-runbook.md)**. Em resumo, prepare uma VPS Ubuntu, clone o repositório, crie o arquivo de runtime a partir de [`deployment/vps/runtime.template`](deployment/vps/runtime.template), restaure os backups, inicie os serviços e finalize DNS/HTTPS.
+
+| Documento | Finalidade |
+| --- | --- |
+| [Guia de migração para VPS](docs/vps-migration-runbook.md) | Instalação limpa, migração, corte de DNS, recuperação e validação. |
+| [Modelo de runtime](deployment/vps/runtime.template) | Lista completa de variáveis sem valores reais. |
+| [Backup da VPS](deployment/vps/backup-playstorcraft.sh) | Gera dump MySQL, cópia de assets, estado do bot e manifesto de integridade. |
+| [Verificação da VPS](deployment/vps/verify-playstorcraft.sh) | Confere serviços, HTTPS, cabeçalhos e rotas operacionais. |
+| [Plugin Paper](docs/minecraft-plugin.md) | Instalação e configuração da entrega automática. |
+| [Integração Discord](docs/discord-bot-bridge.md) | Ponte assinada entre Discord, Paper e site. |
+
+## Comandos de desenvolvimento
+
+```bash
+corepack enable
+pnpm install --frozen-lockfile
+pnpm check
+pnpm test
+pnpm run dev
+```
+
+Para produção, a composição em [`deployment/vps/docker-compose.yml`](deployment/vps/docker-compose.yml) usa Node 22, MySQL 8.4 e redes internas. O banco não é publicado na internet; apenas a aplicação é exposta localmente em `127.0.0.1:3000` para o Nginx.
+
+## Informações operacionais importantes
+
+As aprovações de pagamento chegam por webhook assinado; retornar do checkout **não** libera itens. O Paper coleta entregas autenticadas e as conclui de forma idempotente. Durante a migração, mantenha somente uma instância do bot Discord ativa e gere uma nova chave individual para cada servidor Paper criado no novo ambiente. Consulte o guia de migração antes de transferir qualquer arquivo de produção.
+
+## Licença e informações sensíveis
+
+Não publique `.env`, `/root/playstorcraft-runtime`, `config.yml` do plugin já preenchido, dumps, tokens de Mercado Pago, token do Discord, certificados ou chaves de servidor. Revogue e rotacione segredos se houver qualquer suspeita de exposição.

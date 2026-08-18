@@ -322,3 +322,8 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Reforçar cabeçalhos HTTP e políticas de cache da VPS para rotas públicas e privadas, sem comprometer pagamento, Discord ou assets estáticos; HSTS, CSP de base, políticas de defesa e `no-store` em rotas dinâmicas validados.
 - [x] Validar os fluxos públicos, checkout, autenticação e status após as correções de apresentação e infraestrutura; produto, regras, novidades, status, Nginx, app, bot e banco permaneceram operacionais.
 - [x] Corrigir a codificação UTF-8 dos conteúdos comunitários publicados, preservando os textos e os slugs já aprovados; regras e novidade revalidadas com caracteres legíveis.
+
+- [x] Auditar os arquivos atuais de implantação, runtime, banco, Paper e bot para documentar uma migração de VPS reproduzível.
+- [x] Escrever um guia completo de instalação, DNS, HTTPS, banco, aplicação, Paper, Discord, backups, atualizações e recuperação sem incluir segredos.
+- [x] Adicionar modelos seguros de configuração e scripts verificáveis para reduzir erros em uma nova VPS.
+- [ ] Validar a documentação e enviar a atualização completa ao repositório GitHub selecionado.
