@@ -1,6 +1,7 @@
 import { randomBytes, scryptSync, timingSafeEqual } from "crypto";
 import type { Express, Request, Response } from "express";
 import * as db from "./db";
+import { recordLoginAttempt } from "./db/loginAttempts";
 import { sdk } from "./_core/sdk";
 import { COOKIE_NAME, ONE_YEAR_MS } from "../shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
@@ -37,8 +38,11 @@ export function registerLocalAuthRoutes(app: Express) {
   app.post("/api/auth/login", async (req, res) => {
     const { email, password } = req.body ?? {};
     if (typeof email !== "string" || typeof password !== "string") return res.status(400).json({ error: "Credenciais inválidas." });
-    const user = await db.getUserByEmail(email.trim().toLowerCase());
-    if (!user?.passwordHash || !verifyPassword(password, user.passwordHash)) return res.status(401).json({ error: "E-mail ou senha inválidos." });
+    const normalizedEmail = email.trim().toLowerCase();
+    const user = await db.getUserByEmail(normalizedEmail);
+    const success = Boolean(user?.passwordHash && verifyPassword(password, user.passwordHash));
+    void recordLoginAttempt({ email: normalizedEmail, userId: user?.id, success }).catch(() => undefined);
+    if (!success || !user) return res.status(401).json({ error: "E-mail ou senha inválidos." });
     res.json(await startSession(req, res, user));
   });
 }

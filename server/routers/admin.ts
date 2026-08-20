@@ -5,6 +5,7 @@ import { COOKIE_NAME } from "@shared/const";
 import { createCategoryRecord, createProductRecord, listAdminCategories } from "../db/adminCatalog";
 import { cancelOrderRecord, createCouponRecord, createServerRecord, deleteCouponRecord, getAdminMetricsByPeriod, getAdminMonthlySales, getAdminOrderDetail, getAdminOverview, getAdminProductPriceCents, listAdminCoupons, listAdminDeliveries, listAdminLogs, listAdminOrderExport, listAdminOrders, listAdminPlayers, listAdminProducts, listAdminServers, listAdminUsers, listPlayerHistory, retryDeliveryRecord, searchAdminRecords, setAdminRole, setProductStatus, updateCategoryRecord, updateCouponRecord, updateProductRecord, updateServerRecord, writeAdminAuditLog } from "../db/admin";
 import { cancelMaintenanceSchedule, enqueueMaintenanceNotificationTest, getMaintenanceControl, getStoreAvailability, listMaintenanceEventExport, scheduleMaintenance, setMaintenanceDiscordChannel, setMaintenanceScheduleTask, setManualMaintenance, setStoreAvailability } from "../db/storeSettings";
+import { listRecentLoginAttempts } from "../db/loginAttempts";
 import { createHeartbeatJob, updateHeartbeatJob } from "../_core/heartbeat";
 import { adminProcedure, router } from "../_core/trpc";
 
@@ -30,7 +31,8 @@ function maintenanceSession(ctx: { req: { headers: { cookie?: string } } }) {
 }
 
 export const adminRouter = router({
-  overview: adminProcedure.query(getAdminOverview),
+  loginAttempts: adminProcedure.input(z.object({ limit: z.number().int().min(1).max(100).default(20) }).optional()).query(async ({ input }) => listRecentLoginAttempts(input?.limit ?? 20)),
+  overview: adminProcedure.query(async () => getAdminOverview()),
 
   monthlySales: adminProcedure.query(() => getAdminMonthlySales()),
 

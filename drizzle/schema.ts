@@ -39,6 +39,16 @@ export const users = mysqlTable("users", {
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
 });
 
+/** Registro operacional mínimo de tentativas de autenticação por senha. Não armazena senha nem IP bruto. */
+export const loginAttempts = mysqlTable("login_attempts", {
+  id: varchar("id", { length: 36 }).primaryKey(),
+  userId: int("userId").references(() => users.id, { onDelete: "set null" }),
+  emailHint: varchar("emailHint", { length: 96 }).notNull(),
+  outcome: mysqlEnum("outcome", ["SUCCESS", "FAILED"]).notNull(),
+  method: mysqlEnum("method", ["PASSWORD"]).default("PASSWORD").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, table => [index("login_attempts_created_idx").on(table.createdAt), index("login_attempts_user_created_idx").on(table.userId, table.createdAt)]);
+
 /** Configuração singleton da disponibilidade comercial pública. */
 export const storeSettings = mysqlTable("store_settings", {
   id: int("id").primaryKey(),

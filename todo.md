@@ -422,3 +422,8 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Restringir o painel de manutenção a usuários administrativos e exibir acesso negado para contas sem essa função.
 - [x] Oferecer controles essenciais de manutenção, agendamento e comunicação em uma interface isolada do dashboard completo.
 - [x] Cobrir o login, a autorização e a responsividade do painel antes da publicação na VPS; 25 testes passaram, e o login foi revisado em desktop e celular.
+
+- [ ] Adiado pelo administrador: implementar recuperação segura de senha por e-mail com token único, expiração e resposta anti-enumeração quando houver serviço de e-mail transacional configurado.
+- [x] Registrar tentativas de login aprovadas e recusadas com contexto operacional mínimo e visualização restrita a administradores.
+- [ ] Adiar as telas de solicitação e redefinição de senha até a configuração segura de envio de e-mail.
+- [x] Cobrir a auditoria de login e publicar a atualização sem configurar credenciais de e-mail; 17 testes passaram e a rota restrita foi revisada em desktop e celular.
