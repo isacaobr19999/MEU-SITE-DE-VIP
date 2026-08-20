@@ -378,3 +378,11 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Preparar uma campanha de cupom com regras de validade, limite total e escopo de produtos em estado seguro, sem ativar desconto comercial sem parâmetros confirmados; `BEMVINDO10` foi ativado após confirmação explícita, com 10% em todos os produtos, expiração em 31/08/2026 às 23:59, 30 usos totais e um uso por jogador.
 - [x] Validar no checkout a apresentação de valor original, desconto e total da campanha preparada sem iniciar pagamento; o carrinho exibiu o subtotal de R$ 4,90 e o backend calculou R$ 0,49 de desconto, total de R$ 4,41, sem criar pedido, pagamento ou entrega.
 - [x] Adicionar controle administrativo protegido para ativar ou desativar a loja pública, com mensagem de manutenção e acesso de reativação preservado em `/admin`; painel, persistência, auditoria, bloqueio de pedidos/checkout e tela pública de manutenção implementados e validados sem alterar o estado online atual.
+- [x] Atualizar a mensagem padrão de manutenção para orientar clientes sobre indisponibilidade temporária, pedidos existentes e retorno da loja; texto configurado na VPS e validado no painel sem colocar a loja offline.
+- [x] Confirmar que o painel administrativo exibe os limites e os usos da campanha BEMVINDO10 para acompanhamento operacional; painel publicado mostra `0/30 usos` e a consulta de banco confirmou zero usos.
+- [ ] Preparar o texto de divulgação pública da BEMVINDO10, aguardando confirmação antes de qualquer publicação visível à comunidade.
+- [ ] Publicar o anúncio confirmado da campanha BEMVINDO10 no canal oficial de anúncios da comunidade e registrar o identificador da mensagem.
+- [ ] Repetir a publicação confirmada da BEMVINDO10 após a concessão de permissão de envio ao bot no canal oficial.
+- [ ] Executar a tentativa final autorizada de publicação do anúncio BEMVINDO10 após a revisão das permissões específicas do canal.
+- [ ] Reenviar o anúncio confirmado da BEMVINDO10 com conteúdo em formato simples após a rejeição de formatação do Discord.
+- [ ] Verificar a permissão efetiva do membro PlayStorCraft em `#📢-anúncios` antes da nova tentativa de publicação autorizada.

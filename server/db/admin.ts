@@ -111,11 +111,13 @@ export async function createServerRecord(input: { name: string; slug: string; ki
 
 export async function listAdminCoupons() {
   const db = await requireDb();
-  const [rows, assignments] = await Promise.all([
+  const [rows, assignments, usages] = await Promise.all([
     db.select().from(coupons).where(isNull(coupons.archivedAt)).orderBy(desc(coupons.createdAt)),
     db.select({ couponId: couponProducts.couponId, productId: couponProducts.productId }).from(couponProducts),
+    db.select({ couponId: couponUsage.couponId, usedCount: count() }).from(couponUsage).groupBy(couponUsage.couponId),
   ]);
-  return rows.map(row => ({ ...row, productIds: assignments.filter(assignment => assignment.couponId === row.id).map(assignment => assignment.productId) }));
+  const usageByCoupon = new Map(usages.map(usage => [usage.couponId, Number(usage.usedCount)]));
+  return rows.map(row => ({ ...row, productIds: assignments.filter(assignment => assignment.couponId === row.id).map(assignment => assignment.productId), usedCount: usageByCoupon.get(row.id) ?? 0 }));
 }
 
 export async function createCouponRecord(input: { code: string; description?: string; type: "PERCENTAGE" | "FIXED"; percentageBasisPoints?: number; fixedDiscountCents?: number; startsAt?: Date | null; endsAt?: Date | null; maxUses?: number | null; maxUsesPerPlayer: number; active: boolean; productIds?: number[] }) {

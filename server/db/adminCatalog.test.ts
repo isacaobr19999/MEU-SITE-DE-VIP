@@ -47,9 +47,10 @@ describe("consulta de categorias administrativas", () => {
     const couponWhere = vi.fn().mockReturnValue({ orderBy: couponOrderBy });
     const couponFrom = vi.fn().mockReturnValue({ where: couponWhere });
     const assignmentFrom = vi.fn().mockResolvedValue(assignments);
-    mocks.requireDb.mockResolvedValue({ select: vi.fn().mockReturnValueOnce({ from: couponFrom }).mockReturnValueOnce({ from: assignmentFrom }) });
+    const usageFrom = vi.fn().mockReturnValue({ groupBy: vi.fn().mockResolvedValue([{ couponId: 9, usedCount: 3 }]) });
+    mocks.requireDb.mockResolvedValue({ select: vi.fn().mockReturnValueOnce({ from: couponFrom }).mockReturnValueOnce({ from: assignmentFrom }).mockReturnValueOnce({ from: usageFrom }) });
 
-    await expect(listAdminCoupons()).resolves.toEqual([{ ...couponRows[0], productIds: [4] }]);
+    await expect(listAdminCoupons()).resolves.toEqual([{ ...couponRows[0], productIds: [4], usedCount: 3 }]);
     expect(couponWhere).toHaveBeenCalledOnce();
   });
 });
