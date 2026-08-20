@@ -4,6 +4,7 @@ import { createOrderForUser, getOrderForUser, listOrdersForUser } from "../db/or
 import { completeComplimentaryOrderForUser, getCheckoutOrderForUser, getSavedCheckout, saveCheckoutPreference } from "../db/payments";
 import { protectedProcedure, router } from "../_core/trpc";
 import { createMercadoPagoPreference } from "../services/mercadoPago";
+import { assertStoreOnline } from "../db/storeSettings";
 
 const orderInput = z.object({
   username: z.string().trim().min(3).max(16).regex(/^[A-Za-z0-9_]+$/, "Use somente letras, números e sublinhado no nome Minecraft"),
@@ -15,6 +16,7 @@ const orderInput = z.object({
 export const ordersRouter = router({
   create: protectedProcedure.input(orderInput).mutation(async ({ ctx, input }) => {
     try {
+      await assertStoreOnline();
       return await createOrderForUser(ctx.user.id, input);
     } catch (error) {
       throw new TRPCError({ code: "BAD_REQUEST", message: error instanceof Error ? error.message : "Não foi possível criar o pedido" });
@@ -22,6 +24,7 @@ export const ordersRouter = router({
   }),
   checkout: protectedProcedure.input(z.object({ orderId: z.string().uuid() })).mutation(async ({ ctx, input }) => {
     try {
+      await assertStoreOnline();
       const checkout = await getCheckoutOrderForUser(ctx.user.id, input.orderId);
       if (!checkout) throw new Error("Pedido não localizado");
       if (!["WAITING_PAYMENT", "PENDING"].includes(checkout.order.status)) throw new Error("Este pedido não pode mais ser pago");

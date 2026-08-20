@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { startLogin } from "@/const";
 import { trpc } from "@/lib/trpc";
 import { Activity, ArrowRight, BarChart3, Boxes, ClipboardList, CreditCard, Download, KeyRound, Loader2, Package, Plus, ReceiptText, ServerCog, ShieldCheck, Ticket, Users } from "lucide-react";
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { Link } from "wouter";
 import { toast } from "sonner";
 import { downloadAdminOrdersCsv } from "@/lib/adminOrdersCsv";
@@ -62,6 +62,7 @@ function AdminContent() {
   const servers = trpc.admin.servers.useQuery(undefined, { enabled: isAdmin });
   const coupons = trpc.admin.coupons.useQuery(undefined, { enabled: isAdmin });
   const users = trpc.admin.users.useQuery(undefined, { enabled: isAdmin });
+  const storeAvailability = trpc.admin.storeAvailability.useQuery(undefined, { enabled: isAdmin });
 
   const [dialog, setDialog] = useState<CreateDialog>(null);
   const [categoryName, setCategoryName] = useState("");
@@ -87,6 +88,11 @@ function AdminContent() {
   const [couponEndsAt, setCouponEndsAt] = useState("");
   const [couponMaxUses, setCouponMaxUses] = useState("");
   const [couponToDelete, setCouponToDelete] = useState<{ id: number; code: string } | null>(null);
+  const [offlineMessage, setOfflineMessage] = useState("");
+
+  useEffect(() => {
+    if (storeAvailability.data) setOfflineMessage(storeAvailability.data.offlineMessage);
+  }, [storeAvailability.data]);
 
   const invalidateStore = () => {
     utils.admin.overview.invalidate();
@@ -97,6 +103,8 @@ function AdminContent() {
     utils.admin.servers.invalidate();
     utils.admin.coupons.invalidate();
     utils.admin.users.invalidate();
+    utils.admin.storeAvailability.invalidate();
+    utils.store.availability.invalidate();
     utils.catalog.categories.invalidate();
     utils.catalog.products.invalidate();
   };
@@ -106,6 +114,7 @@ function AdminContent() {
   const createProduct = trpc.admin.createProduct.useMutation({ onSuccess: () => { toast.success("Produto criado."); setProductName(""); setProductSlug(""); setProductPrice(""); setProductCommands(""); setDialog(null); invalidateStore(); }, onError: reportMutationError });
   const createCoupon = trpc.admin.createCoupon.useMutation({ onSuccess: () => { toast.success("Cupom criado."); setCouponCode(""); setCouponValue(""); setCouponStartsAt(""); setCouponEndsAt(""); setCouponMaxUses(""); setDialog(null); invalidateStore(); }, onError: reportMutationError });
   const deleteCoupon = trpc.admin.deleteCoupon.useMutation({ onSuccess: result => { toast.success(result.deleted ? "Cupom excluído." : "Cupom desativado; o histórico de uso foi preservado."); setCouponToDelete(null); invalidateStore(); }, onError: reportMutationError });
+  const setStoreAvailability = trpc.admin.setStoreAvailability.useMutation({ onSuccess: result => { toast.success(result.publicOnline ? "Loja pública ativada." : "Loja pública colocada em manutenção."); setOfflineMessage(result.offlineMessage); invalidateStore(); }, onError: reportMutationError });
   const productStatus = trpc.admin.setProductStatus.useMutation({ onSuccess: () => { toast.success("Disponibilidade atualizada."); invalidateStore(); }, onError: reportMutationError });
   const roleChange = trpc.admin.setUserRole.useMutation({ onSuccess: () => { toast.success("Acesso atualizado."); invalidateStore(); }, onError: reportMutationError });
 
@@ -121,6 +130,10 @@ function AdminContent() {
     downloadAdminOrdersCsv(result.data ?? []);
     toast.success(`${result.data?.length ?? 0} pedido(s) exportado(s) em CSV.`);
   };
+  const updateStoreAvailability = (publicOnline: boolean) => {
+    if (!publicOnline && !window.confirm("Colocar a loja offline? Compras e pagamentos serão pausados, mas o painel administrativo continuará acessível.")) return;
+    setStoreAvailability.mutate({ publicOnline, offlineMessage: offlineMessage.trim() || undefined });
+  };
 
   if (loading) return <div className="grid min-h-80 place-items-center"><Loader2 className="animate-spin text-emerald-300" /></div>;
   if (!user) return <div className="grid min-h-screen place-items-center bg-[#07111d] p-6 text-center text-white"><div><ShieldCheck className="mx-auto text-emerald-300" size={32} /><h1 className="mt-4 text-2xl font-bold">Acesso administrativo</h1><p className="mt-2 text-sm text-slate-400">Entre com uma conta autorizada para continuar.</p><Button onClick={startLogin} className="mt-6 bg-emerald-300 text-slate-950 hover:bg-emerald-200">Entrar</Button></div></div>;
@@ -129,6 +142,8 @@ function AdminContent() {
   const createActions = <div className="flex flex-wrap gap-2"><Button type="button" onClick={() => setDialog("product")} className="bg-emerald-300 text-slate-950 hover:bg-emerald-200"><Plus size={16} /> Novo produto</Button><Button type="button" variant="outline" onClick={() => setDialog("coupon")} className="border-white/10 bg-white/[.03] text-slate-100 hover:bg-white/[.08]"><Ticket size={16} /> Novo cupom</Button></div>;
 
   return <div className="min-h-full text-slate-100"><div className="mx-auto max-w-7xl space-y-6"><header className="surface-panel relative overflow-hidden rounded-[1.75rem] p-5 sm:p-7"><div className="pointer-events-none absolute -right-10 -top-12 h-56 w-56 rounded-full bg-emerald-300/10 blur-3xl" /><div className="relative flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between"><div><p className="section-kicker">CENTRAL DE OPERAÇÕES</p><h1 className="font-display mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">Controle da PlayStorCraft</h1><p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400">Acompanhe vendas, entregas e ações administrativas em uma visão organizada e segura.</p></div><div className="flex flex-wrap gap-2"><Link href="/admin/operations"><Button variant="outline" className="border-white/10 bg-white/[.03] text-slate-100 hover:bg-white/[.08]"><ClipboardList size={16} /> Abrir operações</Button></Link>{createActions}</div></div></header>
+
+    <section className={`surface-panel rounded-[1.6rem] p-5 sm:p-6 ${storeAvailability.data?.publicOnline === false ? "border-amber-300/25" : "border-emerald-300/15"}`}><SectionHeading eyebrow="DISPONIBILIDADE DA LOJA" title={storeAvailability.data?.publicOnline === false ? "Loja pública em manutenção" : "Loja pública online"} description="Este controle pausa novas compras e pagamentos na área pública. O painel administrativo continua acessível para reativação." /><div className="grid gap-3 lg:grid-cols-[1fr_auto]"><Textarea value={offlineMessage} onChange={event => setOfflineMessage(event.target.value)} maxLength={280} placeholder="Mensagem exibida enquanto a loja estiver offline" className="min-h-20" /><div className="flex flex-wrap items-end gap-2"><Button type="button" disabled={setStoreAvailability.isPending || storeAvailability.isLoading} onClick={() => updateStoreAvailability(true)} className="bg-emerald-300 text-slate-950 hover:bg-emerald-200">Deixar online</Button><Button type="button" disabled={setStoreAvailability.isPending || storeAvailability.isLoading} onClick={() => updateStoreAvailability(false)} variant="outline" className="border-amber-300/30 text-amber-100 hover:bg-amber-300/10">Deixar offline</Button></div></div></section>
 
     {overview.isError ? <div className="rounded-2xl border border-rose-300/20 bg-rose-300/[.06] p-5 text-sm text-rose-100">Não foi possível atualizar as métricas. <button className="ml-2 font-bold underline" onClick={() => overview.refetch()}>Tentar novamente</button></div> : <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3"><MetricCard label="Vendas hoje" value={money.format((overview.data?.salesTodayCents ?? 0) / 100)} detail="Pedidos pagos no dia" icon={CreditCard} /><MetricCard label="Vendas no mês" value={money.format((overview.data?.salesMonthCents ?? 0) / 100)} detail="Faturamento confirmado" icon={ReceiptText} tone="sky" /><MetricCard label="Pedidos ativos" value={String(attention.orders)} detail="Aguardando pagamento ou processamento" icon={ClipboardList} tone={attention.orders ? "amber" : "emerald"} /><MetricCard label="Entregas na fila" value={String(attention.pending)} detail="Pendentes ou em nova tentativa" icon={Package} tone={attention.pending ? "amber" : "emerald"} /><MetricCard label="Entregas com falha" value={String(attention.failed)} detail="Exigem revisão operacional" icon={Activity} tone={attention.failed ? "rose" : "emerald"} /><MetricCard label="Jogadores registrados" value={String(overview.data?.playerCount ?? 0)} detail="Perfis sincronizados ao servidor" icon={Users} tone="sky" /></section>}
 

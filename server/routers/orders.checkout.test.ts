@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { TrpcContext } from "../_core/context";
 
 const mocks = vi.hoisted(() => ({
@@ -7,6 +7,7 @@ const mocks = vi.hoisted(() => ({
   getCheckoutOrderForUser: vi.fn(),
   getSavedCheckout: vi.fn(),
   saveCheckoutPreference: vi.fn(),
+  assertStoreOnline: vi.fn(),
 }));
 
 vi.mock("../db/orders", () => ({
@@ -23,6 +24,7 @@ vi.mock("../db/payments", () => ({
 }));
 
 vi.mock("../services/mercadoPago", () => ({ createMercadoPagoPreference: mocks.createMercadoPagoPreference }));
+vi.mock("../db/storeSettings", () => ({ assertStoreOnline: mocks.assertStoreOnline }));
 
 import { ordersRouter } from "./orders";
 
@@ -37,6 +39,11 @@ function context(): TrpcContext {
 }
 
 describe("checkout com cupom", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mocks.assertStoreOnline.mockResolvedValue(undefined);
+  });
+
   it("finaliza pedido totalmente descontado sem enviar unit_price zero ao Mercado Pago", async () => {
     mocks.getCheckoutOrderForUser.mockResolvedValue({ order: { id: orderId, status: "WAITING_PAYMENT", totalCents: 0 }, items: [] });
     mocks.completeComplimentaryOrderForUser.mockResolvedValue({ preferenceId: `coupon-${orderId}`, checkoutUrl: `/orders/${orderId}`, complimentary: true });
@@ -53,5 +60,13 @@ describe("checkout com cupom", () => {
 
     await expect(ordersRouter.createCaller(context()).checkout({ orderId })).resolves.toEqual({ preferenceId: "preference-1", checkoutUrl: "https://checkout.example", complimentary: false });
     expect(mocks.createMercadoPagoPreference).toHaveBeenCalledWith({ orderId, orderNumber: "PSC-TESTE", totalCents: 2691, items: [{ productId: 2, productName: "VIP Ouro", quantity: 1, unitPriceCents: 2990 }] });
+  });
+
+  it("bloqueia a abertura de pagamento quando a loja está offline", async () => {
+    mocks.assertStoreOnline.mockRejectedValueOnce(new Error("A loja está em manutenção."));
+
+    await expect(ordersRouter.createCaller(context()).checkout({ orderId })).rejects.toMatchObject({ code: "PRECONDITION_FAILED", message: "A loja está em manutenção." });
+    expect(mocks.getCheckoutOrderForUser).not.toHaveBeenCalled();
+    expect(mocks.createMercadoPagoPreference).not.toHaveBeenCalled();
   });
 });

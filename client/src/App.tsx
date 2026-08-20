@@ -6,6 +6,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import { STORE_ROUTES } from "./lib/storeRoutes";
+import StoreAvailabilityGate from "./components/StoreAvailabilityGate";
 
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
@@ -65,7 +66,7 @@ function App() {
       >
         <TooltipProvider>
           <Toaster />
-          <Router />
+          <StoreAvailabilityGate><Router /></StoreAvailabilityGate>
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>

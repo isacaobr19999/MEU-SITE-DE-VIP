@@ -36,6 +36,14 @@ export const users = mysqlTable("users", {
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
 });
 
+/** Configuração singleton da disponibilidade comercial pública. */
+export const storeSettings = mysqlTable("store_settings", {
+  id: int("id").primaryKey(),
+  publicOnline: boolean("publicOnline").default(true).notNull(),
+  offlineMessage: varchar("offlineMessage", { length: 280 }).default("A loja está temporariamente em manutenção. Volte em breve.").notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
 /** Perfil Minecraft, vinculado opcionalmente ao usuário autenticado da loja. */
 export const players = mysqlTable(
   "players",

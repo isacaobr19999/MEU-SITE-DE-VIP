@@ -1,0 +1,11 @@
+import { trpc } from "@/lib/trpc";
+import { useLocation } from "wouter";
+import MaintenancePage from "@/pages/MaintenancePage";
+
+export default function StoreAvailabilityGate({ children }: { children: React.ReactNode }) {
+  const [location] = useLocation();
+  const availability = trpc.store.availability.useQuery(undefined, { staleTime: 15_000, refetchOnWindowFocus: true });
+  const protectedRoute = location === "/login" || location.startsWith("/admin");
+  if (protectedRoute || availability.isLoading || availability.isError || availability.data?.publicOnline !== false) return <>{children}</>;
+  return <MaintenancePage message={availability.data.offlineMessage} />;
+}

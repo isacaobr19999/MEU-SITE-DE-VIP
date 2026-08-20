@@ -2,6 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createCategoryRecord, createProductRecord, listAdminCategories } from "../db/adminCatalog";
 import { cancelOrderRecord, createCouponRecord, createServerRecord, deleteCouponRecord, getAdminMonthlySales, getAdminOrderDetail, getAdminOverview, getAdminProductPriceCents, listAdminCoupons, listAdminDeliveries, listAdminLogs, listAdminOrderExport, listAdminOrders, listAdminPlayers, listAdminProducts, listAdminServers, listAdminUsers, listPlayerHistory, retryDeliveryRecord, setAdminRole, setProductStatus, updateCategoryRecord, updateCouponRecord, updateProductRecord, updateServerRecord, writeAdminAuditLog } from "../db/admin";
+import { getStoreAvailability, setStoreAvailability } from "../db/storeSettings";
 import { adminProcedure, router } from "../_core/trpc";
 
 const slug = z.string().trim().toLowerCase().regex(/^[a-z0-9-]+$/).min(3).max(160);
@@ -45,6 +46,12 @@ export const adminRouter = router({
   coupons: adminProcedure.query(listAdminCoupons),
   logs: adminProcedure.query(listAdminLogs),
   users: adminProcedure.query(listAdminUsers),
+  storeAvailability: adminProcedure.query(getStoreAvailability),
+  setStoreAvailability: adminProcedure.input(z.object({ publicOnline: z.boolean(), offlineMessage: z.string().trim().min(8).max(280).optional() })).mutation(async ({ ctx, input }) => {
+    const settings = await setStoreAvailability(input);
+    await audit(ctx, input.publicOnline ? "store.activated" : "store.deactivated", "store_settings", "1", { publicOnline: input.publicOnline });
+    return settings;
+  }),
   createCategory: adminProcedure.input(z.object({ name: z.string().trim().min(2).max(96), slug: slug.max(96), description: z.string().trim().max(2000).optional(), imageUrl: adminMediaUrl.optional(), position: z.number().int().min(0).max(9999).default(0) })).mutation(async ({ ctx, input }) => {
     const id = await createCategoryRecord(input);
     await audit(ctx, "category.created", "category", String(id), { name: input.name });
