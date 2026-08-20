@@ -208,7 +208,7 @@ export async function deleteCouponRecord(id: number) {
   return db.transaction(async tx => {
     const [usage] = await tx.select({ value: count() }).from(couponUsage).where(eq(couponUsage.couponId, id));
     if (usage.value > 0) {
-      const result = await tx.update(coupons).set({ active: false }).where(eq(coupons.id, id));
+      const result = await tx.update(coupons).set({ active: false, archivedAt: new Date() }).where(eq(coupons.id, id));
       if (result[0].affectedRows !== 1) throw new Error("Cupom não localizado.");
       return { deleted: false, deactivated: true };
     }

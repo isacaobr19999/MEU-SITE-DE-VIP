@@ -189,10 +189,11 @@ export const coupons = mysqlTable(
     maxUses: int("maxUses"),
     maxUsesPerPlayer: int("maxUsesPerPlayer").default(1).notNull(),
     active: boolean("active").default(true).notNull(),
+    archivedAt: timestamp("archivedAt"),
     createdAt: timestamp("createdAt").defaultNow().notNull(),
     updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   },
-  table => [uniqueIndex("coupons_code_unique").on(table.code), index("coupons_active_window_idx").on(table.active, table.startsAt, table.endsAt)]
+  table => [uniqueIndex("coupons_code_unique").on(table.code), index("coupons_active_window_idx").on(table.active, table.startsAt, table.endsAt), index("coupons_archived_idx").on(table.archivedAt)]
 );
 
 export const couponProducts = mysqlTable(

@@ -51,7 +51,7 @@ describe("catálogo administrativo de cupons", () => {
     mocks.categories.mockReturnValue(query([]));
     mocks.products.mockReturnValue(query([]));
     mocks.servers.mockReturnValue(query([]));
-    mocks.coupons.mockReturnValue(query([{ id: 41, code: "TEMPO10", type: "PERCENTAGE", percentageBasisPoints: 1000, fixedDiscountCents: null, productIds: [], active: true, endsAt: "2099-08-31T18:00:00.000Z" }]));
+    mocks.coupons.mockReturnValue(query([{ id: 41, code: "TEMPO10", type: "PERCENTAGE", percentageBasisPoints: 1000, fixedDiscountCents: null, productIds: [], active: false, archivedAt: "2026-08-20T08:56:06.000Z", maxUses: 5, endsAt: "2099-08-31T18:00:00.000Z" }]));
     [mocks.updateCategory, mocks.updateProduct, mocks.updateServer, mocks.updateCoupon, mocks.deleteCoupon].forEach(mock => mock.mockReturnValue(mutation));
   });
 
@@ -64,6 +64,8 @@ describe("catálogo administrativo de cupons", () => {
     rerender(<AdminCatalog />);
 
     expect(screen.getByText(/Expira em/)).toBeInTheDocument();
+    expect(screen.getByText("ARQUIVADO")).toBeInTheDocument();
+    expect(screen.getByText(/limite total: 5/)).toBeInTheDocument();
     const confirm = vi.spyOn(window, "confirm").mockReturnValue(true);
     fireEvent.click(screen.getByRole("button", { name: "Excluir" }));
     expect(confirm).toHaveBeenCalledWith(expect.stringContaining("TEMPO10"));

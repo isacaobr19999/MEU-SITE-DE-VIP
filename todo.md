@@ -368,3 +368,6 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Corrigir a exclusão de cupons no painel administrativo, incluindo confirmação, atualização da lista e tratamento de erro sem afetar pedidos ou registros históricos; ação disponibilizada no painel e catálogo, com mensagem distinta para exclusão ou desativação por histórico.
 - [x] Exibir e permitir configurar claramente a data e a hora de expiração do cupom no cadastro, na edição e na listagem administrativa; criação aceita início/fim, cartões informam expiração e backend valida o intervalo.
 - [x] Corrigir a ordem de hooks no catálogo administrativo para impedir o erro React #310 durante a transição de carregamento dos cupons; transição validada em produção sem falha.
+- [x] Criar uma validação segura de cupom com prazo curto, sem abrir pagamento ou gerar entrega, para confirmar o aviso de expiração; `VALIDAEXP2026` permaneceu inativo, com validade de 15 minutos e limite único.
+- [x] Arquivar os cupons antigos já desativados sem apagar histórico de uso, pedidos ou auditoria; seis cupons usados foram marcados com `archivedAt` após backup SQL e vínculos preservados.
+- [x] Permitir definir e visualizar limite total de usos ao criar campanhas de cupom no painel administrativo; campo, resumo, validação e visualização no catálogo implementados e cobertos por teste.

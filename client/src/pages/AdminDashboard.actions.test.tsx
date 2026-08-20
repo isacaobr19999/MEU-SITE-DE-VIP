@@ -102,4 +102,15 @@ describe("atalhos da visão administrativa", () => {
     expect(confirm).toHaveBeenCalledWith(expect.stringContaining("TEMPO10"));
     expect(mutation.mutate).toHaveBeenCalledWith({ id: 15 });
   });
+
+  it("envia o limite total configurado ao criar uma campanha de cupom", () => {
+    render(<AdminDashboard />);
+    fireEvent.click(screen.getAllByRole("button", { name: "Novo cupom" })[0]);
+    fireEvent.change(screen.getByPlaceholderText("PLAY10"), { target: { value: "LIMITE5" } });
+    fireEvent.change(screen.getByPlaceholderText("10 para 10%"), { target: { value: "10" } });
+    fireEvent.change(screen.getByLabelText("Limite total de usos"), { target: { value: "5" } });
+    fireEvent.click(screen.getByRole("button", { name: "Criar cupom" }));
+
+    expect(mutation.mutate).toHaveBeenCalledWith(expect.objectContaining({ code: "LIMITE5", percentageBasisPoints: 1000, maxUses: 5, maxUsesPerPlayer: 1, active: true }));
+  });
 });
