@@ -21,6 +21,9 @@ const communityServerStatuses = ["UNKNOWN", "ONLINE", "OFFLINE", "MAINTENANCE"] 
 const communityPostKinds = ["RULE", "NEWS", "POLICY"] as const;
 const discordNotificationKinds = ["PAYMENT_APPROVED", "DELIVERY_COMPLETED", "DELIVERY_FAILED"] as const;
 const discordNotificationStatuses = ["PENDING", "SENT"] as const;
+const maintenanceModes = ["CLOSED", "CATALOG_ONLY"] as const;
+const maintenanceScheduleStatuses = ["NONE", "SCHEDULED", "ACTIVE", "COMPLETED", "CANCELLED"] as const;
+const maintenanceEventKinds = ["SCHEDULED", "STARTED", "ENDED", "CANCELLED", "UPDATED"] as const;
 
 /** Identidade de usuários autenticados e papéis de acesso. */
 export const users = mysqlTable("users", {
@@ -41,8 +44,30 @@ export const storeSettings = mysqlTable("store_settings", {
   id: int("id").primaryKey(),
   publicOnline: boolean("publicOnline").default(true).notNull(),
   offlineMessage: varchar("offlineMessage", { length: 280 }).default("A loja está temporariamente em manutenção. Volte em breve.").notNull(),
+  maintenanceMode: mysqlEnum("maintenanceMode", maintenanceModes).default("CLOSED").notNull(),
+  maintenanceReason: varchar("maintenanceReason", { length: 280 }),
+  scheduledStartAt: timestamp("scheduledStartAt"),
+  scheduledEndAt: timestamp("scheduledEndAt"),
+  scheduleStatus: mysqlEnum("scheduleStatus", maintenanceScheduleStatuses).default("NONE").notNull(),
+  scheduleStartedAt: timestamp("scheduleStartedAt"),
+  scheduleEndedAt: timestamp("scheduleEndedAt"),
+  scheduleCronTaskUid: varchar("scheduleCronTaskUid", { length: 65 }),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-});
+}, table => [index("store_settings_schedule_idx").on(table.scheduleStatus, table.scheduledStartAt)]);
+
+/** Eventos imutáveis que explicam cada alteração manual ou automática de manutenção. */
+export const maintenanceEvents = mysqlTable("maintenance_events", {
+  id: varchar("id", { length: 36 }).primaryKey(),
+  eventType: mysqlEnum("eventType", maintenanceEventKinds).notNull(),
+  mode: mysqlEnum("mode", maintenanceModes).notNull(),
+  message: varchar("message", { length: 280 }).notNull(),
+  reason: varchar("reason", { length: 280 }),
+  scheduledStartAt: timestamp("scheduledStartAt"),
+  scheduledEndAt: timestamp("scheduledEndAt"),
+  actorId: varchar("actorId", { length: 160 }),
+  actorType: mysqlEnum("actorType", ["admin", "scheduler"]).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, table => [index("maintenance_events_created_idx").on(table.createdAt)]);
 
 /** Perfil Minecraft, vinculado opcionalmente ao usuário autenticado da loja. */
 export const players = mysqlTable(
@@ -326,7 +351,7 @@ export const discordNotifications = mysqlTable(
   "discord_notifications",
   {
     id: varchar("id", { length: 36 }).primaryKey(),
-    eventType: mysqlEnum("eventType", discordNotificationKinds).notNull(),
+    eventType: mysqlEnum("eventType", [...discordNotificationKinds, "STORE_MAINTENANCE_STARTED", "STORE_MAINTENANCE_ENDED"] as const).notNull(),
     status: mysqlEnum("status", discordNotificationStatuses).default("PENDING").notNull(),
     orderId: varchar("orderId", { length: 36 }).references(() => orders.id, { onDelete: "set null" }),
     deliveryId: varchar("deliveryId", { length: 36 }).references(() => deliveries.id, { onDelete: "set null" }),

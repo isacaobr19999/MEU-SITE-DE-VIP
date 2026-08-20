@@ -1,8 +1,11 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { parse as parseCookie } from "cookie";
+import { COOKIE_NAME } from "@shared/const";
 import { createCategoryRecord, createProductRecord, listAdminCategories } from "../db/adminCatalog";
 import { cancelOrderRecord, createCouponRecord, createServerRecord, deleteCouponRecord, getAdminMetricsByPeriod, getAdminMonthlySales, getAdminOrderDetail, getAdminOverview, getAdminProductPriceCents, listAdminCoupons, listAdminDeliveries, listAdminLogs, listAdminOrderExport, listAdminOrders, listAdminPlayers, listAdminProducts, listAdminServers, listAdminUsers, listPlayerHistory, retryDeliveryRecord, searchAdminRecords, setAdminRole, setProductStatus, updateCategoryRecord, updateCouponRecord, updateProductRecord, updateServerRecord, writeAdminAuditLog } from "../db/admin";
-import { getStoreAvailability, setStoreAvailability } from "../db/storeSettings";
+import { cancelMaintenanceSchedule, getMaintenanceControl, getStoreAvailability, scheduleMaintenance, setMaintenanceScheduleTask, setManualMaintenance, setStoreAvailability } from "../db/storeSettings";
+import { createHeartbeatJob, updateHeartbeatJob } from "../_core/heartbeat";
 import { adminProcedure, router } from "../_core/trpc";
 
 const slug = z.string().trim().toLowerCase().regex(/^[a-z0-9-]+$/).min(3).max(160);
@@ -15,9 +18,15 @@ export const adminProductUpdatePriceCents = z.number().int().min(0).max(100_000_
 const productUpdateInput = productInput.safeExtend({ priceCents: adminProductUpdatePriceCents });
 const productContentInput = z.object({ shortDescription: z.string().trim().max(280).optional(), description: z.string().trim().max(8000).optional(), imageUrl: adminMediaUrl.optional(), position: z.number().int().min(0).max(9999).default(0) });
 const couponInput = z.object({ code: z.string().trim().toUpperCase().regex(/^[A-Z0-9_-]+$/).min(3).max(48), description: z.string().trim().max(280).optional(), type: z.enum(["PERCENTAGE", "FIXED"]), percentageBasisPoints: z.number().int().min(1).max(10_000).optional(), fixedDiscountCents: z.number().int().min(1).max(100_000_000).optional(), startsAt: z.date().nullable().optional(), endsAt: z.date().nullable().optional(), maxUses: z.number().int().min(1).nullable().optional(), maxUsesPerPlayer: z.number().int().min(1).max(100).default(1), active: z.boolean().default(true), productIds: z.array(z.number().int().positive()).optional() }).superRefine((value, issue) => { if (value.type === "PERCENTAGE" && !value.percentageBasisPoints) issue.addIssue({ code: "custom", message: "Informe o percentual de desconto", path: ["percentageBasisPoints"] }); if (value.type === "FIXED" && !value.fixedDiscountCents) issue.addIssue({ code: "custom", message: "Informe o valor fixo de desconto", path: ["fixedDiscountCents"] }); if (value.startsAt && value.endsAt && value.endsAt <= value.startsAt) issue.addIssue({ code: "custom", message: "A expiração deve ocorrer depois do início do cupom.", path: ["endsAt"] }); });
+const maintenanceInput = z.object({ mode: z.enum(["CLOSED", "CATALOG_ONLY"]), offlineMessage: z.string().trim().min(8).max(280), reason: z.string().trim().max(280).optional() });
+const maintenanceScheduleInput = maintenanceInput.extend({ startAt: z.date(), endAt: z.date() }).superRefine((value, issue) => { if (value.startAt <= new Date()) issue.addIssue({ code: "custom", path: ["startAt"], message: "Escolha um início futuro para o agendamento." }); if (value.endAt <= value.startAt) issue.addIssue({ code: "custom", path: ["endAt"], message: "O encerramento deve ocorrer depois do início." }); });
 
 function audit(ctx: { user: { openId: string } }, action: string, entityType: string, entityId?: string, metadata?: Record<string, unknown>) {
   return writeAdminAuditLog(ctx.user.openId, action, entityType, entityId, metadata).catch(() => undefined);
+}
+
+function maintenanceSession(ctx: { req: { headers: { cookie?: string } } }) {
+  return parseCookie(ctx.req.headers.cookie ?? "")[COOKIE_NAME] ?? "";
 }
 
 export const adminRouter = router({
@@ -51,10 +60,41 @@ export const adminRouter = router({
   logs: adminProcedure.query(listAdminLogs),
   users: adminProcedure.query(listAdminUsers),
   storeAvailability: adminProcedure.query(getStoreAvailability),
+  maintenanceControl: adminProcedure.query(getMaintenanceControl),
   setStoreAvailability: adminProcedure.input(z.object({ publicOnline: z.boolean(), offlineMessage: z.string().trim().min(8).max(280).optional() })).mutation(async ({ ctx, input }) => {
     const settings = await setStoreAvailability(input);
     await audit(ctx, input.publicOnline ? "store.activated" : "store.deactivated", "store_settings", "1", { publicOnline: input.publicOnline });
     return settings;
+  }),
+  setManualMaintenance: adminProcedure.input(maintenanceInput.extend({ publicOnline: z.boolean() })).mutation(async ({ ctx, input }) => {
+    const result = await setManualMaintenance({ ...input, actorId: ctx.user.openId });
+    if (result.previousTaskUid && process.env.SELF_HOSTED !== "true") await updateHeartbeatJob(result.previousTaskUid, { enable: false }, maintenanceSession(ctx)).catch(() => undefined);
+    await audit(ctx, input.publicOnline ? "maintenance.ended" : "maintenance.updated", "store_settings", "1", { mode: input.mode, reason: input.reason });
+    return result.settings;
+  }),
+  scheduleMaintenance: adminProcedure.input(maintenanceScheduleInput).mutation(async ({ ctx, input }) => {
+    const result = await scheduleMaintenance({ ...input, actorId: ctx.user.openId });
+    if (process.env.SELF_HOSTED === "true") {
+      await setMaintenanceScheduleTask("self-hosted-maintenance");
+      await audit(ctx, "maintenance.scheduled", "store_settings", "1", { startAt: input.startAt.toISOString(), endAt: input.endAt.toISOString(), mode: input.mode, executor: "vps" });
+      return getMaintenanceControl();
+    }
+    const session = maintenanceSession(ctx);
+    if (result.existingTaskUid) {
+      await updateHeartbeatJob(result.existingTaskUid, { cron: "0 * * * * *", path: "/api/scheduled/store-maintenance", description: "Processa a manutenção agendada da loja", enable: true }, session);
+      await setMaintenanceScheduleTask(result.existingTaskUid);
+    } else {
+      const job = await createHeartbeatJob({ name: "playstorcraft-store-maintenance", cron: "0 * * * * *", path: "/api/scheduled/store-maintenance", description: "Processa a manutenção agendada da loja" }, session);
+      await setMaintenanceScheduleTask(job.taskUid);
+    }
+    await audit(ctx, "maintenance.scheduled", "store_settings", "1", { startAt: input.startAt.toISOString(), endAt: input.endAt.toISOString(), mode: input.mode });
+    return getMaintenanceControl();
+  }),
+  cancelMaintenanceSchedule: adminProcedure.mutation(async ({ ctx }) => {
+    const result = await cancelMaintenanceSchedule(ctx.user.openId);
+    if (result.taskUid && process.env.SELF_HOSTED !== "true") await updateHeartbeatJob(result.taskUid, { enable: false }, maintenanceSession(ctx)).catch(() => undefined);
+    await audit(ctx, "maintenance.schedule_cancelled", "store_settings", "1");
+    return result.settings;
   }),
   createCategory: adminProcedure.input(z.object({ name: z.string().trim().min(2).max(96), slug: slug.max(96), description: z.string().trim().max(2000).optional(), imageUrl: adminMediaUrl.optional(), position: z.number().int().min(0).max(9999).default(0) })).mutation(async ({ ctx, input }) => {
     const id = await createCategoryRecord(input);

@@ -400,3 +400,10 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Exibir alertas administrativos visíveis e acionáveis quando houver entregas com falha.
 - [x] Criar uma busca global protegida para localizar pedidos, jogadores e cupons a partir do painel.
 - [x] Cobrir os novos fluxos com testes, validar a responsividade e publicar na VPS sem alterar pagamentos ou entregas; TypeScript, build e 18 testes administrativos passaram.
+
+- [x] Adicionar agendamento seguro de entrada e saída da manutenção, com execução automática e idempotente.
+- [x] Criar prévia da página pública e modelos de mensagem para manutenção breve, programada e incidente técnico.
+- [x] Exibir pedidos protegidos durante a manutenção e oferecer o modo somente catálogo, que bloqueia checkout sem ocultar produtos.
+- [x] Registrar histórico auditável de manutenções, incluindo responsável, motivo, modo, horários e resultado.
+- [x] Notificar a comunidade no Discord quando a loja entrar ou sair da manutenção, sem ampliar privilégios do bot.
+- [x] Validar os novos controles, a automação e o fluxo público antes de publicar na VPS; TypeScript, build e 23 testes passaram.

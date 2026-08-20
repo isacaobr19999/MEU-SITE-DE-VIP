@@ -104,6 +104,8 @@ if (!token || !bridgeSecret) {
     const payload = notification.payload || {};
     if (notification.eventType === "PAYMENT_APPROVED") return `💳 **Pagamento aprovado**\nPedido: **${payload.orderNumber || "—"}**\nValor: **R$ ${((Number(payload.totalCents) || 0) / 100).toFixed(2).replace(".", ",")}**\nA entrega foi colocada na fila.`;
     if (notification.eventType === "DELIVERY_COMPLETED") return `📦 **Entrega concluída**\nPedido: **${payload.orderNumber || "—"}**\nJogador: **${payload.playerName || "—"}**\nProduto: **${payload.productName || "—"}**`;
+    if (notification.eventType === "STORE_MAINTENANCE_STARTED") return `🛠️ **Loja em manutenção**\nModo: **${payload.mode === "CATALOG_ONLY" ? "somente catálogo" : "loja temporariamente fechada"}**\n${payload.reason ? `Motivo: ${payload.reason}\n` : ""}A comunidade foi avisada e os pedidos já confirmados continuam protegidos.`;
+    if (notification.eventType === "STORE_MAINTENANCE_ENDED") return `✅ **Loja reaberta**\nA manutenção foi concluída e compras e pagamentos voltaram a ficar disponíveis.${payload.reason ? `\nMotivo registrado: ${payload.reason}` : ""}`;
     return `⚠️ **Entrega precisa de atenção**\nPedido: **${payload.orderNumber || "—"}**\nJogador: **${payload.playerName || "—"}**\nProduto: **${payload.productName || "—"}**\nMotivo: ${payload.error || "não informado"}`;
   }
 

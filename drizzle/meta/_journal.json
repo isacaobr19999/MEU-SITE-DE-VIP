@@ -71,6 +71,13 @@
       "when": 1787223884208,
       "tag": "0009_neat_scrambler",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "5",
+      "when": 1787240423577,
+      "tag": "0010_slimy_ikaris",
+      "breakpoints": true
     }
   ]
 }

@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { startLogin } from "@/const";
 import { downloadAdminOrdersCsv } from "@/lib/adminOrdersCsv";
 import { trpc } from "@/lib/trpc";
-import { Activity, ArrowRight, Boxes, CheckCircle2, CircleAlert, ClipboardList, CreditCard, Download, KeyRound, Loader2, Package, Plus, ReceiptText, RefreshCw, Search, ServerCog, ShieldCheck, Sparkles, Store, Ticket, Users } from "lucide-react";
+import { Activity, ArrowRight, Boxes, CalendarClock, CheckCircle2, CircleAlert, ClipboardList, CreditCard, Download, Eye, History, KeyRound, Loader2, LockKeyhole, Package, Plus, ReceiptText, RefreshCw, Search, ServerCog, ShieldCheck, Sparkles, Store, Ticket, Users } from "lucide-react";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { Link } from "wouter";
 import { toast } from "sonner";
@@ -63,6 +63,7 @@ function AdminContent() {
   const coupons = trpc.admin.coupons.useQuery(undefined, { enabled: isAdmin });
   const users = trpc.admin.users.useQuery(undefined, { enabled: isAdmin });
   const storeAvailability = trpc.admin.storeAvailability.useQuery(undefined, { enabled: isAdmin });
+  const maintenanceControl = trpc.admin.maintenanceControl.useQuery(undefined, { enabled: isAdmin });
 
   const [dialog, setDialog] = useState<CreateDialog>(null);
   const [categoryName, setCategoryName] = useState("");
@@ -88,6 +89,11 @@ function AdminContent() {
   const [couponEndsAt, setCouponEndsAt] = useState("");
   const [couponMaxUses, setCouponMaxUses] = useState("");
   const [offlineMessage, setOfflineMessage] = useState("");
+  const [maintenanceMode, setMaintenanceMode] = useState<"CLOSED" | "CATALOG_ONLY">("CLOSED");
+  const [maintenanceReason, setMaintenanceReason] = useState("");
+  const [scheduleStart, setScheduleStart] = useState("");
+  const [scheduleEnd, setScheduleEnd] = useState("");
+  const [maintenancePreviewOpen, setMaintenancePreviewOpen] = useState(false);
   const [metricsPeriod, setMetricsPeriod] = useState<"7d" | "30d" | "90d">("30d");
   const [globalSearchOpen, setGlobalSearchOpen] = useState(false);
   const [globalSearchQuery, setGlobalSearchQuery] = useState("");
@@ -99,6 +105,15 @@ function AdminContent() {
   useEffect(() => {
     if (storeAvailability.data) setOfflineMessage(storeAvailability.data.offlineMessage);
   }, [storeAvailability.data]);
+  useEffect(() => {
+    const settings = maintenanceControl.data?.settings;
+    if (!settings) return;
+    setOfflineMessage(settings.offlineMessage);
+    setMaintenanceMode(settings.maintenanceMode);
+    setMaintenanceReason(settings.maintenanceReason ?? "");
+    setScheduleStart(settings.scheduledStartAt ? new Date(settings.scheduledStartAt).toISOString().slice(0, 16) : "");
+    setScheduleEnd(settings.scheduledEndAt ? new Date(settings.scheduledEndAt).toISOString().slice(0, 16) : "");
+  }, [maintenanceControl.data]);
 
   const invalidateStore = () => {
     utils.admin.overview.invalidate();
@@ -110,6 +125,7 @@ function AdminContent() {
     utils.admin.coupons.invalidate();
     utils.admin.users.invalidate();
     utils.admin.storeAvailability.invalidate();
+    utils.admin.maintenanceControl.invalidate();
     utils.store.availability.invalidate();
     utils.catalog.categories.invalidate();
     utils.catalog.products.invalidate();
@@ -121,6 +137,9 @@ function AdminContent() {
   const createCoupon = trpc.admin.createCoupon.useMutation({ onSuccess: () => { toast.success("Cupom criado."); setCouponCode(""); setCouponValue(""); setCouponStartsAt(""); setCouponEndsAt(""); setCouponMaxUses(""); setDialog(null); invalidateStore(); }, onError: reportMutationError });
   const deleteCoupon = trpc.admin.deleteCoupon.useMutation({ onSuccess: result => { toast.success(result.deleted ? "Cupom excluído." : "Cupom desativado; o histórico de uso foi preservado."); invalidateStore(); }, onError: reportMutationError });
   const setStoreAvailability = trpc.admin.setStoreAvailability.useMutation({ onSuccess: result => { toast.success(result.publicOnline ? "Loja pública ativada." : "Loja pública colocada em manutenção."); setOfflineMessage(result.offlineMessage); invalidateStore(); }, onError: reportMutationError });
+  const setManualMaintenance = trpc.admin.setManualMaintenance.useMutation({ onSuccess: result => { toast.success(result.publicOnline ? "Loja reaberta e aviso encaminhado ao Discord." : "Modo de manutenção atualizado e aviso encaminhado ao Discord."); invalidateStore(); }, onError: reportMutationError });
+  const scheduleMaintenance = trpc.admin.scheduleMaintenance.useMutation({ onSuccess: () => { toast.success("Manutenção agendada. A loja mudará de estado automaticamente."); invalidateStore(); }, onError: reportMutationError });
+  const cancelMaintenance = trpc.admin.cancelMaintenanceSchedule.useMutation({ onSuccess: () => { toast.success("Agendamento de manutenção cancelado."); invalidateStore(); }, onError: reportMutationError });
   const productStatus = trpc.admin.setProductStatus.useMutation({ onSuccess: () => { toast.success("Disponibilidade atualizada."); invalidateStore(); }, onError: reportMutationError });
   const roleChange = trpc.admin.setUserRole.useMutation({ onSuccess: () => { toast.success("Acesso atualizado."); invalidateStore(); }, onError: reportMutationError });
   const retryDelivery = trpc.admin.retryDelivery.useMutation({ onSuccess: () => { toast.success("Entrega recolocada na fila."); utils.admin.deliveries.invalidate(); utils.admin.overview.invalidate(); }, onError: reportMutationError });
@@ -143,12 +162,32 @@ function AdminContent() {
     toast.success(`${result.data?.length ?? 0} pedido(s) exportado(s) em CSV.`);
   };
   const refreshDashboard = async () => {
-    await Promise.all([overview.refetch(), monthlySales.refetch(), metricsByPeriod.refetch(), products.refetch(), orders.refetch(), deliveries.refetch(), coupons.refetch(), users.refetch(), storeAvailability.refetch()]);
+    await Promise.all([overview.refetch(), monthlySales.refetch(), metricsByPeriod.refetch(), products.refetch(), orders.refetch(), deliveries.refetch(), coupons.refetch(), users.refetch(), storeAvailability.refetch(), maintenanceControl.refetch()]);
     toast.success("Dados do painel atualizados.");
   };
   const updateStoreAvailability = (publicOnline: boolean) => {
     if (!publicOnline && !window.confirm("Colocar a loja offline? Compras e pagamentos serão pausados, mas o painel administrativo continuará acessível.")) return;
     setStoreAvailability.mutate({ publicOnline, offlineMessage: offlineMessage.trim() || undefined });
+  };
+  const useMaintenanceTemplate = (template: "brief" | "scheduled" | "incident") => {
+    const templates = {
+      brief: { message: "Estamos realizando uma manutenção rápida. Seus pedidos já confirmados continuam protegidos e serão processados normalmente. Volte em alguns minutos.", reason: "Manutenção rápida" },
+      scheduled: { message: "Estamos realizando uma manutenção programada para melhorar a loja. Seus pedidos já confirmados continuam protegidos e serão processados normalmente.", reason: "Atualização programada" },
+      incident: { message: "Identificamos uma instabilidade temporária e pausamos novas compras para proteger sua experiência. Seus pedidos já confirmados continuam seguros.", reason: "Estabilidade técnica" },
+    } as const;
+    setOfflineMessage(templates[template].message);
+    setMaintenanceReason(templates[template].reason);
+  };
+  const applyManualMaintenance = (publicOnline: boolean) => {
+    if (!publicOnline && !window.confirm("Aplicar este modo de manutenção agora? Novas compras e pagamentos serão pausados.")) return;
+    setManualMaintenance.mutate({ publicOnline, mode: maintenanceMode, offlineMessage: offlineMessage.trim(), reason: maintenanceReason.trim() || undefined });
+  };
+  const submitMaintenanceSchedule = (event: FormEvent) => {
+    event.preventDefault();
+    const startAt = new Date(scheduleStart);
+    const endAt = new Date(scheduleEnd);
+    if (Number.isNaN(startAt.getTime()) || Number.isNaN(endAt.getTime())) return toast.error("Informe o início e o término da manutenção.");
+    scheduleMaintenance.mutate({ startAt, endAt, mode: maintenanceMode, offlineMessage: offlineMessage.trim(), reason: maintenanceReason.trim() || undefined });
   };
 
   if (loading) return <div className="grid min-h-80 place-items-center"><Loader2 className="animate-spin text-emerald-300" /></div>;
@@ -159,6 +198,8 @@ function AdminContent() {
     <header className="admin-page-header"><div><p className="section-kicker">CENTRAL DE OPERAÇÕES</p><h1>Controle simples, decisões rápidas.</h1><p>Veja o que precisa de atenção, acompanhe resultados e acesse cada área sem navegar por painéis repetidos.</p></div><div className="admin-page-header__actions"><Button type="button" variant="outline" onClick={() => setGlobalSearchOpen(true)} className="border-white/10 bg-white/[.03] text-slate-100 hover:bg-white/[.08]"><Search size={16} /> Buscar</Button><Button type="button" variant="outline" onClick={refreshDashboard} className="border-white/10 bg-white/[.03] text-slate-100 hover:bg-white/[.08]"><RefreshCw size={16} /> Atualizar dados</Button><Button type="button" onClick={() => setDialog("product")} className="bg-emerald-300 text-slate-950 hover:bg-emerald-200"><Plus size={16} /> Novo produto</Button></div></header>
 
     <section className={`admin-store-status ${storeAvailability.data?.publicOnline === false ? "admin-store-status--offline" : ""}`}><div className="flex min-w-0 items-start gap-3"><span className={`admin-store-status__icon ${storeAvailability.data?.publicOnline === false ? "text-amber-200" : "text-emerald-200"}`}>{storeAvailability.data?.publicOnline === false ? <CircleAlert size={19} /> : <CheckCircle2 size={19} />}</span><div><p className="font-semibold text-white">{storeAvailability.data?.publicOnline === false ? "Loja pública em manutenção" : "Loja pública online"}</p><p>{storeAvailability.data?.publicOnline === false ? offlineMessage || "As novas compras estão pausadas até a reativação." : "Compras e pagamentos estão habilitados para os jogadores."}</p></div></div><div className="flex flex-wrap items-center gap-2"><Button type="button" disabled={setStoreAvailability.isPending || storeAvailability.isLoading} onClick={() => updateStoreAvailability(true)} size="sm" className="bg-emerald-300 text-slate-950 hover:bg-emerald-200">Deixar online</Button><Button type="button" disabled={setStoreAvailability.isPending || storeAvailability.isLoading} onClick={() => updateStoreAvailability(false)} size="sm" variant="outline" className="border-amber-300/30 text-amber-100 hover:bg-amber-300/10">Deixar offline</Button></div><details className="admin-store-status__details"><summary>Editar mensagem de manutenção</summary><Textarea value={offlineMessage} onChange={event => setOfflineMessage(event.target.value)} maxLength={280} placeholder="Mensagem exibida enquanto a loja estiver offline" className="mt-3 min-h-20" /></details></section>
+
+    <section className="surface-panel rounded-[1.4rem] p-5 sm:p-6"><SectionHeading eyebrow="CENTRO DE MANUTENÇÃO" title="Planeje, comunique e preserve pedidos" description="Os avisos seguem automaticamente para o canal operacional do Discord; o bot continua usando somente as permissões já concedidas." action={<Button type="button" variant="outline" onClick={() => setMaintenancePreviewOpen(true)} className="border-white/10 bg-white/[.03] text-slate-100 hover:bg-white/[.08]"><Eye size={16} /> Prévia pública</Button>} />{maintenanceControl.isLoading ? <div className="grid min-h-32 place-items-center"><Loader2 className="animate-spin text-emerald-300" /></div> : <div className="maintenance-center"><div className="maintenance-protection"><LockKeyhole size={18} /><div><strong>{maintenanceControl.data?.protectedOrders ?? 0} pedido(s) protegido(s)</strong><span>Pedidos pagos, em processamento ou concluídos não são cancelados durante a manutenção.</span></div></div><div className="maintenance-templates"><span>Modelos rápidos</span><Button type="button" size="sm" variant="outline" onClick={() => useMaintenanceTemplate("brief")}>Breve</Button><Button type="button" size="sm" variant="outline" onClick={() => useMaintenanceTemplate("scheduled")}>Programada</Button><Button type="button" size="sm" variant="outline" onClick={() => useMaintenanceTemplate("incident")}>Incidente</Button></div><div className="maintenance-fields"><label><span>Modo público</span><select value={maintenanceMode} onChange={event => setMaintenanceMode(event.target.value as "CLOSED" | "CATALOG_ONLY")}><option value="CLOSED">Loja fechada</option><option value="CATALOG_ONLY">Somente catálogo</option></select><small>{maintenanceMode === "CATALOG_ONLY" ? "Produtos continuam visíveis; compras e pagamentos ficam bloqueados." : "A página pública exibe o aviso de manutenção."}</small></label><label><span>Motivo interno</span><Input value={maintenanceReason} maxLength={280} onChange={event => setMaintenanceReason(event.target.value)} placeholder="Ex.: atualização programada" /></label><label className="maintenance-fields__message"><span>Mensagem para jogadores</span><Textarea value={offlineMessage} maxLength={280} onChange={event => setOfflineMessage(event.target.value)} placeholder="Explique de forma breve o que está acontecendo." /></label></div><div className="maintenance-actions"><Button type="button" disabled={setManualMaintenance.isPending} onClick={() => applyManualMaintenance(false)} className="bg-amber-300 text-slate-950 hover:bg-amber-200">Aplicar manutenção agora</Button><Button type="button" disabled={setManualMaintenance.isPending} onClick={() => applyManualMaintenance(true)} variant="outline" className="border-emerald-300/30 text-emerald-100 hover:bg-emerald-300/10">Reabrir loja agora</Button></div><form onSubmit={submitMaintenanceSchedule} className="maintenance-schedule"><div><CalendarClock size={18} /><div><strong>Agendamento automático</strong><span>O sistema aplica e encerra a manutenção no horário escolhido, sem depender de o painel estar aberto.</span></div></div><label><span>Início</span><Input type="datetime-local" value={scheduleStart} onChange={event => setScheduleStart(event.target.value)} /></label><label><span>Término</span><Input type="datetime-local" value={scheduleEnd} onChange={event => setScheduleEnd(event.target.value)} /></label><Button type="submit" disabled={scheduleMaintenance.isPending} className="bg-sky-200 text-slate-950 hover:bg-sky-100">{scheduleMaintenance.isPending ? <Loader2 className="animate-spin" /> : "Agendar"}</Button>{maintenanceControl.data?.settings.scheduleStatus === "SCHEDULED" || maintenanceControl.data?.settings.scheduleStatus === "ACTIVE" ? <Button type="button" variant="outline" disabled={cancelMaintenance.isPending} onClick={() => { if (window.confirm("Cancelar o agendamento atual?")) cancelMaintenance.mutate(); }} className="border-rose-300/30 text-rose-100 hover:bg-rose-300/10">Cancelar agenda</Button> : null}</form><div className="maintenance-history"><div><History size={17} /><strong>Histórico recente</strong></div>{maintenanceControl.data?.history.length ? <div className="space-y-2">{maintenanceControl.data.history.map(event => <div key={event.id}><span>{event.eventType === "SCHEDULED" ? "Agendada" : event.eventType === "STARTED" ? "Iniciada" : event.eventType === "ENDED" ? "Encerrada" : event.eventType === "CANCELLED" ? "Cancelada" : "Atualizada"}</span><p>{event.reason || event.message}</p><small>{new Date(event.createdAt).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })} · {event.actorType === "scheduler" ? "automático" : "administrador"}</small></div>)}</div> : <p className="text-sm text-slate-500">Nenhum evento de manutenção registrado ainda.</p>}</div></div>}</section>
 
     {failedDeliveries.length ? <section className="admin-failure-alert"><div className="flex min-w-0 items-start gap-3"><span><CircleAlert size={19} /></span><div><p className="font-semibold">{failedDeliveries.length} entrega(s) com falha</p><p>Reprocesse a entrega ou abra a fila completa para analisar o histórico do jogador e do pedido.</p></div></div><div className="admin-failure-alert__actions">{failedDeliveries.slice(0, 2).map(delivery => <Button key={delivery.id} type="button" size="sm" variant="outline" disabled={retryDelivery.isPending} onClick={() => retryDelivery.mutate({ id: delivery.id })} className="border-rose-300/25 text-rose-100 hover:bg-rose-300/10">Reprocessar {delivery.playerName}</Button>)}<Link href="/admin/operations" className="admin-section-link">Ver fila <ArrowRight size={14} /></Link></div></section> : null}
 
@@ -176,6 +217,8 @@ function AdminContent() {
   </div>
 
   <Dialog open={globalSearchOpen} onOpenChange={open => { setGlobalSearchOpen(open); if (!open) setGlobalSearchQuery(""); }}><DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto border-white/10 bg-[#0b1725] text-slate-100"><DialogHeader><DialogTitle>Busca global</DialogTitle><DialogDescription>Localize pedidos, jogadores ou cupons sem navegar entre áreas administrativas.</DialogDescription></DialogHeader><label className="relative block"><Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={17} /><Input autoFocus value={globalSearchQuery} onChange={event => setGlobalSearchQuery(event.target.value)} placeholder="Ex.: PSC-100, nome do jogador ou BEMVINDO10" className="pl-10" /></label>{globalSearchInput.query.length < 2 ? <p className="py-5 text-center text-sm text-slate-400">Digite ao menos 2 caracteres para pesquisar.</p> : globalSearch.isLoading ? <div className="grid min-h-28 place-items-center"><Loader2 className="animate-spin text-emerald-300" /></div> : globalSearch.isError ? <p className="py-5 text-center text-sm text-rose-200">Não foi possível concluir a busca. Tente novamente.</p> : <div className="mt-2 space-y-4">{globalResultsCount ? <p className="text-xs font-bold uppercase tracking-wide text-slate-500">{globalResultsCount} resultado(s)</p> : <p className="py-5 text-center text-sm text-slate-400">Nenhum registro encontrado.</p>}{globalSearch.data?.orders.length ? <div><p className="mb-2 text-xs font-bold uppercase tracking-wide text-emerald-200">Pedidos</p><div className="space-y-2">{globalSearch.data.orders.map(order => <Link key={order.id} href="/admin/operations" onClick={() => setGlobalSearchOpen(false)} className="admin-search-result"><span><strong className="font-mono">{order.orderNumber}</strong><small>{order.playerName} · {money.format(order.totalCents / 100)}</small></span><StatusBadge status={order.status} /></Link>)}</div></div> : null}{globalSearch.data?.players.length ? <div><p className="mb-2 text-xs font-bold uppercase tracking-wide text-sky-200">Jogadores</p><div className="space-y-2">{globalSearch.data.players.map(player => <Link key={player.id} href="/admin/operations" onClick={() => setGlobalSearchOpen(false)} className="admin-search-result"><span><strong>{player.username}</strong><small>{player.uuid}</small></span><Users size={16} className="text-sky-200" /></Link>)}</div></div> : null}{globalSearch.data?.coupons.length ? <div><p className="mb-2 text-xs font-bold uppercase tracking-wide text-amber-200">Cupons</p><div className="space-y-2">{globalSearch.data.coupons.map(coupon => <Link key={coupon.id} href="/admin/catalog" onClick={() => setGlobalSearchOpen(false)} className="admin-search-result"><span><strong className="font-mono">{coupon.code}</strong><small>{coupon.description || "Sem descrição"}</small></span><StatusBadge status={coupon.active ? "ATIVO" : "INATIVO"} /></Link>)}</div></div> : null}</div>}</DialogContent></Dialog>
+
+  <Dialog open={maintenancePreviewOpen} onOpenChange={setMaintenancePreviewOpen}><DialogContent className="border-white/10 bg-[#0b1725] text-slate-100"><DialogHeader><DialogTitle>Prévia para jogadores</DialogTitle><DialogDescription>Esta é a mensagem que será exibida no modo fechado ou comunicada no modo somente catálogo.</DialogDescription></DialogHeader><div className="rounded-[1.2rem] border border-amber-300/20 bg-[#07111d] p-6 text-center"><div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl border border-amber-300/25 bg-amber-300/[.08] text-amber-200"><ShieldCheck size={22} /></div><p className="section-kicker mt-5">{maintenanceMode === "CATALOG_ONLY" ? "CATÁLOGO DISPONÍVEL" : "MANUTENÇÃO PROGRAMADA"}</p><h3 className="mt-3 text-xl font-bold text-white">{maintenanceMode === "CATALOG_ONLY" ? "Você pode consultar os benefícios" : "A loja está temporariamente offline"}</h3><p className="mt-4 text-sm leading-7 text-slate-300">{offlineMessage || "Informe uma mensagem para a manutenção."}</p><p className="mt-5 text-xs leading-5 text-slate-500">{maintenanceMode === "CATALOG_ONLY" ? "Compras e pagamentos estarão pausados até o fim da manutenção." : "Compras e pagamentos estarão pausados enquanto a manutenção estiver ativa."}</p></div><DialogFooter><Button type="button" onClick={() => setMaintenancePreviewOpen(false)} className="bg-emerald-300 text-slate-950 hover:bg-emerald-200">Fechar prévia</Button></DialogFooter></DialogContent></Dialog>
 
   <Dialog open={dialog === "category"} onOpenChange={open => !open && setDialog(null)}><DialogContent className="border-white/10 bg-[#0b1725] text-slate-100"><DialogHeader><DialogTitle>Nova categoria</DialogTitle><DialogDescription>Crie uma seção para organizar os benefícios na vitrine.</DialogDescription></DialogHeader><form onSubmit={(event: FormEvent) => { event.preventDefault(); createCategory.mutate({ name: categoryName.trim(), slug: categorySlug.trim().toLowerCase() }); }} className="space-y-3"><Input required value={categoryName} onChange={event => setCategoryName(event.target.value)} placeholder="Ex.: VIPs" /><Input required value={categorySlug} onChange={event => setCategorySlug(event.target.value.toLowerCase())} placeholder="vips" className="font-mono" /><DialogFooter><Button type="submit" disabled={createCategory.isPending} className="bg-emerald-300 text-slate-950 hover:bg-emerald-200">{createCategory.isPending ? "Criando…" : "Criar categoria"}</Button></DialogFooter></form></DialogContent></Dialog>
 

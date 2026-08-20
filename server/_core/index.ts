@@ -12,6 +12,7 @@ import { claimMinecraftDeliveries, completeMinecraftDelivery, deferMinecraftDeli
 import { updateCommunityStatusRoute } from "../community";
 import { acknowledgeDiscordNotificationsRoute, listDiscordNotificationsRoute } from "../discordNotifications";
 import { commerceMaintenance } from "../scheduled/commerceMaintenance";
+import { storeMaintenanceScheduler } from "../scheduled/storeMaintenance";
 import { serveStatic, setupVite } from "./vite";
 
 function isPortAvailable(port: number): Promise<boolean> {
@@ -57,6 +58,7 @@ async function startServer() {
   app.get("/api/integrations/discord/operations", listDiscordNotificationsRoute);
   app.post("/api/integrations/discord/operations/ack", acknowledgeDiscordNotificationsRoute);
   app.post("/api/scheduled/commerce-maintenance", commerceMaintenance);
+  app.post("/api/scheduled/store-maintenance", storeMaintenanceScheduler);
   // tRPC API
   app.use(
     "/api/trpc",

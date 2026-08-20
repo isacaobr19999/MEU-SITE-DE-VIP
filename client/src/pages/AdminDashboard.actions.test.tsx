@@ -18,6 +18,7 @@ const mocks = vi.hoisted(() => ({
   coupons: vi.fn(),
   users: vi.fn(),
   storeAvailability: vi.fn(),
+  maintenanceControl: vi.fn(),
   metricsByPeriod: vi.fn(),
   search: vi.fn(),
   createCategory: vi.fn(),
@@ -29,6 +30,9 @@ const mocks = vi.hoisted(() => ({
   roleChange: vi.fn(),
   setStoreAvailability: vi.fn(),
   retryDelivery: vi.fn(),
+  setManualMaintenance: vi.fn(),
+  scheduleMaintenance: vi.fn(),
+  cancelMaintenanceSchedule: vi.fn(),
 }));
 
 vi.mock("@/_core/hooks/useAuth", () => ({ useAuth: mocks.auth }));
@@ -48,6 +52,7 @@ vi.mock("@/lib/trpc", () => ({
       coupons: { useQuery: mocks.coupons },
       users: { useQuery: mocks.users },
       storeAvailability: { useQuery: mocks.storeAvailability },
+      maintenanceControl: { useQuery: mocks.maintenanceControl },
       metricsByPeriod: { useQuery: mocks.metricsByPeriod },
       search: { useQuery: mocks.search },
       createCategory: { useMutation: mocks.createCategory },
@@ -59,6 +64,9 @@ vi.mock("@/lib/trpc", () => ({
       setUserRole: { useMutation: mocks.roleChange },
       setStoreAvailability: { useMutation: mocks.setStoreAvailability },
       retryDelivery: { useMutation: mocks.retryDelivery },
+      setManualMaintenance: { useMutation: mocks.setManualMaintenance },
+      scheduleMaintenance: { useMutation: mocks.scheduleMaintenance },
+      cancelMaintenanceSchedule: { useMutation: mocks.cancelMaintenanceSchedule },
     },
     store: { availability: { useQuery: mocks.storeAvailability } },
   },
@@ -76,7 +84,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   mocks.auth.mockReturnValue({ user: { id: 1, role: "admin", name: "Administrador" }, loading: false });
   mocks.useUtils.mockReturnValue({
-    admin: { overview: invalidate, categories: invalidate, products: invalidate, orders: invalidate, deliveries: invalidate, servers: invalidate, coupons: invalidate, users: invalidate, storeAvailability: invalidate },
+    admin: { overview: invalidate, categories: invalidate, products: invalidate, orders: invalidate, deliveries: invalidate, servers: invalidate, coupons: invalidate, users: invalidate, storeAvailability: invalidate, maintenanceControl: invalidate },
     store: { availability: invalidate },
     catalog: { categories: invalidate, products: invalidate },
   });
@@ -91,9 +99,10 @@ beforeEach(() => {
   mocks.coupons.mockReturnValue(query([]));
   mocks.users.mockReturnValue(query([{ id: 1, name: "Administrador", role: "admin" }]));
   mocks.storeAvailability.mockReturnValue(query({ publicOnline: true, offlineMessage: "A loja está temporariamente em manutenção." }));
+  mocks.maintenanceControl.mockReturnValue(query({ settings: { publicOnline: true, offlineMessage: "A loja está temporariamente em manutenção.", maintenanceMode: "CLOSED", maintenanceReason: null, scheduledStartAt: null, scheduledEndAt: null, scheduleStatus: "NONE" }, protectedOrders: 2, history: [] }));
   mocks.metricsByPeriod.mockReturnValue(query({ period: "30d", salesCents: 1090, paidOrders: 2, averageOrderCents: 545 }));
   mocks.search.mockReturnValue(query({ orders: [{ id: "search-order", orderNumber: "PSC-BUSCA", status: "PAID", totalCents: 490, playerName: "BuscaPlayer" }], players: [], coupons: [] }));
-  [mocks.createCategory, mocks.createServer, mocks.createProduct, mocks.createCoupon, mocks.deleteCoupon, mocks.productStatus, mocks.roleChange, mocks.setStoreAvailability, mocks.retryDelivery].forEach(mock => mock.mockReturnValue(mutation));
+  [mocks.createCategory, mocks.createServer, mocks.createProduct, mocks.createCoupon, mocks.deleteCoupon, mocks.productStatus, mocks.roleChange, mocks.setStoreAvailability, mocks.retryDelivery, mocks.setManualMaintenance, mocks.scheduleMaintenance, mocks.cancelMaintenanceSchedule].forEach(mock => mock.mockReturnValue(mutation));
 });
 
 describe("atalhos da visão administrativa", () => {
@@ -125,6 +134,23 @@ describe("atalhos da visão administrativa", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Reprocessar FalhaPlayer" }));
     expect(mutation.mutate).toHaveBeenCalledWith({ id: "delivery-failed" });
+  });
+
+  it("mostra pedidos protegidos e permite revisar a prévia pública da manutenção", () => {
+    render(<AdminDashboard />);
+    expect(screen.getByText("2 pedido(s) protegido(s)")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Prévia pública" }));
+    expect(screen.getByText("Esta é a mensagem que será exibida no modo fechado ou comunicada no modo somente catálogo.")).toBeInTheDocument();
+  });
+
+  it("ativa o modo de manutenção com mensagem e modelo selecionado", () => {
+    const confirm = vi.spyOn(window, "confirm").mockReturnValue(true);
+    render(<AdminDashboard />);
+    fireEvent.click(screen.getByRole("button", { name: "Programada" }));
+    fireEvent.click(screen.getByRole("button", { name: "Aplicar manutenção agora" }));
+
+    expect(confirm).toHaveBeenCalled();
+    expect(mutation.mutate).toHaveBeenCalledWith(expect.objectContaining({ publicOnline: false, mode: "CLOSED", reason: "Atualização programada" }));
   });
 
   it("abre o fluxo guiado de criação de produto", () => {

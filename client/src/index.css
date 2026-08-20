@@ -166,6 +166,33 @@
 		.admin-search-result span { display: grid; min-width: 0; gap: .13rem; }
 		.admin-search-result strong { overflow: hidden; color: #f8fafc; font-size: .78rem; text-overflow: ellipsis; white-space: nowrap; }
 		.admin-search-result small { overflow: hidden; color: #94a3b8; font-size: .65rem; text-overflow: ellipsis; white-space: nowrap; }
+		.maintenance-center { display: grid; gap: 1rem; }
+		.maintenance-protection, .maintenance-schedule { display: flex; flex-wrap: wrap; align-items: center; gap: .8rem; border: 1px solid rgba(110,231,183,.18); border-radius: 1rem; background: linear-gradient(125deg, rgba(110,231,183,.075), rgba(255,255,255,.018)); padding: .85rem; }
+		.maintenance-protection > svg, .maintenance-schedule > div > svg { flex: 0 0 auto; color: #6ee7b7; }
+		.maintenance-protection > div, .maintenance-schedule > div { display: grid; min-width: 0; gap: .18rem; }
+		.maintenance-protection strong, .maintenance-schedule strong { color: #f8fafc; font-size: .8rem; }
+		.maintenance-protection span, .maintenance-schedule span { color: #94a3b8; font-size: .67rem; line-height: 1.4; }
+		.maintenance-templates { display: flex; flex-wrap: wrap; align-items: center; gap: .45rem; }
+		.maintenance-templates > span { margin-right: .15rem; color: #94a3b8; font-size: .68rem; font-weight: 750; }
+		.maintenance-templates button { height: 1.9rem; border-color: rgba(148,163,184,.18); color: #cbd5e1; font-size: .68rem; }
+		.maintenance-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .7rem; }
+		.maintenance-fields label { display: grid; gap: .38rem; color: #cbd5e1; font-size: .68rem; font-weight: 700; }
+		.maintenance-fields label > span, .maintenance-schedule label > span { color: #94a3b8; font-size: .65rem; font-weight: 700; }
+		.maintenance-fields select { height: 2.5rem; border: 1px solid rgba(148,163,184,.18); border-radius: .7rem; background: rgba(2,8,15,.46); padding: 0 .7rem; color: #e2e8f0; outline: none; }
+		.maintenance-fields small { color: #64748b; font-size: .62rem; font-weight: 500; line-height: 1.35; }
+		.maintenance-fields__message { grid-column: 1 / -1; }
+		.maintenance-fields__message textarea { min-height: 4.7rem; }
+		.maintenance-actions { display: flex; flex-wrap: wrap; gap: .55rem; }
+		.maintenance-schedule > div { flex: 1 1 13rem; }
+		.maintenance-schedule label { display: grid; min-width: 8.8rem; gap: .32rem; }
+		.maintenance-schedule input { background: rgba(2,8,15,.35); }
+		.maintenance-history { border-top: 1px solid rgba(148,163,184,.12); padding-top: .85rem; }
+		.maintenance-history > div:first-child { display: flex; align-items: center; gap: .45rem; color: #cbd5e1; font-size: .75rem; }
+		.maintenance-history > div:first-child svg { color: #94a3b8; }
+		.maintenance-history > .space-y-2 > div { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: .55rem; border: 1px solid rgba(148,163,184,.1); border-radius: .75rem; background: rgba(255,255,255,.018); padding: .6rem .7rem; }
+		.maintenance-history > .space-y-2 span { align-self: start; border-radius: .45rem; background: rgba(148,163,184,.1); padding: .18rem .38rem; color: #cbd5e1; font-size: .57rem; font-weight: 800; text-transform: uppercase; }
+		.maintenance-history > .space-y-2 p { overflow: hidden; color: #e2e8f0; font-size: .7rem; text-overflow: ellipsis; white-space: nowrap; }
+		.maintenance-history > .space-y-2 small { grid-column: 2; margin-top: .15rem; color: #64748b; font-size: .6rem; }
 		.admin-metric-card { display: flex; align-items: flex-start; justify-content: space-between; gap: .8rem; border: 1px solid rgba(148,163,184,.13); border-radius: 1.1rem; background: rgba(13,29,45,.66); padding: 1rem; box-shadow: inset 0 1px rgba(255,255,255,.025); }
 		.admin-metric-card p { color: #94a3b8; font-size: .7rem; font-weight: 750; }
 		.admin-metric-card strong { display: block; margin-top: .55rem; color: #f8fafc; font-family: var(--font-mono); font-size: 1.45rem; line-height: 1; letter-spacing: -.06em; }
@@ -211,7 +238,7 @@
 	.monthly-chart__label { color: #f1f5f9; font-family: "DM Mono", monospace; font-size: .67rem; font-weight: 700; text-transform: capitalize; }
 	.monthly-chart__meta { color: #64748b; font-size: .64rem; }
 		@media (max-width: 500px) { .monthly-chart { gap: .25rem; padding-left: .5rem; padding-right: .5rem; } .monthly-chart__value { font-size: .52rem; } .monthly-chart__label { font-size: .56rem; } .monthly-chart__meta { display: none; } .monthly-chart__grid { left: .5rem; right: .5rem; } }
-		@media (max-width: 639px) { .admin-page-header { padding: 1.1rem; } .admin-page-header__actions { width: 100%; } .admin-page-header__actions > * { flex: 1; } .admin-store-status { grid-template-columns: 1fr; } .admin-store-status > .flex:last-of-type { width: 100%; } .admin-store-status > .flex:last-of-type > * { flex: 1; } .admin-metric-card { padding: .9rem; } .admin-period-metrics { grid-template-columns: 1fr; } .admin-failure-alert__actions { width: 100%; } .admin-growth-strip { align-items: flex-start; } }
+		@media (max-width: 639px) { .admin-page-header { padding: 1.1rem; } .admin-page-header__actions { width: 100%; } .admin-page-header__actions > * { flex: 1; } .admin-store-status { grid-template-columns: 1fr; } .admin-store-status > .flex:last-of-type { width: 100%; } .admin-store-status > .flex:last-of-type > * { flex: 1; } .admin-metric-card { padding: .9rem; } .admin-period-metrics, .maintenance-fields { grid-template-columns: 1fr; } .maintenance-schedule { align-items: stretch; } .maintenance-schedule label, .maintenance-schedule button, .maintenance-actions > button { width: 100%; } .admin-failure-alert__actions { width: 100%; } .admin-growth-strip { align-items: flex-start; } }
 	.delivery-filter-card { display: grid; gap: .22rem; border: 1px solid rgba(148,163,184,.12); border-radius: .85rem; background: rgba(255,255,255,.025); padding: .65rem .75rem; text-align: left; color: #94a3b8; }
 	.delivery-filter-card:hover { border-color: rgba(110,231,183,.25); background: rgba(110,231,183,.045); }
 	.delivery-filter-card span { font-size: .68rem; font-weight: 700; }
