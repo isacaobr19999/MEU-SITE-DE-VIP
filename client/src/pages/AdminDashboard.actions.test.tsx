@@ -87,6 +87,12 @@ beforeEach(() => {
 });
 
 describe("atalhos da visão administrativa", () => {
+  it("mantém disponível a atualização manual dos dados operacionais", () => {
+    render(<AdminDashboard />);
+
+    expect(screen.getByRole("button", { name: "Atualizar dados" })).toBeInTheDocument();
+  });
+
   it("abre o fluxo guiado de criação de produto", () => {
     render(<AdminDashboard />);
     fireEvent.click(screen.getAllByRole("button", { name: "Novo produto" })[0]);

@@ -390,3 +390,8 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Verificar a publicação após a confirmação do ajuste mínimo de permissões feita pelo administrador no Discord.
 - [x] Executar uma única tentativa de publicação após a confirmação final do administrador de que `Enviar mensagens` foi permitido ao bot.
 - [x] Testar uma única publicação autorizada enquanto o bot possui Administrador temporário e orientar a remoção imediata do privilégio após o resultado; publicação confirmada e remoção do privilégio confirmada pelo administrador.
+
+- [x] Auditar o painel administrativo para simplificar navegação, densidade de conteúdo e ações recorrentes sem alterar regras de negócio.
+- [x] Reorganizar o resumo operacional e os atalhos administrativos em uma interface mais limpa e legível em desktop e celular.
+- [x] Aprimorar estados visuais, filtros, tabelas e feedback de ações para reduzir ruído e facilitar a operação diária.
+- [x] Validar as melhorias do painel com testes automatizados, checagem de tipos e revisão visual responsiva antes da publicação; TypeScript, build de produção e 8 testes administrativos passaram, e a rota protegida foi revisada em desktop e celular.
