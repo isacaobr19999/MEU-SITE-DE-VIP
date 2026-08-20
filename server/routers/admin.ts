@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createCategoryRecord, createProductRecord, listAdminCategories } from "../db/adminCatalog";
-import { cancelOrderRecord, createCouponRecord, createServerRecord, deleteCouponRecord, getAdminMonthlySales, getAdminOrderDetail, getAdminOverview, getAdminProductPriceCents, listAdminCoupons, listAdminDeliveries, listAdminLogs, listAdminOrderExport, listAdminOrders, listAdminPlayers, listAdminProducts, listAdminServers, listAdminUsers, listPlayerHistory, retryDeliveryRecord, setAdminRole, setProductStatus, updateCategoryRecord, updateCouponRecord, updateProductRecord, updateServerRecord, writeAdminAuditLog } from "../db/admin";
+import { cancelOrderRecord, createCouponRecord, createServerRecord, deleteCouponRecord, getAdminMetricsByPeriod, getAdminMonthlySales, getAdminOrderDetail, getAdminOverview, getAdminProductPriceCents, listAdminCoupons, listAdminDeliveries, listAdminLogs, listAdminOrderExport, listAdminOrders, listAdminPlayers, listAdminProducts, listAdminServers, listAdminUsers, listPlayerHistory, retryDeliveryRecord, searchAdminRecords, setAdminRole, setProductStatus, updateCategoryRecord, updateCouponRecord, updateProductRecord, updateServerRecord, writeAdminAuditLog } from "../db/admin";
 import { getStoreAvailability, setStoreAvailability } from "../db/storeSettings";
 import { adminProcedure, router } from "../_core/trpc";
 
@@ -24,6 +24,10 @@ export const adminRouter = router({
   overview: adminProcedure.query(getAdminOverview),
 
   monthlySales: adminProcedure.query(() => getAdminMonthlySales()),
+
+  metricsByPeriod: adminProcedure.input(z.object({ period: z.enum(["7d", "30d", "90d"]) })).query(({ input }) => getAdminMetricsByPeriod(input.period)),
+
+  search: adminProcedure.input(z.object({ query: z.string().trim().min(2).max(80) })).query(({ input }) => searchAdminRecords(input.query)),
 
   exportOrders: adminProcedure.query(async ({ ctx }) => {
     const rows = await listAdminOrderExport();

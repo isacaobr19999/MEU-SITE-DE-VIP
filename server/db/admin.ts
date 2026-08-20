@@ -1,4 +1,4 @@
-import { and, asc, count, desc, eq, gte, inArray, isNull, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, gte, inArray, isNull, like, or, sql } from "drizzle-orm";
 import { randomBytes } from "node:crypto";
 import { adminUsers, categories,   couponProducts,
   couponUsage,
@@ -32,6 +32,46 @@ export async function getAdminOverview() {
     failedDeliveries: failedDeliveries?.value ?? 0,
     playerCount: playerCount?.value ?? 0,
   };
+}
+
+export type AdminMetricsPeriod = "7d" | "30d" | "90d";
+
+function metricsPeriodStart(period: AdminMetricsPeriod, now = new Date()) {
+  const days = period === "7d" ? 7 : period === "30d" ? 30 : 90;
+  return new Date(now.getTime() - (days - 1) * 86_400_000);
+}
+
+export async function getAdminMetricsByPeriod(period: AdminMetricsPeriod) {
+  const db = await requireDb();
+  const startAt = metricsPeriodStart(period);
+  const completedStatuses = ["PAID", "PROCESSING", "COMPLETED"] as const;
+  const [values] = await db.select({
+    salesCents: sql<number>`coalesce(sum(${orders.totalCents}), 0)`,
+    paidOrders: count(),
+    averageOrderCents: sql<number>`coalesce(round(avg(${orders.totalCents})), 0)`,
+  }).from(orders).where(and(inArray(orders.status, completedStatuses), gte(orders.paidAt, startAt)));
+  return {
+    period,
+    startAt,
+    salesCents: Number(values?.salesCents ?? 0),
+    paidOrders: Number(values?.paidOrders ?? 0),
+    averageOrderCents: Number(values?.averageOrderCents ?? 0),
+  };
+}
+
+function escapeLikeTerm(value: string) {
+  return value.replace(/[\\%_]/g, "\\$&");
+}
+
+export async function searchAdminRecords(query: string) {
+  const db = await requireDb();
+  const term = `%${escapeLikeTerm(query.trim())}%`;
+  const [orderRows, playerRows, couponRows] = await Promise.all([
+    db.select({ id: orders.id, orderNumber: orders.orderNumber, status: orders.status, totalCents: orders.totalCents, playerName: players.username }).from(orders).innerJoin(players, eq(orders.playerId, players.id)).where(or(like(orders.orderNumber, term), like(players.username, term))).orderBy(desc(orders.createdAt)).limit(5),
+    db.select({ id: players.id, username: players.username, uuid: players.uuid, email: players.email }).from(players).where(or(like(players.username, term), like(players.uuid, term), like(players.email, term))).orderBy(desc(players.createdAt)).limit(5),
+    db.select({ id: coupons.id, code: coupons.code, description: coupons.description, active: coupons.active }).from(coupons).where(and(isNull(coupons.archivedAt), or(like(coupons.code, term), like(coupons.description, term)))).orderBy(desc(coupons.createdAt)).limit(5),
+  ]);
+  return { orders: orderRows, players: playerRows, coupons: couponRows };
 }
 
 export async function listAdminProducts() {

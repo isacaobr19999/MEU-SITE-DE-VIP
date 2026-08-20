@@ -395,3 +395,8 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Reorganizar o resumo operacional e os atalhos administrativos em uma interface mais limpa e legível em desktop e celular.
 - [x] Aprimorar estados visuais, filtros, tabelas e feedback de ações para reduzir ruído e facilitar a operação diária.
 - [x] Validar as melhorias do painel com testes automatizados, checagem de tipos e revisão visual responsiva antes da publicação; TypeScript, build de produção e 8 testes administrativos passaram, e a rota protegida foi revisada em desktop e celular.
+
+- [x] Adicionar filtros de período às métricas administrativas, com cálculos consistentes para vendas e pedidos confirmados.
+- [x] Exibir alertas administrativos visíveis e acionáveis quando houver entregas com falha.
+- [x] Criar uma busca global protegida para localizar pedidos, jogadores e cupons a partir do painel.
+- [x] Cobrir os novos fluxos com testes, validar a responsividade e publicar na VPS sem alterar pagamentos ou entregas; TypeScript, build e 18 testes administrativos passaram.

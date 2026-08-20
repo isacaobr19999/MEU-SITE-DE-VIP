@@ -28,6 +28,13 @@ describe("adminRouter", () => {
     await expect(caller.admin.overview()).rejects.toMatchObject<Partial<TRPCError>>({ code: "FORBIDDEN" });
   });
 
+  it("protege métricas por período e busca global antes de consultar registros", async () => {
+    const caller = appRouter.createCaller(userContext("user"));
+
+    await expect(caller.admin.metricsByPeriod({ period: "30d" })).rejects.toMatchObject<Partial<TRPCError>>({ code: "FORBIDDEN" });
+    await expect(caller.admin.search({ query: "PSC" })).rejects.toMatchObject<Partial<TRPCError>>({ code: "FORBIDDEN" });
+  });
+
   it("protege a edição de produtos de usuários sem função administrativa", async () => {
     const caller = appRouter.createCaller(userContext("user"));
     await expect(caller.admin.updateProduct({

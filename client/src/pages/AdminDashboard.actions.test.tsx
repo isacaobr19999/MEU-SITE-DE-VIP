@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
 import "@testing-library/jest-dom/vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   auth: vi.fn(),
@@ -18,6 +18,8 @@ const mocks = vi.hoisted(() => ({
   coupons: vi.fn(),
   users: vi.fn(),
   storeAvailability: vi.fn(),
+  metricsByPeriod: vi.fn(),
+  search: vi.fn(),
   createCategory: vi.fn(),
   createServer: vi.fn(),
   createProduct: vi.fn(),
@@ -26,6 +28,7 @@ const mocks = vi.hoisted(() => ({
   productStatus: vi.fn(),
   roleChange: vi.fn(),
   setStoreAvailability: vi.fn(),
+  retryDelivery: vi.fn(),
 }));
 
 vi.mock("@/_core/hooks/useAuth", () => ({ useAuth: mocks.auth }));
@@ -45,6 +48,8 @@ vi.mock("@/lib/trpc", () => ({
       coupons: { useQuery: mocks.coupons },
       users: { useQuery: mocks.users },
       storeAvailability: { useQuery: mocks.storeAvailability },
+      metricsByPeriod: { useQuery: mocks.metricsByPeriod },
+      search: { useQuery: mocks.search },
       createCategory: { useMutation: mocks.createCategory },
       createServer: { useMutation: mocks.createServer },
       createProduct: { useMutation: mocks.createProduct },
@@ -53,6 +58,7 @@ vi.mock("@/lib/trpc", () => ({
       setProductStatus: { useMutation: mocks.productStatus },
       setUserRole: { useMutation: mocks.roleChange },
       setStoreAvailability: { useMutation: mocks.setStoreAvailability },
+      retryDelivery: { useMutation: mocks.retryDelivery },
     },
     store: { availability: { useQuery: mocks.storeAvailability } },
   },
@@ -63,6 +69,8 @@ import AdminDashboard from "./AdminDashboard";
 const mutation = { mutate: vi.fn(), isPending: false };
 const query = (data: unknown) => ({ data, isError: false, isLoading: false, refetch: vi.fn() });
 const invalidate = vi.fn();
+
+afterEach(cleanup);
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -83,7 +91,9 @@ beforeEach(() => {
   mocks.coupons.mockReturnValue(query([]));
   mocks.users.mockReturnValue(query([{ id: 1, name: "Administrador", role: "admin" }]));
   mocks.storeAvailability.mockReturnValue(query({ publicOnline: true, offlineMessage: "A loja está temporariamente em manutenção." }));
-  [mocks.createCategory, mocks.createServer, mocks.createProduct, mocks.createCoupon, mocks.deleteCoupon, mocks.productStatus, mocks.roleChange, mocks.setStoreAvailability].forEach(mock => mock.mockReturnValue(mutation));
+  mocks.metricsByPeriod.mockReturnValue(query({ period: "30d", salesCents: 1090, paidOrders: 2, averageOrderCents: 545 }));
+  mocks.search.mockReturnValue(query({ orders: [{ id: "search-order", orderNumber: "PSC-BUSCA", status: "PAID", totalCents: 490, playerName: "BuscaPlayer" }], players: [], coupons: [] }));
+  [mocks.createCategory, mocks.createServer, mocks.createProduct, mocks.createCoupon, mocks.deleteCoupon, mocks.productStatus, mocks.roleChange, mocks.setStoreAvailability, mocks.retryDelivery].forEach(mock => mock.mockReturnValue(mutation));
 });
 
 describe("atalhos da visão administrativa", () => {
@@ -91,6 +101,30 @@ describe("atalhos da visão administrativa", () => {
     render(<AdminDashboard />);
 
     expect(screen.getByRole("button", { name: "Atualizar dados" })).toBeInTheDocument();
+  });
+
+  it("permite alternar o período das métricas comerciais", () => {
+    render(<AdminDashboard />);
+    fireEvent.click(screen.getByRole("button", { name: "7 dias" }));
+
+    expect(screen.getByText("Resumo de 7 dias")).toBeInTheDocument();
+  });
+
+  it("encontra pedidos na busca global protegida", () => {
+    render(<AdminDashboard />);
+    fireEvent.click(screen.getByRole("button", { name: "Buscar" }));
+    fireEvent.change(screen.getByPlaceholderText("Ex.: PSC-100, nome do jogador ou BEMVINDO10"), { target: { value: "PSC" } });
+
+    expect(screen.getByText("PSC-BUSCA")).toBeInTheDocument();
+    expect(screen.getByText(/BuscaPlayer/)).toBeInTheDocument();
+  });
+
+  it("oferece reprocessamento direto quando existe entrega com falha", () => {
+    mocks.deliveries.mockReturnValue(query([{ id: "delivery-failed", status: "FAILED", attemptCount: 2, maxAttempts: 8, lastError: "Servidor indisponível", orderNumber: "PSC-FAIL", playerName: "FalhaPlayer", serverName: "PlayStorCraft" }]));
+    render(<AdminDashboard />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Reprocessar FalhaPlayer" }));
+    expect(mutation.mutate).toHaveBeenCalledWith({ id: "delivery-failed" });
   });
 
   it("abre o fluxo guiado de criação de produto", () => {

@@ -149,6 +149,23 @@
 		.admin-store-status p:last-child { margin-top: .18rem; color: #94a3b8; font-size: .75rem; line-height: 1.4; }
 		.admin-store-status__details { grid-column: 1 / -1; border-top: 1px solid rgba(148,163,184,.12); padding-top: .7rem; color: #94a3b8; font-size: .76rem; }
 		.admin-store-status__details summary { cursor: pointer; font-weight: 700; color: #cbd5e1; }
+		.admin-failure-alert { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .9rem; border: 1px solid rgba(251,113,133,.3); border-radius: 1.1rem; background: linear-gradient(135deg, rgba(251,113,133,.1), rgba(67,20,35,.25)); padding: .9rem 1rem; color: #fecdd3; }
+		.admin-failure-alert > .flex > span { display: grid; flex: 0 0 auto; place-items: center; width: 2.3rem; height: 2.3rem; border: 1px solid rgba(251,113,133,.38); border-radius: .8rem; background: rgba(251,113,133,.12); }
+		.admin-failure-alert p:last-child { margin-top: .18rem; color: #fda4af; font-size: .74rem; line-height: 1.4; }
+		.admin-failure-alert__actions { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
+		.admin-period-filter { display: inline-flex; gap: .25rem; border: 1px solid rgba(148,163,184,.14); border-radius: .8rem; background: rgba(255,255,255,.025); padding: .25rem; }
+		.admin-period-filter button { border-radius: .58rem; padding: .42rem .65rem; color: #94a3b8; font-size: .7rem; font-weight: 750; }
+		.admin-period-filter button:hover { color: #e2e8f0; background: rgba(255,255,255,.06); }
+		.admin-period-filter button.is-active { background: rgba(110,231,183,.13); color: #d1fae5; box-shadow: inset 0 0 0 1px rgba(110,231,183,.18); }
+		.admin-period-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .6rem; margin-top: 1rem; }
+		.admin-period-metrics > div { border: 1px solid rgba(148,163,184,.12); border-radius: .9rem; background: rgba(255,255,255,.024); padding: .75rem; }
+		.admin-period-metrics span, .admin-period-metrics small { display: block; color: #94a3b8; font-size: .63rem; }
+		.admin-period-metrics strong { display: block; margin: .42rem 0; color: #f8fafc; font-family: var(--font-mono); font-size: 1.04rem; letter-spacing: -.04em; }
+		.admin-search-result { display: flex; align-items: center; justify-content: space-between; gap: .7rem; border: 1px solid rgba(148,163,184,.12); border-radius: .8rem; background: rgba(255,255,255,.025); padding: .7rem .75rem; }
+		.admin-search-result:hover { border-color: rgba(110,231,183,.32); background: rgba(110,231,183,.055); }
+		.admin-search-result span { display: grid; min-width: 0; gap: .13rem; }
+		.admin-search-result strong { overflow: hidden; color: #f8fafc; font-size: .78rem; text-overflow: ellipsis; white-space: nowrap; }
+		.admin-search-result small { overflow: hidden; color: #94a3b8; font-size: .65rem; text-overflow: ellipsis; white-space: nowrap; }
 		.admin-metric-card { display: flex; align-items: flex-start; justify-content: space-between; gap: .8rem; border: 1px solid rgba(148,163,184,.13); border-radius: 1.1rem; background: rgba(13,29,45,.66); padding: 1rem; box-shadow: inset 0 1px rgba(255,255,255,.025); }
 		.admin-metric-card p { color: #94a3b8; font-size: .7rem; font-weight: 750; }
 		.admin-metric-card strong { display: block; margin-top: .55rem; color: #f8fafc; font-family: var(--font-mono); font-size: 1.45rem; line-height: 1; letter-spacing: -.06em; }
@@ -194,7 +211,7 @@
 	.monthly-chart__label { color: #f1f5f9; font-family: "DM Mono", monospace; font-size: .67rem; font-weight: 700; text-transform: capitalize; }
 	.monthly-chart__meta { color: #64748b; font-size: .64rem; }
 		@media (max-width: 500px) { .monthly-chart { gap: .25rem; padding-left: .5rem; padding-right: .5rem; } .monthly-chart__value { font-size: .52rem; } .monthly-chart__label { font-size: .56rem; } .monthly-chart__meta { display: none; } .monthly-chart__grid { left: .5rem; right: .5rem; } }
-		@media (max-width: 639px) { .admin-page-header { padding: 1.1rem; } .admin-page-header__actions { width: 100%; } .admin-page-header__actions > * { flex: 1; } .admin-store-status { grid-template-columns: 1fr; } .admin-store-status > .flex:last-of-type { width: 100%; } .admin-store-status > .flex:last-of-type > * { flex: 1; } .admin-metric-card { padding: .9rem; } .admin-growth-strip { align-items: flex-start; } }
+		@media (max-width: 639px) { .admin-page-header { padding: 1.1rem; } .admin-page-header__actions { width: 100%; } .admin-page-header__actions > * { flex: 1; } .admin-store-status { grid-template-columns: 1fr; } .admin-store-status > .flex:last-of-type { width: 100%; } .admin-store-status > .flex:last-of-type > * { flex: 1; } .admin-metric-card { padding: .9rem; } .admin-period-metrics { grid-template-columns: 1fr; } .admin-failure-alert__actions { width: 100%; } .admin-growth-strip { align-items: flex-start; } }
 	.delivery-filter-card { display: grid; gap: .22rem; border: 1px solid rgba(148,163,184,.12); border-radius: .85rem; background: rgba(255,255,255,.025); padding: .65rem .75rem; text-align: left; color: #94a3b8; }
 	.delivery-filter-card:hover { border-color: rgba(110,231,183,.25); background: rgba(110,231,183,.045); }
 	.delivery-filter-card span { font-size: .68rem; font-weight: 700; }
