@@ -118,7 +118,10 @@ if (!token || !bridgeSecret) {
     const { notifications = [] } = await response.json();
     const sentIds = [];
     for (const notification of notifications) {
-      await channel.send({ content: operationMessage(notification) });
+      const requestedChannelId = ["STORE_MAINTENANCE_STARTED", "STORE_MAINTENANCE_ENDED"].includes(notification.eventType) && /^\d{17,20}$/.test(String(notification.payload?.channelId || "")) ? String(notification.payload.channelId) : operationsChannelId;
+      const requestedChannel = requestedChannelId === operationsChannelId ? channel : await guild.channels.fetch(requestedChannelId).catch(() => null);
+      const targetChannel = requestedChannel && requestedChannel.guildId === guild.id && requestedChannel.isTextBased() && typeof requestedChannel.send === "function" ? requestedChannel : channel;
+      await targetChannel.send({ content: operationMessage(notification) });
       sentIds.push(notification.id);
     }
     if (!sentIds.length) return;

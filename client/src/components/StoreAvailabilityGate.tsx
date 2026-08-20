@@ -7,5 +7,5 @@ export default function StoreAvailabilityGate({ children }: { children: React.Re
   const availability = trpc.store.availability.useQuery(undefined, { staleTime: 15_000, refetchOnWindowFocus: true });
   const protectedRoute = location === "/login" || location.startsWith("/admin");
   if (protectedRoute || availability.isLoading || availability.isError || availability.data?.publicOnline !== false || availability.data?.maintenanceMode === "CATALOG_ONLY") return <>{children}</>;
-  return <MaintenancePage message={availability.data.offlineMessage} />;
+  return <MaintenancePage message={availability.data.offlineMessage} estimatedReturnAt={availability.data.estimatedReturnAt} />;
 }

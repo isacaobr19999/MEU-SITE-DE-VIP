@@ -10,6 +10,7 @@ const mocks = vi.hoisted(() => ({
   overview: vi.fn(),
   monthlySales: vi.fn(),
   exportOrders: vi.fn(),
+  exportMaintenanceHistory: vi.fn(),
   categories: vi.fn(),
   products: vi.fn(),
   orders: vi.fn(),
@@ -33,6 +34,7 @@ const mocks = vi.hoisted(() => ({
   setManualMaintenance: vi.fn(),
   scheduleMaintenance: vi.fn(),
   cancelMaintenanceSchedule: vi.fn(),
+  setMaintenanceDiscordChannel: vi.fn(),
 }));
 
 vi.mock("@/_core/hooks/useAuth", () => ({ useAuth: mocks.auth }));
@@ -44,6 +46,7 @@ vi.mock("@/lib/trpc", () => ({
       overview: { useQuery: mocks.overview },
       monthlySales: { useQuery: mocks.monthlySales },
       exportOrders: { useQuery: mocks.exportOrders },
+      exportMaintenanceHistory: { useQuery: mocks.exportMaintenanceHistory },
       categories: { useQuery: mocks.categories },
       products: { useQuery: mocks.products },
       orders: { useQuery: mocks.orders },
@@ -67,6 +70,7 @@ vi.mock("@/lib/trpc", () => ({
       setManualMaintenance: { useMutation: mocks.setManualMaintenance },
       scheduleMaintenance: { useMutation: mocks.scheduleMaintenance },
       cancelMaintenanceSchedule: { useMutation: mocks.cancelMaintenanceSchedule },
+      setMaintenanceDiscordChannel: { useMutation: mocks.setMaintenanceDiscordChannel },
     },
     store: { availability: { useQuery: mocks.storeAvailability } },
   },
@@ -91,6 +95,7 @@ beforeEach(() => {
   mocks.overview.mockReturnValue(query({ salesTodayCents: 0, salesMonthCents: 1090, pendingOrders: 2, pendingDeliveries: 0, failedDeliveries: 0, playerCount: 1 }));
   mocks.monthlySales.mockReturnValue(query([{ key: "2026-08", label: "ago", salesCents: 1090, paidOrders: 2 }]));
   mocks.exportOrders.mockReturnValue({ ...query([]), isFetching: false });
+  mocks.exportMaintenanceHistory.mockReturnValue({ ...query([]), isFetching: false });
   mocks.categories.mockReturnValue(query([{ id: 1, name: "Cash", slug: "cash", active: true }]));
   mocks.products.mockReturnValue(query([{ id: 7, name: "1.000 Cash", categoryName: "Cash", priceCents: 490, active: true }]));
   mocks.orders.mockReturnValue(query([{ id: "order-1", orderNumber: "PSC-1", playerName: "_Nube", totalCents: 490, status: "WAITING_PAYMENT" }]));
@@ -99,10 +104,10 @@ beforeEach(() => {
   mocks.coupons.mockReturnValue(query([]));
   mocks.users.mockReturnValue(query([{ id: 1, name: "Administrador", role: "admin" }]));
   mocks.storeAvailability.mockReturnValue(query({ publicOnline: true, offlineMessage: "A loja está temporariamente em manutenção." }));
-  mocks.maintenanceControl.mockReturnValue(query({ settings: { publicOnline: true, offlineMessage: "A loja está temporariamente em manutenção.", maintenanceMode: "CLOSED", maintenanceReason: null, scheduledStartAt: null, scheduledEndAt: null, scheduleStatus: "NONE" }, protectedOrders: 2, history: [] }));
+  mocks.maintenanceControl.mockReturnValue(query({ settings: { publicOnline: true, offlineMessage: "A loja está temporariamente em manutenção.", maintenanceMode: "CLOSED", maintenanceReason: null, scheduledStartAt: null, scheduledEndAt: null, scheduleStatus: "NONE", maintenanceDiscordChannelId: null }, protectedOrders: 2, history: [] }));
   mocks.metricsByPeriod.mockReturnValue(query({ period: "30d", salesCents: 1090, paidOrders: 2, averageOrderCents: 545 }));
   mocks.search.mockReturnValue(query({ orders: [{ id: "search-order", orderNumber: "PSC-BUSCA", status: "PAID", totalCents: 490, playerName: "BuscaPlayer" }], players: [], coupons: [] }));
-  [mocks.createCategory, mocks.createServer, mocks.createProduct, mocks.createCoupon, mocks.deleteCoupon, mocks.productStatus, mocks.roleChange, mocks.setStoreAvailability, mocks.retryDelivery, mocks.setManualMaintenance, mocks.scheduleMaintenance, mocks.cancelMaintenanceSchedule].forEach(mock => mock.mockReturnValue(mutation));
+  [mocks.createCategory, mocks.createServer, mocks.createProduct, mocks.createCoupon, mocks.deleteCoupon, mocks.productStatus, mocks.roleChange, mocks.setStoreAvailability, mocks.retryDelivery, mocks.setManualMaintenance, mocks.scheduleMaintenance, mocks.cancelMaintenanceSchedule, mocks.setMaintenanceDiscordChannel].forEach(mock => mock.mockReturnValue(mutation));
 });
 
 describe("atalhos da visão administrativa", () => {
@@ -151,6 +156,14 @@ describe("atalhos da visão administrativa", () => {
 
     expect(confirm).toHaveBeenCalled();
     expect(mutation.mutate).toHaveBeenCalledWith(expect.objectContaining({ publicOnline: false, mode: "CLOSED", reason: "Atualização programada" }));
+  });
+
+  it("permite configurar o canal de avisos de manutenção no Discord", () => {
+    render(<AdminDashboard />);
+    fireEvent.change(screen.getByPlaceholderText("ID do canal, ex.: 1492898167405150268"), { target: { value: "1492898167405150268" } });
+    fireEvent.click(screen.getByRole("button", { name: "Salvar canal" }));
+
+    expect(mutation.mutate).toHaveBeenCalledWith({ channelId: "1492898167405150268" });
   });
 
   it("abre o fluxo guiado de criação de produto", () => {

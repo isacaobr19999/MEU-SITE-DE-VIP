@@ -407,3 +407,8 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Registrar histórico auditável de manutenções, incluindo responsável, motivo, modo, horários e resultado.
 - [x] Notificar a comunidade no Discord quando a loja entrar ou sair da manutenção, sem ampliar privilégios do bot.
 - [x] Validar os novos controles, a automação e o fluxo público antes de publicar na VPS; TypeScript, build e 23 testes passaram.
+
+- [x] Exibir aos jogadores uma duração estimada ou horário previsto de retorno durante a manutenção programada.
+- [x] Permitir selecionar de forma segura o canal do Discord que receberá avisos de manutenção.
+- [x] Disponibilizar exportação CSV do histórico de manutenções no painel administrativo.
+- [x] Cobrir as novas configurações e publicar a atualização na VPS após validação de tipos, testes e build; TypeScript, build e 22 testes passaram.

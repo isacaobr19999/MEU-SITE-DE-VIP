@@ -157,7 +157,7 @@ export default function Home() {
       <StoreHeader itemCount={itemCount} onCart={openCart} />
 
       <main className="relative z-10">
-        {catalogOnly ? <div className="container pt-5"><div className="rounded-2xl border border-amber-300/25 bg-amber-300/[.08] px-4 py-3 text-sm text-amber-100"><strong>Modo somente catálogo.</strong> {availability.data?.offlineMessage || "Você pode consultar os benefícios, mas compras e pagamentos voltam após a manutenção."}</div></div> : null}
+        {catalogOnly ? <div className="container pt-5"><div className="rounded-2xl border border-amber-300/25 bg-amber-300/[.08] px-4 py-3 text-sm text-amber-100"><strong>Modo somente catálogo.</strong> {availability.data?.offlineMessage || "Você pode consultar os benefícios, mas compras e pagamentos voltam após a manutenção."}{availability.data?.estimatedReturnAt ? <span className="mt-1 block text-xs text-amber-200">Previsão de retorno: {new Date(availability.data.estimatedReturnAt).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })}</span> : null}</div></div> : null}
 	        <section className="store-hero minecraft-hero container grid items-center gap-8 pb-20 pt-10 sm:gap-10 sm:pt-14 lg:grid-cols-[1.05fr_.95fr] lg:gap-16 lg:pb-28 lg:pt-24">
 	          <div className="max-w-2xl">
 	            <div className="minecraft-kicker mb-6 inline-flex items-center gap-2 border border-emerald-300/20 bg-emerald-300/[.08] px-4 py-2 text-[10px] font-bold tracking-[.16em] text-emerald-100"><span className="h-1.5 w-1.5 bg-emerald-300 shadow-[0_0_12px_currentColor]" /> RECOMPENSAS DO SERVIDOR</div>

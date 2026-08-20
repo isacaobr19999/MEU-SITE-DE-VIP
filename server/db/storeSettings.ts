@@ -21,11 +21,12 @@ export type StoreAvailability = {
   scheduleStartedAt: Date | null;
   scheduleEndedAt: Date | null;
   scheduleCronTaskUid: string | null;
+  maintenanceDiscordChannelId: string | null;
   updatedAt: Date | null;
 };
 
 function defaultAvailability(): StoreAvailability {
-  return { publicOnline: true, offlineMessage: DEFAULT_OFFLINE_MESSAGE, maintenanceMode: "CLOSED", maintenanceReason: null, scheduledStartAt: null, scheduledEndAt: null, scheduleStatus: "NONE", scheduleStartedAt: null, scheduleEndedAt: null, scheduleCronTaskUid: null, updatedAt: null };
+  return { publicOnline: true, offlineMessage: DEFAULT_OFFLINE_MESSAGE, maintenanceMode: "CLOSED", maintenanceReason: null, scheduledStartAt: null, scheduledEndAt: null, scheduleStatus: "NONE", scheduleStartedAt: null, scheduleEndedAt: null, scheduleCronTaskUid: null, maintenanceDiscordChannelId: null, updatedAt: null };
 }
 
 function messageOrDefault(message?: string | null) {
@@ -45,7 +46,8 @@ export async function getStoreAvailability(): Promise<StoreAvailability> {
 
 export async function getPublicStoreAvailability() {
   const settings = await getStoreAvailability();
-  return { publicOnline: settings.publicOnline, offlineMessage: settings.offlineMessage, maintenanceMode: settings.maintenanceMode };
+  const estimatedReturnAt = ["SCHEDULED", "ACTIVE"].includes(settings.scheduleStatus) ? settings.scheduledEndAt : null;
+  return { publicOnline: settings.publicOnline, offlineMessage: settings.offlineMessage, maintenanceMode: settings.maintenanceMode, estimatedReturnAt };
 }
 
 export async function getMaintenanceControl() {
@@ -56,6 +58,17 @@ export async function getMaintenanceControl() {
     db.select().from(maintenanceEvents).orderBy(desc(maintenanceEvents.createdAt)).limit(8),
   ]);
   return { settings, protectedOrders: Number(protectedOrders[0]?.value ?? 0), history };
+}
+
+export async function listMaintenanceEventExport() {
+  const db = await requireDb();
+  return db.select().from(maintenanceEvents).orderBy(desc(maintenanceEvents.createdAt)).limit(2000);
+}
+
+export async function setMaintenanceDiscordChannel(channelId: string | null) {
+  const db = await requireDb();
+  await db.insert(storeSettings).values({ id: 1, maintenanceDiscordChannelId: channelId }).onDuplicateKeyUpdate({ set: { maintenanceDiscordChannelId: channelId } });
+  return getStoreAvailability();
 }
 
 export async function setStoreAvailability(input: { publicOnline: boolean; offlineMessage?: string }) {
@@ -86,7 +99,7 @@ export async function setManualMaintenance(input: { publicOnline: boolean; mode:
   await db.update(storeSettings).set(values).where(eq(storeSettings.id, 1));
   const settings = await getStoreAvailability();
   await recordMaintenanceEvent({ eventType: input.publicOnline ? "ENDED" : "UPDATED", mode: input.mode, message: settings.offlineMessage, reason: values.maintenanceReason, actorId: input.actorId, actorType: "admin" });
-  await enqueueDiscordNotification({ eventType: input.publicOnline ? "STORE_MAINTENANCE_ENDED" : "STORE_MAINTENANCE_STARTED", dedupeKey: `maintenance-manual:${input.publicOnline ? "ended" : "started"}:${settings.updatedAt?.toISOString() ?? Date.now()}`, payload: { mode: input.mode, message: settings.offlineMessage, reason: values.maintenanceReason, manual: true } });
+  await enqueueDiscordNotification({ eventType: input.publicOnline ? "STORE_MAINTENANCE_ENDED" : "STORE_MAINTENANCE_STARTED", dedupeKey: `maintenance-manual:${input.publicOnline ? "ended" : "started"}:${settings.updatedAt?.toISOString() ?? Date.now()}`, payload: { mode: input.mode, message: settings.offlineMessage, reason: values.maintenanceReason, channelId: settings.maintenanceDiscordChannelId, manual: true } });
   return { settings, previousTaskUid: current.scheduleCronTaskUid };
 }
 
@@ -134,7 +147,7 @@ export async function processScheduledMaintenance(taskUid: string) {
     if (current.scheduleStatus === "ACTIVE") {
       await db.update(storeSettings).set({ publicOnline: true, scheduleStatus: "COMPLETED", scheduleEndedAt: now }).where(eq(storeSettings.id, 1));
       await recordMaintenanceEvent({ eventType: "ENDED", mode: current.maintenanceMode, message: current.offlineMessage, reason: current.maintenanceReason, scheduledStartAt: current.scheduledStartAt, scheduledEndAt: current.scheduledEndAt, actorType: "scheduler" });
-      await enqueueDiscordNotification({ eventType: "STORE_MAINTENANCE_ENDED", dedupeKey: `maintenance-ended:${scheduleKey}`, payload: { mode: current.maintenanceMode, reason: current.maintenanceReason, scheduledEndAt: current.scheduledEndAt.toISOString() } });
+      await enqueueDiscordNotification({ eventType: "STORE_MAINTENANCE_ENDED", dedupeKey: `maintenance-ended:${scheduleKey}`, payload: { mode: current.maintenanceMode, reason: current.maintenanceReason, channelId: current.maintenanceDiscordChannelId, scheduledEndAt: current.scheduledEndAt.toISOString() } });
       return { action: "ended" as const };
     }
     await db.update(storeSettings).set({ scheduleStatus: "COMPLETED", scheduleEndedAt: now }).where(eq(storeSettings.id, 1));
@@ -143,7 +156,7 @@ export async function processScheduledMaintenance(taskUid: string) {
   if (current.scheduleStatus === "ACTIVE" && current.publicOnline === false) return { action: "active" as const };
   await db.update(storeSettings).set({ publicOnline: false, scheduleStatus: "ACTIVE", scheduleStartedAt: now }).where(eq(storeSettings.id, 1));
   await recordMaintenanceEvent({ eventType: "STARTED", mode: current.maintenanceMode, message: current.offlineMessage, reason: current.maintenanceReason, scheduledStartAt: current.scheduledStartAt, scheduledEndAt: current.scheduledEndAt, actorType: "scheduler" });
-  await enqueueDiscordNotification({ eventType: "STORE_MAINTENANCE_STARTED", dedupeKey: `maintenance-started:${scheduleKey}`, payload: { mode: current.maintenanceMode, message: current.offlineMessage, reason: current.maintenanceReason, scheduledEndAt: current.scheduledEndAt.toISOString() } });
+  await enqueueDiscordNotification({ eventType: "STORE_MAINTENANCE_STARTED", dedupeKey: `maintenance-started:${scheduleKey}`, payload: { mode: current.maintenanceMode, message: current.offlineMessage, reason: current.maintenanceReason, channelId: current.maintenanceDiscordChannelId, scheduledEndAt: current.scheduledEndAt.toISOString() } });
   return { action: "started" as const };
 }
 

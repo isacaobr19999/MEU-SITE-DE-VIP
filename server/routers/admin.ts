@@ -4,7 +4,7 @@ import { parse as parseCookie } from "cookie";
 import { COOKIE_NAME } from "@shared/const";
 import { createCategoryRecord, createProductRecord, listAdminCategories } from "../db/adminCatalog";
 import { cancelOrderRecord, createCouponRecord, createServerRecord, deleteCouponRecord, getAdminMetricsByPeriod, getAdminMonthlySales, getAdminOrderDetail, getAdminOverview, getAdminProductPriceCents, listAdminCoupons, listAdminDeliveries, listAdminLogs, listAdminOrderExport, listAdminOrders, listAdminPlayers, listAdminProducts, listAdminServers, listAdminUsers, listPlayerHistory, retryDeliveryRecord, searchAdminRecords, setAdminRole, setProductStatus, updateCategoryRecord, updateCouponRecord, updateProductRecord, updateServerRecord, writeAdminAuditLog } from "../db/admin";
-import { cancelMaintenanceSchedule, getMaintenanceControl, getStoreAvailability, scheduleMaintenance, setMaintenanceScheduleTask, setManualMaintenance, setStoreAvailability } from "../db/storeSettings";
+import { cancelMaintenanceSchedule, getMaintenanceControl, getStoreAvailability, listMaintenanceEventExport, scheduleMaintenance, setMaintenanceDiscordChannel, setMaintenanceScheduleTask, setManualMaintenance, setStoreAvailability } from "../db/storeSettings";
 import { createHeartbeatJob, updateHeartbeatJob } from "../_core/heartbeat";
 import { adminProcedure, router } from "../_core/trpc";
 
@@ -61,9 +61,15 @@ export const adminRouter = router({
   users: adminProcedure.query(listAdminUsers),
   storeAvailability: adminProcedure.query(getStoreAvailability),
   maintenanceControl: adminProcedure.query(getMaintenanceControl),
+  exportMaintenanceHistory: adminProcedure.query(listMaintenanceEventExport),
   setStoreAvailability: adminProcedure.input(z.object({ publicOnline: z.boolean(), offlineMessage: z.string().trim().min(8).max(280).optional() })).mutation(async ({ ctx, input }) => {
     const settings = await setStoreAvailability(input);
     await audit(ctx, input.publicOnline ? "store.activated" : "store.deactivated", "store_settings", "1", { publicOnline: input.publicOnline });
+    return settings;
+  }),
+  setMaintenanceDiscordChannel: adminProcedure.input(z.object({ channelId: z.string().trim().regex(/^\d{17,20}$/, "Informe um ID de canal Discord válido.").nullable() })).mutation(async ({ ctx, input }) => {
+    const settings = await setMaintenanceDiscordChannel(input.channelId);
+    await audit(ctx, "maintenance.discord_channel_updated", "store_settings", "1", { configured: Boolean(input.channelId) });
     return settings;
   }),
   setManualMaintenance: adminProcedure.input(maintenanceInput.extend({ publicOnline: z.boolean() })).mutation(async ({ ctx, input }) => {

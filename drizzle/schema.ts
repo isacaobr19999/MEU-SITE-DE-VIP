@@ -52,6 +52,7 @@ export const storeSettings = mysqlTable("store_settings", {
   scheduleStartedAt: timestamp("scheduleStartedAt"),
   scheduleEndedAt: timestamp("scheduleEndedAt"),
   scheduleCronTaskUid: varchar("scheduleCronTaskUid", { length: 65 }),
+  maintenanceDiscordChannelId: varchar("maintenanceDiscordChannelId", { length: 32 }),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 }, table => [index("store_settings_schedule_idx").on(table.scheduleStatus, table.scheduledStartAt)]);
 
