@@ -35,6 +35,7 @@ const mocks = vi.hoisted(() => ({
   scheduleMaintenance: vi.fn(),
   cancelMaintenanceSchedule: vi.fn(),
   setMaintenanceDiscordChannel: vi.fn(),
+  sendMaintenanceNotificationTest: vi.fn(),
 }));
 
 vi.mock("@/_core/hooks/useAuth", () => ({ useAuth: mocks.auth }));
@@ -71,6 +72,7 @@ vi.mock("@/lib/trpc", () => ({
       scheduleMaintenance: { useMutation: mocks.scheduleMaintenance },
       cancelMaintenanceSchedule: { useMutation: mocks.cancelMaintenanceSchedule },
       setMaintenanceDiscordChannel: { useMutation: mocks.setMaintenanceDiscordChannel },
+      sendMaintenanceNotificationTest: { useMutation: mocks.sendMaintenanceNotificationTest },
     },
     store: { availability: { useQuery: mocks.storeAvailability } },
   },
@@ -104,10 +106,10 @@ beforeEach(() => {
   mocks.coupons.mockReturnValue(query([]));
   mocks.users.mockReturnValue(query([{ id: 1, name: "Administrador", role: "admin" }]));
   mocks.storeAvailability.mockReturnValue(query({ publicOnline: true, offlineMessage: "A loja está temporariamente em manutenção." }));
-  mocks.maintenanceControl.mockReturnValue(query({ settings: { publicOnline: true, offlineMessage: "A loja está temporariamente em manutenção.", maintenanceMode: "CLOSED", maintenanceReason: null, scheduledStartAt: null, scheduledEndAt: null, scheduleStatus: "NONE", maintenanceDiscordChannelId: null }, protectedOrders: 2, history: [] }));
+  mocks.maintenanceControl.mockReturnValue(query({ settings: { publicOnline: true, offlineMessage: "A loja está temporariamente em manutenção.", maintenanceMode: "CLOSED", maintenanceReason: null, scheduledStartAt: null, scheduledEndAt: null, scheduleStatus: "NONE", maintenanceDiscordChannelId: null, maintenanceDiscordTemplate: "STANDARD" }, protectedOrders: 2, history: [] }));
   mocks.metricsByPeriod.mockReturnValue(query({ period: "30d", salesCents: 1090, paidOrders: 2, averageOrderCents: 545 }));
   mocks.search.mockReturnValue(query({ orders: [{ id: "search-order", orderNumber: "PSC-BUSCA", status: "PAID", totalCents: 490, playerName: "BuscaPlayer" }], players: [], coupons: [] }));
-  [mocks.createCategory, mocks.createServer, mocks.createProduct, mocks.createCoupon, mocks.deleteCoupon, mocks.productStatus, mocks.roleChange, mocks.setStoreAvailability, mocks.retryDelivery, mocks.setManualMaintenance, mocks.scheduleMaintenance, mocks.cancelMaintenanceSchedule, mocks.setMaintenanceDiscordChannel].forEach(mock => mock.mockReturnValue(mutation));
+  [mocks.createCategory, mocks.createServer, mocks.createProduct, mocks.createCoupon, mocks.deleteCoupon, mocks.productStatus, mocks.roleChange, mocks.setStoreAvailability, mocks.retryDelivery, mocks.setManualMaintenance, mocks.scheduleMaintenance, mocks.cancelMaintenanceSchedule, mocks.setMaintenanceDiscordChannel, mocks.sendMaintenanceNotificationTest].forEach(mock => mock.mockReturnValue(mutation));
 });
 
 describe("atalhos da visão administrativa", () => {
@@ -161,9 +163,19 @@ describe("atalhos da visão administrativa", () => {
   it("permite configurar o canal de avisos de manutenção no Discord", () => {
     render(<AdminDashboard />);
     fireEvent.change(screen.getByPlaceholderText("ID do canal, ex.: 1492898167405150268"), { target: { value: "1492898167405150268" } });
-    fireEvent.click(screen.getByRole("button", { name: "Salvar canal" }));
+    fireEvent.change(screen.getByLabelText("Modelo da mensagem"), { target: { value: "COMMUNITY" } });
+    fireEvent.click(screen.getByRole("button", { name: "Salvar configuração" }));
 
-    expect(mutation.mutate).toHaveBeenCalledWith({ channelId: "1492898167405150268" });
+    expect(mutation.mutate).toHaveBeenCalledWith({ channelId: "1492898167405150268", template: "COMMUNITY" });
+  });
+
+  it("confirma e envia o teste de aviso sem alterar a loja", () => {
+    const confirm = vi.spyOn(window, "confirm").mockReturnValue(true);
+    render(<AdminDashboard />);
+    fireEvent.click(screen.getByRole("button", { name: "Testar aviso" }));
+
+    expect(confirm).toHaveBeenCalledWith(expect.stringContaining("loja permanecerá online"));
+    expect(mutation.mutate).toHaveBeenCalledWith();
   });
 
   it("abre o fluxo guiado de criação de produto", () => {

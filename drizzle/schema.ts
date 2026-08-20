@@ -53,6 +53,7 @@ export const storeSettings = mysqlTable("store_settings", {
   scheduleEndedAt: timestamp("scheduleEndedAt"),
   scheduleCronTaskUid: varchar("scheduleCronTaskUid", { length: 65 }),
   maintenanceDiscordChannelId: varchar("maintenanceDiscordChannelId", { length: 32 }),
+  maintenanceDiscordTemplate: varchar("maintenanceDiscordTemplate", { length: 24 }).default("STANDARD").notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 }, table => [index("store_settings_schedule_idx").on(table.scheduleStatus, table.scheduledStartAt)]);
 
@@ -352,7 +353,7 @@ export const discordNotifications = mysqlTable(
   "discord_notifications",
   {
     id: varchar("id", { length: 36 }).primaryKey(),
-    eventType: mysqlEnum("eventType", [...discordNotificationKinds, "STORE_MAINTENANCE_STARTED", "STORE_MAINTENANCE_ENDED"] as const).notNull(),
+    eventType: mysqlEnum("eventType", [...discordNotificationKinds, "STORE_MAINTENANCE_STARTED", "STORE_MAINTENANCE_ENDED", "STORE_MAINTENANCE_TEST"] as const).notNull(),
     status: mysqlEnum("status", discordNotificationStatuses).default("PENDING").notNull(),
     orderId: varchar("orderId", { length: 36 }).references(() => orders.id, { onDelete: "set null" }),
     deliveryId: varchar("deliveryId", { length: 36 }).references(() => deliveries.id, { onDelete: "set null" }),

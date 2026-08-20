@@ -3,7 +3,7 @@ import { randomUUID } from "node:crypto";
 import { discordNotifications } from "../../drizzle/schema";
 import { requireDb } from "../db";
 
-export type DiscordNotificationEvent = "PAYMENT_APPROVED" | "DELIVERY_COMPLETED" | "DELIVERY_FAILED" | "STORE_MAINTENANCE_STARTED" | "STORE_MAINTENANCE_ENDED";
+export type DiscordNotificationEvent = "PAYMENT_APPROVED" | "DELIVERY_COMPLETED" | "DELIVERY_FAILED" | "STORE_MAINTENANCE_STARTED" | "STORE_MAINTENANCE_ENDED" | "STORE_MAINTENANCE_TEST";
 
 export async function enqueueDiscordNotification(input: { eventType: DiscordNotificationEvent; orderId?: string; deliveryId?: string; dedupeKey: string; payload: Record<string, unknown> }) {
   const db = await requireDb();

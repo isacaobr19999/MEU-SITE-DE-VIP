@@ -104,8 +104,13 @@ if (!token || !bridgeSecret) {
     const payload = notification.payload || {};
     if (notification.eventType === "PAYMENT_APPROVED") return `💳 **Pagamento aprovado**\nPedido: **${payload.orderNumber || "—"}**\nValor: **R$ ${((Number(payload.totalCents) || 0) / 100).toFixed(2).replace(".", ",")}**\nA entrega foi colocada na fila.`;
     if (notification.eventType === "DELIVERY_COMPLETED") return `📦 **Entrega concluída**\nPedido: **${payload.orderNumber || "—"}**\nJogador: **${payload.playerName || "—"}**\nProduto: **${payload.productName || "—"}**`;
-    if (notification.eventType === "STORE_MAINTENANCE_STARTED") return `🛠️ **Loja em manutenção**\nModo: **${payload.mode === "CATALOG_ONLY" ? "somente catálogo" : "loja temporariamente fechada"}**\n${payload.reason ? `Motivo: ${payload.reason}\n` : ""}A comunidade foi avisada e os pedidos já confirmados continuam protegidos.`;
-    if (notification.eventType === "STORE_MAINTENANCE_ENDED") return `✅ **Loja reaberta**\nA manutenção foi concluída e compras e pagamentos voltaram a ficar disponíveis.${payload.reason ? `\nMotivo registrado: ${payload.reason}` : ""}`;
+    if (notification.eventType === "STORE_MAINTENANCE_TEST") return `🧪 **Teste de aviso de manutenção**\nEste é um teste controlado do canal configurado. A loja continua **online** e nenhuma compra ou pagamento foi interrompido.`;
+    if (notification.eventType === "STORE_MAINTENANCE_STARTED") {
+      if (payload.template === "CONCISE") return `🛠️ **Loja em manutenção**\nCompras e pagamentos foram pausados temporariamente. Pedidos já confirmados permanecem protegidos.${payload.scheduledEndAt ? `\nPrevisão de retorno: <t:${Math.floor(new Date(payload.scheduledEndAt).getTime() / 1000)}:f>.` : ""}`;
+      if (payload.template === "COMMUNITY") return `🛠️ **Pausa para melhorias**\nEstamos cuidando da loja para manter tudo funcionando bem. Os pedidos já confirmados seguem protegidos.${payload.scheduledEndAt ? `\nEsperamos voltar até <t:${Math.floor(new Date(payload.scheduledEndAt).getTime() / 1000)}:f>.` : ""}`;
+      return `🛠️ **Loja em manutenção**\nModo: **${payload.mode === "CATALOG_ONLY" ? "somente catálogo" : "loja temporariamente fechada"}**\n${payload.reason ? `Motivo: ${payload.reason}\n` : ""}A comunidade foi avisada e os pedidos já confirmados continuam protegidos.${payload.scheduledEndAt ? `\nPrevisão de retorno: <t:${Math.floor(new Date(payload.scheduledEndAt).getTime() / 1000)}:f>.` : ""}`;
+    }
+    if (notification.eventType === "STORE_MAINTENANCE_ENDED") return payload.template === "COMMUNITY" ? `✅ **Voltamos!**\nA manutenção foi concluída e a loja já está disponível novamente. Obrigado pela paciência.` : `✅ **Loja reaberta**\nA manutenção foi concluída e compras e pagamentos voltaram a ficar disponíveis.${payload.reason ? `\nMotivo registrado: ${payload.reason}` : ""}`;
     return `⚠️ **Entrega precisa de atenção**\nPedido: **${payload.orderNumber || "—"}**\nJogador: **${payload.playerName || "—"}**\nProduto: **${payload.productName || "—"}**\nMotivo: ${payload.error || "não informado"}`;
   }
 

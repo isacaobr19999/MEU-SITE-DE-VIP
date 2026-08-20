@@ -21,6 +21,7 @@ const NewsPage = lazy(() => import("./pages/CommunityContent").then((module) => 
 const RulesPage = lazy(() => import("./pages/CommunityContent").then((module) => ({ default: module.RulesPage })));
 const PoliciesPage = lazy(() => import("./pages/CommunityContent").then((module) => ({ default: module.PoliciesPage })));
 const OperationsStatus = lazy(() => import("./pages/OperationsStatus"));
+const MaintenanceHistory = lazy(() => import("./pages/MaintenanceHistory"));
 
 function RouteLoading() {
   return <main className="grid min-h-screen place-items-center bg-[#07111d] px-5 text-slate-200"><div className="rounded-2xl border border-white/10 bg-slate-900/75 px-5 py-4 text-sm shadow-2xl">Carregando página…</div></main>;
@@ -42,6 +43,7 @@ function Router() {
         <Route path={"/news"} component={NewsPage} />
         <Route path={"/policies"} component={PoliciesPage} />
         <Route path={"/status"} component={OperationsStatus} />
+        <Route path={"/maintenance-history"} component={MaintenanceHistory} />
         <Route path={"/products/:slug"} component={ProductDetail} />
         <Route path={"/orders"} component={OrderHistory} />
         <Route path={"/orders/:id"} component={OrderDetail} />

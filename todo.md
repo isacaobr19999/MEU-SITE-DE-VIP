@@ -412,3 +412,8 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Permitir selecionar de forma segura o canal do Discord que receberá avisos de manutenção.
 - [x] Disponibilizar exportação CSV do histórico de manutenções no painel administrativo.
 - [x] Cobrir as novas configurações e publicar a atualização na VPS após validação de tipos, testes e build; TypeScript, build e 22 testes passaram.
+
+- [ ] Adicionar teste controlado de aviso de manutenção sem alterar o estado público da loja.
+- [ ] Permitir selecionar modelos de mensagem de manutenção por canal Discord configurado.
+- [ ] Criar uma página pública com histórico resumido e seguro de manutenções concluídas.
+- [ ] Validar o teste de aviso, os controles e a página pública antes de publicar na VPS.
