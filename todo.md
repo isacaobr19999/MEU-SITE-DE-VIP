@@ -371,3 +371,6 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Criar uma validação segura de cupom com prazo curto, sem abrir pagamento ou gerar entrega, para confirmar o aviso de expiração; `VALIDAEXP2026` permaneceu inativo, com validade de 15 minutos e limite único.
 - [x] Arquivar os cupons antigos já desativados sem apagar histórico de uso, pedidos ou auditoria; seis cupons usados foram marcados com `archivedAt` após backup SQL e vínculos preservados.
 - [x] Permitir definir e visualizar limite total de usos ao criar campanhas de cupom no painel administrativo; campo, resumo, validação e visualização no catálogo implementados e cobertos por teste.
+- [x] Remover o cupom técnico inativo `VALIDAEXP2026` após validar que não possui usos, pedidos ou pagamentos vinculados; backup salvo na VPS e exclusão condicionada confirmou zero registros restantes.
+- [x] Auditar a instalação atual do PlayEconomy no Paper e documentar o procedimento de teste TAB para conta comum e administrativa sem criar permissões novas; JAR e classe de filtragem confirmados, com Paper e plugin ativos.
+- [ ] Retomar o envio do commit local ao GitHub depois que a integração tiver uma credencial válida, sem expor token ou runtime.
