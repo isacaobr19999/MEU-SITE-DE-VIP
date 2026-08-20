@@ -1,7 +1,7 @@
-# Tentativa de divulgação da campanha BEMVINDO10
+# Publicação da campanha BEMVINDO10
 
-O texto de divulgação da BEMVINDO10 foi confirmado pelo administrador para publicação no canal oficial `#📢-anúncios` (ID `1492895622670581932`). As tentativas pela identidade do bot receberam respostas `403`, mesmo após a revisão de permissões informada pelo administrador; portanto, nenhuma mensagem foi criada.
+O texto da campanha BEMVINDO10 foi aprovado pelo administrador e publicado no canal oficial `#📢-anúncios` (ID `1492895622670581932`). A mensagem criada possui o identificador `1539989476431101972` e informa o desconto de 10%, a validade até 31/08/2026 às 23:59, o limite de 30 usos e o limite de um uso por jogador.
 
-Uma tentativa alternativa via sessão de navegador foi iniciada na URL direta do canal, mas o cliente Discord não carregou conteúdo interativo na sessão disponível. Nenhuma publicação foi feita por essa rota.
+As tentativas anteriores receberam resposta `403`, portanto não criaram mensagens. Após a autorização temporária de Administrador, foi feita somente uma publicação adicional, que foi confirmada pela consulta ao histórico recente do canal.
 
-O próximo passo seguro é conferir no Discord Desktop/Web se o membro **PlayStorCraft** tem `Ver canal` e `Enviar mensagens` permitidos diretamente no canal, sem uma sobreposição de negação. O anúncio permanece pendente e deve ser enviado somente uma vez quando a permissão efetiva for confirmada.
+Após o envio, o administrador confirmou a remoção do privilégio temporário. O bot deve manter somente o acesso mínimo necessário no canal: `Ver canal` e `Enviar mensagens`.

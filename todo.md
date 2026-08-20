@@ -380,9 +380,13 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Adicionar controle administrativo protegido para ativar ou desativar a loja pública, com mensagem de manutenção e acesso de reativação preservado em `/admin`; painel, persistência, auditoria, bloqueio de pedidos/checkout e tela pública de manutenção implementados e validados sem alterar o estado online atual.
 - [x] Atualizar a mensagem padrão de manutenção para orientar clientes sobre indisponibilidade temporária, pedidos existentes e retorno da loja; texto configurado na VPS e validado no painel sem colocar a loja offline.
 - [x] Confirmar que o painel administrativo exibe os limites e os usos da campanha BEMVINDO10 para acompanhamento operacional; painel publicado mostra `0/30 usos` e a consulta de banco confirmou zero usos.
-- [ ] Preparar o texto de divulgação pública da BEMVINDO10, aguardando confirmação antes de qualquer publicação visível à comunidade.
-- [ ] Publicar o anúncio confirmado da campanha BEMVINDO10 no canal oficial de anúncios da comunidade e registrar o identificador da mensagem.
-- [ ] Repetir a publicação confirmada da BEMVINDO10 após a concessão de permissão de envio ao bot no canal oficial.
-- [ ] Executar a tentativa final autorizada de publicação do anúncio BEMVINDO10 após a revisão das permissões específicas do canal.
-- [ ] Reenviar o anúncio confirmado da BEMVINDO10 com conteúdo em formato simples após a rejeição de formatação do Discord.
-- [ ] Verificar a permissão efetiva do membro PlayStorCraft em `#📢-anúncios` antes da nova tentativa de publicação autorizada.
+- [x] Preparar o texto de divulgação pública da BEMVINDO10, aguardando confirmação antes de qualquer publicação visível à comunidade.
+- [x] Publicar o anúncio confirmado da campanha BEMVINDO10 no canal oficial de anúncios da comunidade e registrar o identificador da mensagem; mensagem `1539989476431101972` confirmada.
+- [x] Repetir a publicação confirmada da BEMVINDO10 após a concessão de permissão de envio ao bot no canal oficial.
+- [x] Executar a tentativa final autorizada de publicação do anúncio BEMVINDO10 após a revisão das permissões específicas do canal.
+- [x] Reenviar o anúncio confirmado da BEMVINDO10 com conteúdo em formato simples após a rejeição de formatação do Discord.
+- [x] Verificar a permissão efetiva do membro PlayStorCraft em `#📢-anúncios` antes da nova tentativa de publicação autorizada.
+- [x] Concluir o ajuste mínimo de `Ver canal` e `Enviar mensagens` para o membro PlayStorCraft em `#📢-anúncios`, removendo permissões administrativas desnecessárias após a confirmação.
+- [x] Verificar a publicação após a confirmação do ajuste mínimo de permissões feita pelo administrador no Discord.
+- [x] Executar uma única tentativa de publicação após a confirmação final do administrador de que `Enviar mensagens` foi permitido ao bot.
+- [x] Testar uma única publicação autorizada enquanto o bot possui Administrador temporário e orientar a remoção imediata do privilégio após o resultado; publicação confirmada e remoção do privilégio confirmada pelo administrador.
