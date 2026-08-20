@@ -97,6 +97,13 @@ describe("operações administrativas críticas", () => {
     await expect(adminRouter.createCaller(adminContext()).createCoupon(input)).rejects.toMatchObject({ code: "CONFLICT", message: "Já existe um cupom com esse código. Escolha outro código." });
   });
 
+  it("rejeita expiração anterior ao início antes de persistir o cupom", async () => {
+    const input = { code: "TEMPO10", type: "PERCENTAGE" as const, percentageBasisPoints: 1000, maxUsesPerPlayer: 1, active: true, startsAt: new Date("2026-08-21T12:00:00.000Z"), endsAt: new Date("2026-08-21T11:59:00.000Z") };
+
+    await expect(adminRouter.createCaller(adminContext()).createCoupon(input)).rejects.toMatchObject({ code: "BAD_REQUEST", message: expect.stringContaining("expiração") });
+    expect(mocks.createCouponRecord).not.toHaveBeenCalledWith(input);
+  });
+
   it("exclui um cupom sem uso e registra a auditoria", async () => {
     mocks.deleteCouponRecord.mockResolvedValue({ deleted: true, deactivated: false });
     mocks.writeAdminAuditLog.mockResolvedValue(undefined);

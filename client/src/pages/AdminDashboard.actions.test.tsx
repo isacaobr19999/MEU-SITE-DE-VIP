@@ -92,4 +92,14 @@ describe("atalhos da visão administrativa", () => {
     fireEvent.click(screen.getByRole("button", { name: "Pausar venda" }));
     expect(mutation.mutate).toHaveBeenCalledWith({ id: 7, active: false });
   });
+
+  it("confirma a exclusão de cupom antes de executar a ação", () => {
+    const confirm = vi.spyOn(window, "confirm").mockReturnValue(true);
+    mocks.coupons.mockReturnValue(query([{ id: 15, code: "TEMPO10", type: "PERCENTAGE", percentageBasisPoints: 1000, endsAt: "2026-08-31T18:00:00.000Z" }]));
+    render(<AdminDashboard />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Excluir" }));
+    expect(confirm).toHaveBeenCalledWith(expect.stringContaining("TEMPO10"));
+    expect(mutation.mutate).toHaveBeenCalledWith({ id: 15 });
+  });
 });
