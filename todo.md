@@ -417,3 +417,8 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Permitir selecionar modelos de mensagem de manutenção por canal Discord configurado.
 - [x] Criar uma página pública com histórico resumido e seguro de manutenções concluídas.
 - [x] Validar o teste de aviso, os controles e a página pública antes de publicar na VPS; loja permaneceu online com HTTP 200, e a rota foi revisada em desktop e celular.
+
+- [x] Criar uma rota dedicada de manutenção com tela de login e senha usando a autenticação própria existente.
+- [x] Restringir o painel de manutenção a usuários administrativos e exibir acesso negado para contas sem essa função.
+- [x] Oferecer controles essenciais de manutenção, agendamento e comunicação em uma interface isolada do dashboard completo.
+- [x] Cobrir o login, a autorização e a responsividade do painel antes da publicação na VPS; 25 testes passaram, e o login foi revisado em desktop e celular.
