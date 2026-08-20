@@ -44,10 +44,12 @@ describe("consulta de categorias administrativas", () => {
     const couponRows = [{ id: 9, code: "MESTRE10", description: "Campanha", type: "PERCENTAGE", percentageBasisPoints: 1000, fixedDiscountCents: null, startsAt: null, endsAt: null, maxUses: 20, maxUsesPerPlayer: 1, active: true }];
     const assignments = [{ couponId: 9, productId: 4 }];
     const couponOrderBy = vi.fn().mockResolvedValue(couponRows);
-    const couponFrom = vi.fn().mockReturnValue({ orderBy: couponOrderBy });
+    const couponWhere = vi.fn().mockReturnValue({ orderBy: couponOrderBy });
+    const couponFrom = vi.fn().mockReturnValue({ where: couponWhere });
     const assignmentFrom = vi.fn().mockResolvedValue(assignments);
     mocks.requireDb.mockResolvedValue({ select: vi.fn().mockReturnValueOnce({ from: couponFrom }).mockReturnValueOnce({ from: assignmentFrom }) });
 
     await expect(listAdminCoupons()).resolves.toEqual([{ ...couponRows[0], productIds: [4] }]);
+    expect(couponWhere).toHaveBeenCalledOnce();
   });
 });

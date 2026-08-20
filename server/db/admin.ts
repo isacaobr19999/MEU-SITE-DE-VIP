@@ -1,4 +1,4 @@
-import { and, asc, count, desc, eq, gte, inArray, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, gte, inArray, isNull, sql } from "drizzle-orm";
 import { randomBytes } from "node:crypto";
 import { adminUsers, categories,   couponProducts,
   couponUsage,
@@ -112,7 +112,7 @@ export async function createServerRecord(input: { name: string; slug: string; ki
 export async function listAdminCoupons() {
   const db = await requireDb();
   const [rows, assignments] = await Promise.all([
-    db.select().from(coupons).orderBy(desc(coupons.createdAt)),
+    db.select().from(coupons).where(isNull(coupons.archivedAt)).orderBy(desc(coupons.createdAt)),
     db.select({ couponId: couponProducts.couponId, productId: couponProducts.productId }).from(couponProducts),
   ]);
   return rows.map(row => ({ ...row, productIds: assignments.filter(assignment => assignment.couponId === row.id).map(assignment => assignment.productId) }));
