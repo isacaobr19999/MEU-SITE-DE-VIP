@@ -373,4 +373,4 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Permitir definir e visualizar limite total de usos ao criar campanhas de cupom no painel administrativo; campo, resumo, validação e visualização no catálogo implementados e cobertos por teste.
 - [x] Remover o cupom técnico inativo `VALIDAEXP2026` após validar que não possui usos, pedidos ou pagamentos vinculados; backup salvo na VPS e exclusão condicionada confirmou zero registros restantes.
 - [x] Auditar a instalação atual do PlayEconomy no Paper e documentar o procedimento de teste TAB para conta comum e administrativa sem criar permissões novas; JAR e classe de filtragem confirmados, com Paper e plugin ativos.
-- [ ] Retomar o envio do commit local ao GitHub depois que a integração tiver uma credencial válida, sem expor token ou runtime.
+- [x] Retomar o envio do commit local ao GitHub depois que a integração tiver uma credencial válida, sem expor token ou runtime; autenticação restaurada e commits `7ee4e6d` e `f7171d4` enviados para `main`.
