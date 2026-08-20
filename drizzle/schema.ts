@@ -18,7 +18,9 @@ const paymentStatuses = ["PENDING", "PROCESSING", "APPROVED", "REJECTED", "CANCE
 const productKinds = ["VIP", "COINS", "KIT", "COSMETIC"] as const;
 const serverKinds = ["SURVIVAL", "SKYBLOCK", "BEDWARS", "GLOBAL"] as const;
 const communityServerStatuses = ["UNKNOWN", "ONLINE", "OFFLINE", "MAINTENANCE"] as const;
-const communityPostKinds = ["RULE", "NEWS"] as const;
+const communityPostKinds = ["RULE", "NEWS", "POLICY"] as const;
+const discordNotificationKinds = ["PAYMENT_APPROVED", "DELIVERY_COMPLETED", "DELIVERY_FAILED"] as const;
+const discordNotificationStatuses = ["PENDING", "SENT"] as const;
 
 /** Identidade de usuários autenticados e papéis de acesso. */
 export const users = mysqlTable("users", {
@@ -102,6 +104,8 @@ export const communityStatus = mysqlTable("community_status", {
   minecraftPlayersMax: int("minecraftPlayersMax"),
   minecraftMotd: varchar("minecraftMotd", { length: 280 }),
   minecraftVersion: varchar("minecraftVersion", { length: 96 }),
+  minecraftTpsMilli: int("minecraftTpsMilli"),
+  minecraftMsptMicros: int("minecraftMsptMicros"),
   minecraftUpdatedAt: timestamp("minecraftUpdatedAt"),
   sourceUpdatedAt: timestamp("sourceUpdatedAt"),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
@@ -306,6 +310,23 @@ export const deliveries = mysqlTable(
     index("deliveries_order_idx").on(table.orderId),
     index("deliveries_player_idx").on(table.playerId, table.status),
   ]
+);
+
+/** Fila de alertas de operação lida pelo bot Discord autenticado; não armazena tokens. */
+export const discordNotifications = mysqlTable(
+  "discord_notifications",
+  {
+    id: varchar("id", { length: 36 }).primaryKey(),
+    eventType: mysqlEnum("eventType", discordNotificationKinds).notNull(),
+    status: mysqlEnum("status", discordNotificationStatuses).default("PENDING").notNull(),
+    orderId: varchar("orderId", { length: 36 }).references(() => orders.id, { onDelete: "set null" }),
+    deliveryId: varchar("deliveryId", { length: 36 }).references(() => deliveries.id, { onDelete: "set null" }),
+    dedupeKey: varchar("dedupeKey", { length: 128 }).notNull(),
+    payload: json("payload").$type<Record<string, unknown>>().notNull(),
+    sentAt: timestamp("sentAt"),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+  },
+  table => [uniqueIndex("discord_notifications_dedupe_unique").on(table.dedupeKey), index("discord_notifications_status_created_idx").on(table.status, table.createdAt)]
 );
 
 /** Grants são usados para agendar remoções de grupos após a duração contratada. */

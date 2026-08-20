@@ -13,6 +13,8 @@ export const minecraftStatusInput = z.object({
   playersMax: z.number().int().min(1).max(10_000).optional(),
   motd: z.string().trim().max(280).optional(),
   version: z.string().trim().max(96).optional(),
+  tpsMilli: z.number().int().min(0).max(25_000).optional(),
+  msptMicros: z.number().int().min(0).max(5_000_000).optional(),
 });
 
 async function serverFor(req: Request) {

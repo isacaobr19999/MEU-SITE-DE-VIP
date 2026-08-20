@@ -15,6 +15,7 @@ const mocks = vi.hoisted(() => ({
   byId: vi.fn(),
   auth: vi.fn(),
   community: vi.fn(),
+  ranking: vi.fn(),
 }));
 
 vi.mock("@/_core/hooks/useAuth", () => ({ useAuth: mocks.auth }));
@@ -33,7 +34,7 @@ vi.mock("@/lib/trpc", () => ({
       mine: { useQuery: mocks.mine },
       byId: { useQuery: mocks.byId },
     },
-    community: { status: { useQuery: mocks.community } },
+    community: { status: { useQuery: mocks.community }, ranking: { useQuery: mocks.ranking } },
   },
 }));
 vi.mock("wouter", async () => {
@@ -60,6 +61,7 @@ beforeEach(() => {
   mocks.mine.mockReturnValue({ ...queryIdle, data: [] });
   mocks.byId.mockReturnValue({ ...queryIdle, data: undefined });
   mocks.community.mockReturnValue({ ...queryIdle, data: null });
+  mocks.ranking.mockReturnValue({ ...queryIdle, data: [] });
 });
 
 describe("páginas de comércio em runtime", () => {

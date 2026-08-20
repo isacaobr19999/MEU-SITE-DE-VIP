@@ -10,6 +10,7 @@ import { createContext } from "./context";
 import { mercadoPagoWebhook } from "../webhooks/mercadoPago";
 import { claimMinecraftDeliveries, completeMinecraftDelivery, deferMinecraftDelivery, failMinecraftDelivery, syncMinecraftPlayerRoute, updateMinecraftStatusRoute } from "../minecraft";
 import { updateCommunityStatusRoute } from "../community";
+import { acknowledgeDiscordNotificationsRoute, listDiscordNotificationsRoute } from "../discordNotifications";
 import { commerceMaintenance } from "../scheduled/commerceMaintenance";
 import { serveStatic, setupVite } from "./vite";
 
@@ -53,6 +54,8 @@ async function startServer() {
   app.post("/api/minecraft/deliveries/fail", failMinecraftDelivery);
   app.post("/api/minecraft/deliveries/defer", deferMinecraftDelivery);
   app.post("/api/integrations/discord/status", updateCommunityStatusRoute);
+  app.get("/api/integrations/discord/operations", listDiscordNotificationsRoute);
+  app.post("/api/integrations/discord/operations/ack", acknowledgeDiscordNotificationsRoute);
   app.post("/api/scheduled/commerce-maintenance", commerceMaintenance);
   // tRPC API
   app.use(

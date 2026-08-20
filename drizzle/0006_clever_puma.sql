@@ -1,0 +1,1 @@
+ALTER TABLE `community_posts` MODIFY COLUMN `kind` enum('RULE','NEWS','POLICY') NOT NULL;

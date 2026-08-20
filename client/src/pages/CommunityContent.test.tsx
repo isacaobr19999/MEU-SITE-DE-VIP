@@ -25,4 +25,11 @@ describe("CommunityContent", () => {
     expect(screen.getByText("Prepare seu inventário.")).toBeInTheDocument();
     expect(screen.getByText("O evento começa neste fim de semana.")).toBeInTheDocument();
   });
+
+  it("informa com clareza quando as políticas ainda não foram publicadas", () => {
+    mocks.posts.mockReturnValue({ data: [], isLoading: false, isError: false });
+    render(<CommunityContent kind="POLICY" />);
+    expect(screen.getByText("Políticas claras para comprar com tranquilidade.")).toBeInTheDocument();
+    expect(screen.getByText(/A administração ainda não publicou as políticas oficiais/)).toBeInTheDocument();
+  });
 });

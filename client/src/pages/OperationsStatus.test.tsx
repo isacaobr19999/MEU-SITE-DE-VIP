@@ -17,7 +17,7 @@ describe("OperationsStatus", () => {
       isError: false,
       refetch: vi.fn(),
       data: {
-        community: { discordName: "PlayCraftBR", discordOnline: true, discordMemberCount: 42, discordOnlineCount: 7, discordInviteUrl: "https://discord.gg/example", minecraftStatus: "ONLINE", minecraftMotd: "Servidor ativo", minecraftPlayersOnline: 3, minecraftPlayersMax: 20, minecraftVersion: "1.21.x" },
+        community: { discordName: "PlayCraftBR", discordOnline: true, discordMemberCount: 42, discordOnlineCount: 7, discordInviteUrl: "https://discord.gg/example", minecraftStatus: "ONLINE", minecraftMotd: "Servidor ativo", minecraftPlayersOnline: 3, minecraftPlayersMax: 20, minecraftVersion: "1.21.x", minecraftTpsMilli: 19_980, minecraftMsptMicros: 50_200 },
         operations: { refreshedAt: "2026-08-17T12:00:00.000Z", payments: { status: "MONITORED", pendingOrders: 2, settledOrders: 18 }, deliveries: { status: "OPERATIONAL", pending: 1, failed: 0 } },
       },
     });
@@ -28,6 +28,8 @@ describe("OperationsStatus", () => {
     expect(screen.getByText("Operação monitorada")).toBeInTheDocument();
     expect(screen.getByText("Distribuição no servidor")).toBeInTheDocument();
     expect(screen.getByText("3/20")).toBeInTheDocument();
+    expect(screen.getByText("19.98")).toBeInTheDocument();
+    expect(screen.getByText("50.20")).toBeInTheDocument();
     expect(mocks.operations).toHaveBeenCalledWith(undefined, expect.objectContaining({ refetchInterval: 30_000, refetchIntervalInBackground: false, refetchOnWindowFocus: true }));
   });
 

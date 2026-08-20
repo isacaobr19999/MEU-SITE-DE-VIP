@@ -6,9 +6,11 @@ describe("ponte Discord", () => {
   it("aceita uma atualização pública do bot com dados do Discord e do Paper", () => {
     const parsed = communityStatusInput.parse({
       discord: { guildId: "123456789012345678", name: "Comunidade PlayStorCraft", inviteUrl: "https://discord.gg/playstorcraft", memberCount: 120, onlineCount: 24 },
-      minecraft: { status: "ONLINE", playersOnline: 8, playersMax: 100, version: "Paper 1.21.x" },
+      minecraft: { status: "ONLINE", playersOnline: 8, playersMax: 100, version: "Paper 1.21.x", tpsMilli: 19_980, msptMicros: 50_200 },
     });
     expect(parsed.minecraft.status).toBe("ONLINE");
+    expect(parsed.minecraft.tpsMilli).toBe(19_980);
+    expect(parsed.minecraft.msptMicros).toBe(50_200);
     expect(parsed.discord.online).toBeUndefined();
   });
 

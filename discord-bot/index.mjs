@@ -8,7 +8,9 @@ const bridgeUrl = process.env.PLAYSTORCRAFT_BRIDGE_URL?.trim() || "http://app:30
 const inviteUrl = process.env.DISCORD_INVITE_URL?.trim();
 const inviteChannelId = process.env.DISCORD_INVITE_CHANNEL_ID?.trim();
 const statusChannelId = process.env.DISCORD_STATUS_CHANNEL_ID?.trim();
+const operationsChannelId = process.env.DISCORD_OPERATIONS_CHANNEL_ID?.trim();
 const publicStatusUrl = process.env.PLAYSTORCRAFT_PUBLIC_STATUS_URL?.trim();
+const operationsBridgeUrl = process.env.PLAYSTORCRAFT_OPERATIONS_BRIDGE_URL?.trim() || "http://app:3000/api/integrations/discord/operations";
 const managedInviteEnabled = process.env.DISCORD_MANAGED_INVITE === "true";
 const managedInvitePath = "/bot/data/community-invite.json";
 const presenceEnabled = process.env.DISCORD_ENABLE_PRESENCE !== "false";
@@ -62,13 +64,18 @@ if (!token || !bridgeSecret) {
   async function getInviteCounts(targetInviteUrl) {
     const code = targetInviteUrl?.match(/discord\.gg\/([A-Za-z0-9-]+)/i)?.[1];
     if (!code) return {};
-    const response = await fetch(`https://discord.com/api/v10/invites/${encodeURIComponent(code)}?with_counts=true`);
-    if (!response.ok) throw new Error(`O convite respondeu HTTP ${response.status}`);
-    const invite = await response.json();
-    return {
-      memberCount: Number.isInteger(invite.approximate_member_count) ? invite.approximate_member_count : undefined,
-      onlineCount: Number.isInteger(invite.approximate_presence_count) ? invite.approximate_presence_count : undefined,
-    };
+    try {
+      const response = await fetch(`https://discord.com/api/v10/invites/${encodeURIComponent(code)}?with_counts=true`);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const invite = await response.json();
+      return {
+        memberCount: Number.isInteger(invite.approximate_member_count) ? invite.approximate_member_count : undefined,
+        onlineCount: Number.isInteger(invite.approximate_presence_count) ? invite.approximate_presence_count : undefined,
+      };
+    } catch (error) {
+      console.warn("[Discord bot] Não foi possível obter contagens públicas do convite; usando dados do servidor.", error instanceof Error ? error.message : error);
+      return {};
+    }
   }
 
   async function publishMinecraftStatus(guild) {
@@ -91,6 +98,31 @@ if (!token || !bridgeSecret) {
     await channel.send({ content: message });
     lastMinecraftMessage = message;
     console.info(`[Discord bot] Status do Paper publicado no canal ${statusChannelId}.`);
+  }
+
+  function operationMessage(notification) {
+    const payload = notification.payload || {};
+    if (notification.eventType === "PAYMENT_APPROVED") return `💳 **Pagamento aprovado**\nPedido: **${payload.orderNumber || "—"}**\nValor: **R$ ${((Number(payload.totalCents) || 0) / 100).toFixed(2).replace(".", ",")}**\nA entrega foi colocada na fila.`;
+    if (notification.eventType === "DELIVERY_COMPLETED") return `📦 **Entrega concluída**\nPedido: **${payload.orderNumber || "—"}**\nJogador: **${payload.playerName || "—"}**\nProduto: **${payload.productName || "—"}**`;
+    return `⚠️ **Entrega precisa de atenção**\nPedido: **${payload.orderNumber || "—"}**\nJogador: **${payload.playerName || "—"}**\nProduto: **${payload.productName || "—"}**\nMotivo: ${payload.error || "não informado"}`;
+  }
+
+  async function publishOperationsNotifications(guild) {
+    if (!operationsChannelId) return;
+    const channel = await guild.channels.fetch(operationsChannelId).catch(() => null);
+    if (!channel || !channel.isTextBased() || typeof channel.send !== "function") return;
+    const response = await fetch(`${operationsBridgeUrl}?limit=10`, { headers: { "x-playstor-discord-secret": bridgeSecret } });
+    if (!response.ok) throw new Error(`A fila de operações respondeu HTTP ${response.status}`);
+    const { notifications = [] } = await response.json();
+    const sentIds = [];
+    for (const notification of notifications) {
+      await channel.send({ content: operationMessage(notification) });
+      sentIds.push(notification.id);
+    }
+    if (!sentIds.length) return;
+    const acknowledgment = await fetch(`${operationsBridgeUrl}/ack`, { method: "POST", headers: { "content-type": "application/json", "x-playstor-discord-secret": bridgeSecret }, body: JSON.stringify({ ids: sentIds }) });
+    if (!acknowledgment.ok) throw new Error(`A confirmação de operações respondeu HTTP ${acknowledgment.status}`);
+    console.info(`[Discord bot] ${sentIds.length} notificação(ões) operacional(is) publicada(s).`);
   }
 
   async function publishStatus() {
@@ -124,6 +156,7 @@ if (!token || !bridgeSecret) {
     });
     if (!response.ok) throw new Error(`A ponte respondeu HTTP ${response.status}`);
     await publishMinecraftStatus(guild);
+    await publishOperationsNotifications(guild);
     console.info(`[Discord bot] Status publicado: ${guild.name} (${inviteCounts.memberCount ?? guild.memberCount} membros, ${onlineCount ?? "—"} online).`);
   }
 

@@ -350,3 +350,14 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Transformar a identidade visual da vitrine para uma linguagem claramente inspirada em Minecraft, com blocos, painéis, texturas e componentes comerciais coerentes em desktop e celular; vitrine com 11 produtos e ficha real de 1.000 Cash validadas em produção.
 - [x] Implementar no plugin Paper o preenchimento de comandos e subcomandos por TAB, filtrado por permissões e sem expor comandos administrativos a jogadores não autorizados; PlayEconomy compilado, dois testes de visibilidade aprovados e guia de instalação incluído.
 - [x] Consolidar e enviar ao GitHub a documentação completa da sugestão de comandos por TAB do PlayEconomy, com permissões, teste e instalação no Paper; README e guia técnico atualizados e enviados no commit 124fcbb.
+- [x] Corrigir os fluxos pendentes da plataforma sem alterar pagamentos, entrega automática ou permissões existentes; build, tipos, contratos de operação e serviços de produção revalidados.
+- [x] Criar uma release oficial do PlayEconomy com JAR verificável, notas de versão e instruções de instalação; release pública `v16.4.4` criada com JAR e SHA-256.
+- [x] Adicionar uma comparação de VIPs baseada apenas nos benefícios e preços reais cadastrados; a vitrine deriva a tabela do catálogo ativo.
+- [x] Publicar páginas de políticas de privacidade e reembolso com conteúdo configurável pelo administrador; rotas e administração foram preparadas sem inventar termos jurídicos definitivos.
+- [x] Criar histórico de compras autenticado para que cada cliente acompanhe seus próprios pedidos e entregas; fluxo existente confirmado e preservado.
+- [x] Integrar notificações operacionais do Discord para eventos reais de pagamento, entrega e falha; fila idempotente implementada e canal privado `#📊-logs` configurado.
+- [x] Exibir telemetria real do Paper e fila de entregas no site, sem dados simulados; status público confirmou Paper online, TPS/MSPT, pedidos e entregas reais.
+- [x] Ampliar cupons com limites por jogador, produto e período, mantendo validações existentes; regras foram auditadas e 16 testes passaram.
+- [x] Adicionar rankings baseados somente em dados reais disponíveis no servidor ou no banco, com estado vazio quando não houver dados; a consulta usa apenas pedidos concluídos.
+- [x] Atualizar o token renovado do bot Discord na VPS e validar a retomada segura do serviço e das notificações operacionais; bot conectado como PlayStorCraft e status publicado.
+- [x] Corrigir a consulta opcional de contagem do convite para que uma resposta externa indisponível não bloqueie a publicação do status pelo bot; fallback para dados do servidor Discord validado.

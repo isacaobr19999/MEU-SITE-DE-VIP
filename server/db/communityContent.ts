@@ -2,7 +2,7 @@ import { and, desc, eq } from "drizzle-orm";
 import { communityPosts } from "../../drizzle/schema";
 import { requireDb } from "../db";
 
-export type CommunityPostKind = "RULE" | "NEWS";
+export type CommunityPostKind = "RULE" | "NEWS" | "POLICY";
 
 export type CommunityPostInput = {
   slug: string;

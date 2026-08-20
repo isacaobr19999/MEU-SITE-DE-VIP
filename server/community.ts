@@ -22,6 +22,8 @@ export const communityStatusInput = z.object({
     playersMax: optionalNonNegativeInt,
     motd: z.string().trim().max(280).optional(),
     version: z.string().trim().max(96).optional(),
+    tpsMilli: z.number().int().min(0).max(25_000).optional(),
+    msptMicros: z.number().int().min(0).max(5_000_000).optional(),
   }).default({}),
   sourceUpdatedAt: z.coerce.date().optional(),
 });

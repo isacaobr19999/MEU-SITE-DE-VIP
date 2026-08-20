@@ -1,5 +1,5 @@
-import { count, eq, inArray } from "drizzle-orm";
-import { communityStatus, deliveries, orders } from "../../drizzle/schema";
+import { asc, count, desc, eq, inArray } from "drizzle-orm";
+import { communityStatus, deliveries, orders, players } from "../../drizzle/schema";
 import { requireDb } from "../db";
 
 export type CommunityStatusInput = {
@@ -18,6 +18,8 @@ export type CommunityStatusInput = {
     playersMax?: number;
     motd?: string;
     version?: string;
+    tpsMilli?: number;
+    msptMicros?: number;
   };
   sourceUpdatedAt?: Date;
 };
@@ -42,12 +44,14 @@ export async function getPublicCommunityStatus() {
     minecraftPlayersMax: communityStatus.minecraftPlayersMax,
     minecraftMotd: communityStatus.minecraftMotd,
     minecraftVersion: communityStatus.minecraftVersion,
+    minecraftTpsMilli: communityStatus.minecraftTpsMilli,
+    minecraftMsptMicros: communityStatus.minecraftMsptMicros,
     minecraftUpdatedAt: communityStatus.minecraftUpdatedAt,
     updatedAt: communityStatus.updatedAt,
   }).from(communityStatus).where(eq(communityStatus.id, 1)).limit(1);
   if (!row) return null;
   if (row.minecraftStatus === "ONLINE" && !isMinecraftStatusFresh(row.minecraftUpdatedAt)) {
-    return { ...row, minecraftStatus: "OFFLINE" as const, minecraftPlayersOnline: 0 };
+    return { ...row, minecraftStatus: "OFFLINE" as const, minecraftPlayersOnline: 0, minecraftTpsMilli: null, minecraftMsptMicros: null };
   }
   return row;
 }
@@ -69,6 +73,8 @@ export async function upsertCommunityStatus(input: CommunityStatusInput) {
     minecraftPlayersMax: input.minecraft.playersMax ?? current?.minecraftPlayersMax ?? null,
     minecraftMotd: input.minecraft.motd ?? current?.minecraftMotd ?? null,
     minecraftVersion: input.minecraft.version ?? current?.minecraftVersion ?? null,
+    minecraftTpsMilli: input.minecraft.tpsMilli ?? current?.minecraftTpsMilli ?? null,
+    minecraftMsptMicros: input.minecraft.msptMicros ?? current?.minecraftMsptMicros ?? null,
     minecraftUpdatedAt: input.minecraft.status ? input.sourceUpdatedAt ?? new Date() : current?.minecraftUpdatedAt ?? null,
     sourceUpdatedAt: input.sourceUpdatedAt ?? current?.sourceUpdatedAt ?? null,
   };
@@ -93,6 +99,18 @@ export async function getPublicOperationsStatus() {
     payments: { status: "MONITORED" as const, pendingOrders: pendingOrderCount, settledOrders: settledOrderCount },
     deliveries: { status: failedDeliveryCount > 0 ? "ATTENTION" as const : "OPERATIONAL" as const, pending: pendingDeliveryCount, failed: failedDeliveryCount },
   };
+}
+
+/** Ranking público sem valores financeiros: considera somente pedidos concluídos de jogadores reais. */
+export async function getPublicSupporterRanking() {
+  const db = await requireDb();
+  return db.select({ username: players.username, completedOrders: count(orders.id) })
+    .from(orders)
+    .innerJoin(players, eq(orders.playerId, players.id))
+    .where(inArray(orders.status, ["PAID", "PROCESSING", "COMPLETED"]))
+    .groupBy(players.id, players.username)
+    .orderBy(desc(count(orders.id)), asc(players.username))
+    .limit(5);
 }
 
 export async function updateCommunityInvite(inviteUrl: string | null) {

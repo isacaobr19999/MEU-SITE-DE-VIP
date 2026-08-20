@@ -3,6 +3,7 @@ import { randomBytes, randomUUID } from "node:crypto";
 import { deliveries, orderItems, orders, players, servers, vipGrants } from "../../drizzle/schema";
 import { requireDb } from "../db";
 import { hashSecret, verifySecret } from "../services/secretHash";
+import { enqueueDiscordNotification } from "./discordNotifications";
 
 type ClaimedDelivery = { deliveryId: string; claimToken: string; player: string; uuid: string; server: string; product: string; duration: string; commands: string[] };
 
@@ -59,16 +60,21 @@ async function assertClaim(serverId: number, deliveryId: string, claimToken: str
 export async function completeClaimedDelivery(serverId: number, deliveryId: string, claimToken: string) {
   const delivery = await assertClaim(serverId, deliveryId, claimToken);
   const db = await requireDb();
-  await db.transaction(async tx => {
+  const completed = await db.transaction(async tx => {
     const result = await tx.update(deliveries).set({ status: "COMPLETED", completedAt: new Date(), claimTokenHash: null, claimExpiresAt: null, lastError: null }).where(and(eq(deliveries.id, delivery.id), eq(deliveries.status, "CLAIMED")));
-    if (result[0].affectedRows !== 1) return;
+    if (result[0].affectedRows !== 1) return undefined;
     const [item] = await tx.select().from(orderItems).where(eq(orderItems.id, delivery.orderItemId)).limit(1);
     if (item?.luckPermsGroup) {
       await tx.insert(vipGrants).values({ id: randomUUID(), playerId: delivery.playerId, productId: item.productId, serverId: delivery.serverId, groupName: item.luckPermsGroup, grantedByDeliveryId: delivery.id, startsAt: new Date(), expiresAt: item.durationDays ? new Date(Date.now() + item.durationDays * 86_400_000) : null });
     }
     const outstanding = await tx.select({ id: deliveries.id }).from(deliveries).where(and(eq(deliveries.orderId, delivery.orderId), inArray(deliveries.status, ["PENDING", "CLAIMED", "PROCESSING", "RETRYING", "FAILED"])));
     if (!outstanding.length) await tx.update(orders).set({ status: "COMPLETED", completedAt: new Date() }).where(eq(orders.id, delivery.orderId));
+    const [detail] = await tx.select({ orderNumber: orders.orderNumber, playerName: players.username, productName: orderItems.productName })
+      .from(deliveries).innerJoin(orders, eq(deliveries.orderId, orders.id)).innerJoin(players, eq(deliveries.playerId, players.id)).innerJoin(orderItems, eq(deliveries.orderItemId, orderItems.id))
+      .where(eq(deliveries.id, delivery.id)).limit(1);
+    return detail;
   });
+  if (completed) await enqueueDiscordNotification({ eventType: "DELIVERY_COMPLETED", orderId: delivery.orderId, deliveryId, dedupeKey: `delivery-completed:${deliveryId}`, payload: completed });
 }
 
 export async function failClaimedDelivery(serverId: number, deliveryId: string, claimToken: string, error: string) {
@@ -77,7 +83,13 @@ export async function failClaimedDelivery(serverId: number, deliveryId: string, 
   const nextAttempt = delivery.attemptCount + 1;
   const retry = nextAttempt < delivery.maxAttempts;
   const delayMs = Math.min(60 * 60_000, 15_000 * 2 ** Math.min(nextAttempt, 8));
-  await db.update(deliveries).set({ status: retry ? "RETRYING" : "FAILED", attemptCount: nextAttempt, nextAttemptAt: new Date(Date.now() + delayMs), claimTokenHash: null, claimExpiresAt: null, lastError: error.slice(0, 2000) }).where(and(eq(deliveries.id, delivery.id), eq(deliveries.status, "CLAIMED")));
+  const result = await db.update(deliveries).set({ status: retry ? "RETRYING" : "FAILED", attemptCount: nextAttempt, nextAttemptAt: new Date(Date.now() + delayMs), claimTokenHash: null, claimExpiresAt: null, lastError: error.slice(0, 2000) }).where(and(eq(deliveries.id, delivery.id), eq(deliveries.status, "CLAIMED")));
+  if (!retry && result[0].affectedRows === 1) {
+    const [detail] = await db.select({ orderNumber: orders.orderNumber, playerName: players.username, productName: orderItems.productName })
+      .from(deliveries).innerJoin(orders, eq(deliveries.orderId, orders.id)).innerJoin(players, eq(deliveries.playerId, players.id)).innerJoin(orderItems, eq(deliveries.orderItemId, orderItems.id))
+      .where(eq(deliveries.id, deliveryId)).limit(1);
+    if (detail) await enqueueDiscordNotification({ eventType: "DELIVERY_FAILED", orderId: delivery.orderId, deliveryId, dedupeKey: `delivery-failed:${deliveryId}`, payload: { ...detail, error: error.slice(0, 280) } });
+  }
 }
 
 export async function deferClaimedDelivery(serverId: number, deliveryId: string, claimToken: string) {

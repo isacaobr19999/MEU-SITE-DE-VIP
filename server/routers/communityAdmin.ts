@@ -7,7 +7,7 @@ import { adminProcedure, router } from "../_core/trpc";
 
 const communityPostInput = z.object({
   slug: z.string().trim().toLowerCase().regex(/^[a-z0-9-]+$/).min(3).max(160),
-  kind: z.enum(["RULE", "NEWS"]),
+  kind: z.enum(["RULE", "NEWS", "POLICY"]),
   title: z.string().trim().min(2).max(160),
   summary: z.string().trim().max(280).optional(),
   body: z.string().trim().min(2).max(8000),

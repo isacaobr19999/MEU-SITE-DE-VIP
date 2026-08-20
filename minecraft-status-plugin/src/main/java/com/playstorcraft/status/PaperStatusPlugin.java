@@ -30,10 +30,14 @@ public final class PaperStatusPlugin extends JavaPlugin {
         try {
             int online = Bukkit.getOnlinePlayers().size();
             int max = Bukkit.getMaxPlayers();
+            int tpsMilli = (int) Math.round(Math.max(0D, Bukkit.getTPS()[0]) * 1000D);
+            int msptMicros = (int) Math.round(Math.max(0D, Bukkit.getAverageTickTime()) * 1000D);
             String body = "{\"status\":\"ONLINE\",\"playersOnline\":" + online
                     + ",\"playersMax\":" + max
                     + ",\"motd\":\"" + escape(Bukkit.getMotd()) + "\""
-                    + ",\"version\":\"" + escape(Bukkit.getVersion()) + "\"}";
+                    + ",\"version\":\"" + escape(Bukkit.getVersion()) + "\""
+                    + ",\"tpsMilli\":" + tpsMilli
+                    + ",\"msptMicros\":" + msptMicros + "}";
             HttpURLConnection connection = (HttpURLConnection) URI.create(apiBaseUrl + "/api/minecraft/status").toURL().openConnection();
             connection.setRequestMethod("POST");
             connection.setConnectTimeout(8_000);

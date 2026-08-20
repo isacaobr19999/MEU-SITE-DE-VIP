@@ -2,6 +2,7 @@ import { and, eq, inArray } from "drizzle-orm";
 import { randomUUID } from "node:crypto";
 import { deliveries, logs, orderItems, orders, payments } from "../../drizzle/schema";
 import { requireDb } from "../db";
+import { enqueueDiscordNotification } from "./discordNotifications";
 
 export async function getCheckoutOrderForUser(userId: number, orderId: string) {
   const db = await requireDb();
@@ -71,7 +72,7 @@ export async function applyMercadoPagoPayment(input: { eventId: string; payment:
   const providerPaymentId = input.payment.id ? String(input.payment.id) : undefined;
   if (!externalReference || !providerPaymentId) throw new Error("O pagamento notificado não possui referência externa válida.");
   const db = await requireDb();
-  return db.transaction(async tx => {
+  const result = await db.transaction(async tx => {
     const [order] = await tx.select().from(orders).where(eq(orders.id, externalReference)).limit(1);
     if (!order) throw new Error("O pagamento recebido não pertence a um pedido conhecido.");
     const amountCents = Math.round(Number(input.payment.transaction_amount ?? 0) * 100);
@@ -84,7 +85,8 @@ export async function applyMercadoPagoPayment(input: { eventId: string; payment:
     } else {
       await tx.insert(payments).values({ id: randomUUID(), orderId: order.id, provider: "mercado_pago", providerPaymentId, providerEventId: input.eventId, method: mapMercadoPagoMethod(input.payment.payment_type_id), status: mapped.paymentStatus, amountCents, idempotencyKey: `mp-payment:${providerPaymentId}`, gatewayPayload: payload, paidAt: mapped.paymentStatus === "APPROVED" ? new Date(input.payment.date_approved ?? Date.now()) : null });
     }
-    if (mapped.orderStatus === "PAID" && !["PAID", "PROCESSING", "COMPLETED"].includes(order.status)) {
+    const becamePaid = mapped.orderStatus === "PAID" && !["PAID", "PROCESSING", "COMPLETED"].includes(order.status);
+    if (becamePaid) {
       await tx.update(orders).set({ status: "PAID", paidAt: new Date(input.payment.date_approved ?? Date.now()) }).where(eq(orders.id, order.id));
       const items = await tx.select().from(orderItems).where(eq(orderItems.orderId, order.id));
       for (const item of items) {
@@ -95,6 +97,10 @@ export async function applyMercadoPagoPayment(input: { eventId: string; payment:
       await tx.update(orders).set({ status: mapped.orderStatus, cancelledAt: mapped.orderStatus === "CANCELLED" ? new Date() : null }).where(eq(orders.id, order.id));
     }
     await tx.insert(logs).values({ actorType: "gateway", actorId: "mercado_pago", action: "payment.synchronized", entityType: "order", entityId: order.id, metadata: payload });
-    return { orderId: order.id, status: mapped.orderStatus };
+    return { orderId: order.id, status: mapped.orderStatus, becamePaid, orderNumber: order.orderNumber, totalCents: order.totalCents };
   });
+  if (result.becamePaid) {
+    await enqueueDiscordNotification({ eventType: "PAYMENT_APPROVED", orderId: result.orderId, dedupeKey: `payment-approved:${result.orderId}`, payload: { orderNumber: result.orderNumber, totalCents: result.totalCents } });
+  }
+  return { orderId: result.orderId, status: result.status };
 }

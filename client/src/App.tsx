@@ -18,6 +18,7 @@ const Login = lazy(() => import("./pages/Login"));
 const AdminCommunity = lazy(() => import("./pages/AdminCommunity"));
 const NewsPage = lazy(() => import("./pages/CommunityContent").then((module) => ({ default: module.NewsPage })));
 const RulesPage = lazy(() => import("./pages/CommunityContent").then((module) => ({ default: module.RulesPage })));
+const PoliciesPage = lazy(() => import("./pages/CommunityContent").then((module) => ({ default: module.PoliciesPage })));
 const OperationsStatus = lazy(() => import("./pages/OperationsStatus"));
 
 function RouteLoading() {
@@ -38,6 +39,7 @@ function Router() {
         <Route path={"/admin/community"} component={AdminCommunity} />
         <Route path={"/rules"} component={RulesPage} />
         <Route path={"/news"} component={NewsPage} />
+        <Route path={"/policies"} component={PoliciesPage} />
         <Route path={"/status"} component={OperationsStatus} />
         <Route path={"/products/:slug"} component={ProductDetail} />
         <Route path={"/orders"} component={OrderHistory} />
