@@ -48,6 +48,8 @@ Após **cinco** falhas consecutivas na mesma janela de quinze minutos, o acesso 
 
 Quando uma conta administrativa falha ao autenticar, a loja registra um alerta minimizado na fila operacional do Discord. O alerta é entregue no canal privado de operações e informa somente o e-mail mascarado, a quantidade de tentativas e, quando aplicável, o término do bloqueio temporário.
 
+O alerta no Discord é emitido somente quando a quinta falha dentro da janela de segurança ativa o bloqueio temporário. Falhas administrativas isoladas continuam registradas na auditoria, mas não geram notificações, evitando ruído no canal operacional.
+
 Na rota **`/maintenance/security`**, administradores podem consultar os bloqueios ativos por impressão criptográfica parcial e removê-los mediante confirmação. A tela não exibe e-mail, senha, token ou IP. A mesma página mostra os tickets encerrados por mês, calculados somente a partir dos metadados de transcrições recebidas no ChatLog privado; enquanto não houver transcrições reais, o painel exibirá zero.
 
 ## Recuperação de senha

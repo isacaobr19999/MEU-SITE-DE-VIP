@@ -50,10 +50,10 @@ export function registerLocalAuthRoutes(app: Express) {
     void recordLoginAttempt({ email: normalizedEmail, userId: user?.id, success }).catch(() => undefined);
     if (!success || !user) {
       const failure = await registerFailedLogin(normalizedEmail).catch(() => ({ failedAttempts: 0, lockedUntil: null }));
-      if (user?.role === "admin") {
+      if (user?.role === "admin" && failure.lockedUntil) {
         void enqueueDiscordNotification({
           eventType: "LOGIN_SECURITY_ALERT",
-          dedupeKey: `admin-login-failed:${user.id}:${Date.now()}`,
+          dedupeKey: `admin-login-lockout:${user.id}:${failure.lockedUntil.toISOString()}`,
           payload: { emailHint: maskLoginEmail(normalizedEmail), failedAttempts: failure.failedAttempts, lockedUntil: failure.lockedUntil?.toISOString() ?? null },
         }).catch(() => undefined);
       }

@@ -444,3 +444,5 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Criar um painel administrativo para visualizar bloqueios temporários de login e liberar um bloqueio ativo com confirmação.
 - [x] Exibir métricas mensais reais de tickets encerrados, usando somente registros operacionais disponíveis e estado vazio quando não houver dados.
 - [x] Cobrir o painel de bloqueios e as métricas de tickets com testes, revisar em tela responsiva e publicar a atualização.
+- [x] Emitir um alerta operacional específico no Discord quando cinco falhas administrativas acionarem o bloqueio temporário.
+- [x] Cobrir o alerta de bloqueio com teste, atualizar a documentação e publicar a configuração na VPS.

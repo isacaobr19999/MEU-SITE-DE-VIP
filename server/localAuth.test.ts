@@ -121,7 +121,7 @@ describe("login local", () => {
     expect(mocks.enqueueDiscordNotification).not.toHaveBeenCalled();
   });
 
-  it("notifica o Discord com dados mascarados quando uma conta administrativa falha", async () => {
+  it("notifica o Discord com dados mascarados quando uma conta administrativa é bloqueada", async () => {
     mocks.getUserByEmail.mockResolvedValue({ id: 7, role: "admin", passwordHash: "invalid" });
     mocks.getLoginLockout.mockResolvedValue(null);
     mocks.registerFailedLogin.mockResolvedValue({ failedAttempts: 5, lockedUntil: new Date("2026-08-21T04:00:00.000Z") });
@@ -129,5 +129,15 @@ describe("login local", () => {
     await handlerFor("/api/auth/login")({ body: { email: "admin@example.com", password: "senha-segura" } }, res);
     expect(res.status).toHaveBeenCalledWith(429);
     expect(mocks.enqueueDiscordNotification).toHaveBeenCalledWith(expect.objectContaining({ eventType: "LOGIN_SECURITY_ALERT", payload: expect.objectContaining({ emailHint: "a••••@example.com", failedAttempts: 5 }) }));
+  });
+
+  it("não cria alerta no Discord para uma falha administrativa que não acionou bloqueio", async () => {
+    mocks.getUserByEmail.mockResolvedValue({ id: 7, role: "admin", passwordHash: "invalid" });
+    mocks.getLoginLockout.mockResolvedValue(null);
+    mocks.registerFailedLogin.mockResolvedValue({ failedAttempts: 2, lockedUntil: null });
+    const res = response();
+    await handlerFor("/api/auth/login")({ body: { email: "admin@example.com", password: "senha-segura" } }, res);
+    expect(res.status).toHaveBeenCalledWith(401);
+    expect(mocks.enqueueDiscordNotification).not.toHaveBeenCalled();
   });
 });
