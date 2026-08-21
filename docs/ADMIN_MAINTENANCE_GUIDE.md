@@ -42,6 +42,12 @@ Caso uma ferramenta de tickets passe a publicar transcrições, ela deverá ser 
 
 Cada tentativa de login por senha gera um registro de resultado aprovado ou recusado. A visualização administrativa minimiza o e-mail, mostra o horário e não armazena senha, token ou endereço IP bruto. O acesso ao registro exige uma sessão autenticada com função administrativa.
 
+### Proteção contra tentativas repetidas
+
+Após **cinco** falhas consecutivas na mesma janela de quinze minutos, o acesso por senha fica indisponível por quinze minutos. O controle usa uma impressão criptográfica do e-mail, e não persiste o endereço de e-mail bruto, senha, token ou IP. Um login válido remove o estado de falhas anterior.
+
+Quando uma conta administrativa falha ao autenticar, a loja registra um alerta minimizado na fila operacional do Discord. O alerta é entregue no canal privado de operações e informa somente o e-mail mascarado, a quantidade de tentativas e, quando aplicável, o término do bloqueio temporário.
+
 ## Recuperação de senha
 
 A recuperação por e-mail está **adiada por decisão administrativa**. Para habilitá-la, deve-se configurar um serviço de e-mail transacional com uma credencial específica de aplicativo ou API. Senhas normais de contas de e-mail nunca devem ser usadas ou registradas no projeto.

@@ -437,3 +437,7 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Publicar uma mensagem inicial de finalidade e registrar o identificador e as permissões do canal na documentação operacional.
 - [x] Corrigir os mocks de runtime das páginas de comércio para incluir a consulta de disponibilidade da loja e restaurar a suíte Vitest.
 - [x] Corrigir o mock do catálogo administrativo para incluir a mutação de cupom usada pela interface e concluir a suíte Vitest.
+- [x] Configurar o encaminhamento de transcrições encerradas do Ticket Tool para o canal privado `#🔒-chat-logs-sitevip`.
+- [x] Criar bloqueio temporário de login após tentativas administrativas repetidas, sem armazenar senhas, tokens ou IPs brutos.
+- [x] Enviar alerta operacional ao Discord quando um login administrativo for recusado, preservando a privacidade do usuário.
+- [x] Cobrir os controles de login e as notificações com testes, documentar a configuração e publicar a atualização.

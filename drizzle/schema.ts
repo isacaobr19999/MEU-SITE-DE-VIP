@@ -19,7 +19,7 @@ const productKinds = ["VIP", "COINS", "KIT", "COSMETIC"] as const;
 const serverKinds = ["SURVIVAL", "SKYBLOCK", "BEDWARS", "GLOBAL"] as const;
 const communityServerStatuses = ["UNKNOWN", "ONLINE", "OFFLINE", "MAINTENANCE"] as const;
 const communityPostKinds = ["RULE", "NEWS", "POLICY"] as const;
-const discordNotificationKinds = ["PAYMENT_APPROVED", "DELIVERY_COMPLETED", "DELIVERY_FAILED"] as const;
+const discordNotificationKinds = ["PAYMENT_APPROVED", "DELIVERY_COMPLETED", "DELIVERY_FAILED", "LOGIN_SECURITY_ALERT"] as const;
 const discordNotificationStatuses = ["PENDING", "SENT"] as const;
 const maintenanceModes = ["CLOSED", "CATALOG_ONLY"] as const;
 const maintenanceScheduleStatuses = ["NONE", "SCHEDULED", "ACTIVE", "COMPLETED", "CANCELLED"] as const;
@@ -48,6 +48,15 @@ export const loginAttempts = mysqlTable("login_attempts", {
   method: mysqlEnum("method", ["PASSWORD"]).default("PASSWORD").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 }, table => [index("login_attempts_created_idx").on(table.createdAt), index("login_attempts_user_created_idx").on(table.userId, table.createdAt)]);
+
+/** Estado mínimo para limitar tentativas repetidas sem persistir e-mail, senha, token ou IP bruto. */
+export const loginLockouts = mysqlTable("login_lockouts", {
+  emailHash: varchar("emailHash", { length: 64 }).primaryKey(),
+  failedAttempts: int("failedAttempts").default(0).notNull(),
+  windowStartedAt: timestamp("windowStartedAt").defaultNow().notNull(),
+  lockedUntil: timestamp("lockedUntil"),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, table => [index("login_lockouts_locked_idx").on(table.lockedUntil)]);
 
 /** Configuração singleton da disponibilidade comercial pública. */
 export const storeSettings = mysqlTable("store_settings", {

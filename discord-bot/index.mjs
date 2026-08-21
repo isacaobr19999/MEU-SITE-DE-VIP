@@ -104,6 +104,7 @@ if (!token || !bridgeSecret) {
     const payload = notification.payload || {};
     if (notification.eventType === "PAYMENT_APPROVED") return `💳 **Pagamento aprovado**\nPedido: **${payload.orderNumber || "—"}**\nValor: **R$ ${((Number(payload.totalCents) || 0) / 100).toFixed(2).replace(".", ",")}**\nA entrega foi colocada na fila.`;
     if (notification.eventType === "DELIVERY_COMPLETED") return `📦 **Entrega concluída**\nPedido: **${payload.orderNumber || "—"}**\nJogador: **${payload.playerName || "—"}**\nProduto: **${payload.productName || "—"}**`;
+    if (notification.eventType === "LOGIN_SECURITY_ALERT") return `🔐 **Login administrativo recusado**\nConta: **${payload.emailHint || "não informada"}**\nTentativas recentes: **${Number(payload.failedAttempts) || 1}**${payload.lockedUntil ? `\nBloqueio temporário até: <t:${Math.floor(new Date(payload.lockedUntil).getTime() / 1000)}:f>.` : ""}\nNenhuma senha, token ou IP foi registrado neste alerta.`;
     if (notification.eventType === "STORE_MAINTENANCE_TEST") return `🧪 **Teste de aviso de manutenção**\nEste é um teste controlado do canal configurado. A loja continua **online** e nenhuma compra ou pagamento foi interrompido.`;
     if (notification.eventType === "STORE_MAINTENANCE_STARTED") {
       if (payload.template === "CONCISE") return `🛠️ **Loja em manutenção**\nCompras e pagamentos foram pausados temporariamente. Pedidos já confirmados permanecem protegidos.${payload.scheduledEndAt ? `\nPrevisão de retorno: <t:${Math.floor(new Date(payload.scheduledEndAt).getTime() / 1000)}:f>.` : ""}`;

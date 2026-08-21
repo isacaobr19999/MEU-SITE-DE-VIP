@@ -1,5 +1,5 @@
 import { scryptSync } from "crypto";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   createLocalUser: vi.fn(),
@@ -8,6 +8,11 @@ const mocks = vi.hoisted(() => ({
   getUserByEmail: vi.fn(),
   hasAnyUser: vi.fn(),
   recordLoginAttempt: vi.fn(),
+  getLoginLockout: vi.fn(),
+  registerFailedLogin: vi.fn(),
+  clearLoginFailureState: vi.fn(),
+  maskLoginEmail: vi.fn((email: string) => "a••••@example.com"),
+  enqueueDiscordNotification: vi.fn(),
 }));
 
 vi.mock("./db", () => ({
@@ -17,7 +22,8 @@ vi.mock("./db", () => ({
 }));
 vi.mock("./_core/sdk", () => ({ sdk: { createSessionToken: mocks.createSessionToken } }));
 vi.mock("./_core/cookies", () => ({ getSessionCookieOptions: mocks.getSessionCookieOptions }));
-vi.mock("./db/loginAttempts", () => ({ recordLoginAttempt: mocks.recordLoginAttempt }));
+vi.mock("./db/loginAttempts", () => ({ recordLoginAttempt: mocks.recordLoginAttempt, getLoginLockout: mocks.getLoginLockout, registerFailedLogin: mocks.registerFailedLogin, clearLoginFailureState: mocks.clearLoginFailureState, maskLoginEmail: mocks.maskLoginEmail }));
+vi.mock("./db/discordNotifications", () => ({ enqueueDiscordNotification: mocks.enqueueDiscordNotification }));
 
 import { registerLocalAuthRoutes } from "./localAuth";
 
@@ -33,6 +39,15 @@ function response() {
   res.status.mockReturnValue(res);
   return res;
 }
+
+beforeEach(() => {
+  vi.clearAllMocks();
+  mocks.getLoginLockout.mockResolvedValue(null);
+  mocks.registerFailedLogin.mockResolvedValue({ failedAttempts: 1, lockedUntil: null });
+  mocks.clearLoginFailureState.mockResolvedValue(undefined);
+  mocks.recordLoginAttempt.mockResolvedValue(undefined);
+  mocks.enqueueDiscordNotification.mockResolvedValue(undefined);
+});
 
 describe("cadastro local", () => {
   it("rejeita dados de cadastro incompletos antes de acessar o banco", async () => {
@@ -71,6 +86,8 @@ describe("cadastro local", () => {
 describe("login local", () => {
   it("registra tentativa recusada sem informar se o e-mail existe", async () => {
     mocks.getUserByEmail.mockResolvedValue(undefined);
+    mocks.getLoginLockout.mockResolvedValue(null);
+    mocks.registerFailedLogin.mockResolvedValue({ failedAttempts: 1, lockedUntil: null });
     mocks.recordLoginAttempt.mockResolvedValue(undefined);
     const res = response();
     await handlerFor("/api/auth/login")({ body: { email: "inexistente@example.com", password: "senha-segura" } }, res);
@@ -83,12 +100,34 @@ describe("login local", () => {
     const salt = "0123456789abcdef0123456789abcdef";
     const passwordHash = `${salt}:${scryptSync("senha-segura", salt, 64).toString("hex")}`;
     mocks.getUserByEmail.mockResolvedValue({ id: 7, openId: "local_7", email: "admin@example.com", passwordHash, name: "Admin", role: "admin" });
+    mocks.getLoginLockout.mockResolvedValue(null);
     mocks.recordLoginAttempt.mockResolvedValue(undefined);
     mocks.createSessionToken.mockResolvedValue("session-token");
     mocks.getSessionCookieOptions.mockReturnValue({ httpOnly: true });
     const res = response();
     await handlerFor("/api/auth/login")({ protocol: "https", body: { email: "ADMIN@example.com", password: "senha-segura" } }, res);
     expect(mocks.recordLoginAttempt).toHaveBeenCalledWith({ email: "admin@example.com", userId: 7, success: true });
+    expect(mocks.clearLoginFailureState).toHaveBeenCalledWith("admin@example.com");
     expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ id: 7, role: "admin" }));
+  });
+
+  it("bloqueia novas tentativas enquanto o bloqueio temporário estiver ativo", async () => {
+    mocks.getUserByEmail.mockResolvedValue({ id: 7, role: "admin" });
+    mocks.getLoginLockout.mockResolvedValue(new Date(Date.now() + 60_000));
+    const res = response();
+    await handlerFor("/api/auth/login")({ body: { email: "admin@example.com", password: "senha-segura" } }, res);
+    expect(res.status).toHaveBeenCalledWith(429);
+    expect(mocks.registerFailedLogin).not.toHaveBeenCalled();
+    expect(mocks.enqueueDiscordNotification).not.toHaveBeenCalled();
+  });
+
+  it("notifica o Discord com dados mascarados quando uma conta administrativa falha", async () => {
+    mocks.getUserByEmail.mockResolvedValue({ id: 7, role: "admin", passwordHash: "invalid" });
+    mocks.getLoginLockout.mockResolvedValue(null);
+    mocks.registerFailedLogin.mockResolvedValue({ failedAttempts: 5, lockedUntil: new Date("2026-08-21T04:00:00.000Z") });
+    const res = response();
+    await handlerFor("/api/auth/login")({ body: { email: "admin@example.com", password: "senha-segura" } }, res);
+    expect(res.status).toHaveBeenCalledWith(429);
+    expect(mocks.enqueueDiscordNotification).toHaveBeenCalledWith(expect.objectContaining({ eventType: "LOGIN_SECURITY_ALERT", payload: expect.objectContaining({ emailHint: "a••••@example.com", failedAttempts: 5 }) }));
   });
 });
