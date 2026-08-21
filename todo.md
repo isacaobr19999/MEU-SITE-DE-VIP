@@ -450,3 +450,7 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Refinar tokens visuais, tipografia, componentes, cartões, formulários, feedbacks e navegação sem alterar fluxos comerciais.
 - [x] Corrigir inconsistências de responsividade, foco, contraste e estados de carregamento/erro em desktop e celular.
 - [x] Validar a reformulação com testes, checagem de tipos, revisão visual e publicação na VPS.
+- [x] Criar ilustrações de categoria coerentes para VIP, Cash e Booster, hospedadas como ativos estáticos externos.
+- [x] Exibir prévias claras e acessíveis dos benefícios de cada VIP no catálogo e no detalhe do produto, com base em dados reais do catálogo.
+- [x] Adicionar seletor de tema claro e escuro, restrito às áreas administrativas, com preferência persistida por sessão local.
+- [x] Cobrir as novas interações com testes, validar em desktop e celular e publicar a atualização.

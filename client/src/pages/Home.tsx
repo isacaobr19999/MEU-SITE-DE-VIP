@@ -7,6 +7,7 @@ import { StoreHeader } from "@/components/StoreHeader";
 import { DiscordCommunity } from "@/components/DiscordCommunity";
 import { addCartItem, readCart, removeUnavailableCartItems, writeCart, type CartItem, type StoreProduct } from "@/lib/cart";
 import { STORE_ROUTES } from "@/lib/storeRoutes";
+import { getCatalogVisual, getVipPreview } from "@/lib/catalogVisuals";
 import { trpc } from "@/lib/trpc";
 import { Link, useLocation } from "wouter";
 import { ArrowUpRight, BadgeCheck, Box, ChevronRight, CreditCard, Gamepad2, Gem, Loader2, Minus, PackageCheck, Plus, Search, ShieldCheck, ShoppingBag, Sparkles, X } from "lucide-react";
@@ -20,6 +21,8 @@ function ProductCard({ product, onAdd }: { product: StoreProduct; onAdd: (produc
   const destinations = trpc.catalog.productServers.useQuery({ productId: product.id });
   const [serverId, setServerId] = useState<number | null>(null);
   const selectedServer = destinations.data?.find(server => server.id === serverId) ?? destinations.data?.[0];
+  const visual = getCatalogVisual(product);
+  const vipPreview = product.kind === "VIP" ? getVipPreview(product) : null;
 
   function addToCart() {
     if (!selectedServer) {
@@ -32,14 +35,15 @@ function ProductCard({ product, onAdd }: { product: StoreProduct; onAdd: (produc
   return (
     <article className="product-card product-card--store group overflow-hidden rounded-[1.6rem] transition duration-300 hover:-translate-y-1">
       <div className="product-card__visual relative overflow-hidden">
-        {product.imageUrl ? <img src={product.imageUrl} alt="" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" /> : <div className="grid h-full place-items-center bg-gradient-to-br from-emerald-300/25 to-sky-300/15 text-emerald-100"><Box size={34} strokeWidth={2.2} /></div>}
+        <img src={product.imageUrl || visual.url} alt={product.imageUrl ? "" : visual.alt} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#07111d]/90 via-[#07111d]/20 to-transparent" />
-        <div className="absolute inset-x-4 top-4 flex items-center justify-between gap-3"><Badge className="border border-emerald-200/20 bg-[#07111d]/70 px-3 py-1 text-[10px] font-bold tracking-[.14em] text-emerald-100 backdrop-blur">{kindLabels[product.kind].toUpperCase()}</Badge>{product.featured ? <span className="rounded-full bg-amber-300 px-2.5 py-1 text-[9px] font-extrabold tracking-[.12em] text-slate-950">DESTAQUE</span> : null}</div>
+        <div className="absolute inset-x-4 top-4 flex items-center justify-between gap-3"><Badge className="category-art-badge px-3 py-1 text-[10px] font-bold tracking-[.14em] text-emerald-100">{product.imageUrl ? kindLabels[product.kind].toUpperCase() : visual.label.toUpperCase()}</Badge>{product.featured ? <span className="rounded-full bg-amber-300 px-2.5 py-1 text-[9px] font-extrabold tracking-[.12em] text-slate-950">DESTAQUE</span> : null}</div>
         <div className="absolute inset-x-4 bottom-4 flex items-center justify-between"><span className="product-card__duration">{product.durationDays ? `${product.durationDays} dias` : "Permanente"}</span><span className="grid h-8 w-8 place-items-center rounded-full border border-white/20 bg-white/10 text-white backdrop-blur"><Gem size={15} /></span></div>
       </div>
       <div className="p-5">
         <div className="space-y-2"><Link href={`/products/${product.slug}`} className="text-xl font-bold tracking-tight text-white transition hover:text-emerald-200">{product.name}</Link><p className="min-h-10 text-sm leading-5 text-slate-400">{product.shortDescription || "Benefício digital entregue automaticamente no seu servidor."}</p></div>
         <div className="mt-5 flex flex-wrap gap-2 text-xs text-slate-400"><span className="product-chip">{product.categoryName}</span><span className="product-chip">Entrega no jogo</span></div>
+        {product.kind === "VIP" ? <div className="vip-preview mt-4"><div className="flex items-center justify-between gap-3"><span>PRÉVIA VIP</span><strong>{product.durationDays ? `${product.durationDays} dias` : "Permanente"}</strong></div>{vipPreview ? <p>{vipPreview}</p> : <p>Confira os detalhes cadastrados deste VIP antes de adicionar ao carrinho.</p>}</div> : null}
       {destinations.isError ? <p className="mt-5 rounded-xl border border-rose-300/20 bg-rose-300/10 px-3 py-2 text-xs text-rose-100">Não foi possível consultar os servidores de destino.</p> : null}
       {destinations.data && destinations.data.length > 1 ? (
         <select aria-label="Servidor de destino" value={serverId ?? destinations.data[0]?.id} onChange={event => setServerId(Number(event.target.value))} className="mt-5 h-10 w-full rounded-xl border border-white/10 bg-slate-900 px-3 text-sm text-slate-200 outline-none transition focus:border-emerald-300">

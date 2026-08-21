@@ -356,6 +356,28 @@
 		.minecraft-auth-page .field-shell:focus-within { border-color: #8cc76a; box-shadow: 0 0 0 4px rgba(135,198,98,.11); }
 		.minecraft-auth-tabs { border: 2px solid #30492e !important; border-radius: .28rem !important; background: #09140b !important; }
 		.minecraft-auth-tabs button { border-radius: .15rem !important; }
+		.category-art-badge { border: 1px solid rgba(209,242,189,.28) !important; border-radius: .2rem !important; background: rgba(7,18,10,.82) !important; box-shadow: 0 2px 0 rgba(2,8,4,.68); backdrop-filter: blur(10px); }
+		.vip-preview { border: 1px solid rgba(139,201,96,.28); border-radius: .3rem; background: linear-gradient(145deg, rgba(58,95,42,.28), rgba(7,16,10,.72)); padding: .65rem .72rem; }
+		.vip-preview > div { font-family: var(--font-pixel); font-size: .6rem; letter-spacing: .04em; color: #a8e875; }
+		.vip-preview strong { color: #e0f7d1; font-family: var(--font-mono); font-size: .66rem; }
+		.vip-preview p { display: -webkit-box; overflow: hidden; margin-top: .45rem; -webkit-box-orient: vertical; -webkit-line-clamp: 2; color: #c8d7c2; font-size: .72rem; line-height: 1.4; }
+		.vip-detail-preview { display: grid; gap: .6rem; border: 2px solid #466c3a; border-radius: .3rem; background: linear-gradient(145deg, rgba(38,72,33,.76), rgba(8,18,10,.9)); padding: .85rem .95rem; box-shadow: inset 0 0 0 2px rgba(5,13,7,.7), 0 3px 0 #040a05; }
+		.vip-detail-preview p { color: #9dda76; font-family: var(--font-pixel); font-size: .65rem; letter-spacing: .05em; }
+		.vip-detail-preview strong { display: block; margin-top: .22rem; color: #f1fbe9; font-size: .85rem; }
+		.vip-detail-preview > span { color: #c8d7c2; font-size: .82rem; line-height: 1.55; }
+		/* Alternância visual restrita ao painel administrativo; a vitrine pública não é afetada. */
+		.admin-shell--light .admin-workspace--light { background: radial-gradient(circle at 100% 0, rgba(95,181,121,.16), transparent 26rem), linear-gradient(180deg, #f7fbf4, #eef5ed); color: #153025; }
+		.admin-sidebar--light { border-color: rgba(33,74,48,.16) !important; background: rgba(250,253,248,.97) !important; color: #173226 !important; }
+		.admin-shell--light [data-sidebar="sidebar"] { --sidebar: #f9fcf7; --sidebar-foreground: #173226; --sidebar-accent: #e6f2e2; --sidebar-accent-foreground: #173226; --sidebar-border: rgba(33,74,48,.15); --sidebar-ring: #39865b; }
+		.admin-shell--light .admin-mobilebar--light { border-color: rgba(33,74,48,.14); background: rgba(250,253,248,.95); color: #173226; }
+		.admin-shell--light .admin-theme-toggle { border-color: rgba(33,74,48,.16); background: rgba(234,246,230,.75); color: #28563b; }
+		.admin-shell--light .admin-theme-toggle:hover { background: #dff0d9; color: #173226; }
+		.admin-shell--light .surface-panel, .admin-shell--light .surface-panel--soft, .admin-shell--light .admin-metric-card, .admin-shell--light .admin-focus-card, .admin-shell--light .admin-quick-action, .admin-shell--light .admin-compact-item, .admin-shell--light .admin-shortcut, .admin-shell--light .admin-list, .admin-shell--light .monthly-chart { border-color: rgba(33,74,48,.16) !important; background: rgba(255,255,255,.9) !important; box-shadow: 0 14px 34px rgba(30,67,43,.08), inset 0 1px rgba(255,255,255,.75) !important; }
+		.admin-shell--light .admin-workspace--light .text-white, .admin-shell--light .admin-workspace--light .text-slate-100, .admin-shell--light .admin-workspace--light .text-slate-200 { color: #153025 !important; }
+		.admin-shell--light .admin-workspace--light .text-slate-300, .admin-shell--light .admin-workspace--light .text-slate-400, .admin-shell--light .admin-workspace--light .text-slate-500, .admin-shell--light .admin-workspace--light .text-muted-foreground { color: #557062 !important; }
+		.admin-shell--light .admin-workspace--light .bg-white\/\[\.025\], .admin-shell--light .admin-workspace--light .bg-white\/\[\.04\], .admin-shell--light .admin-workspace--light .bg-black\/15 { background: rgba(230,242,226,.65) !important; }
+		.admin-shell--light .admin-workspace--light input, .admin-shell--light .admin-workspace--light textarea, .admin-shell--light .admin-workspace--light select, .admin-shell--light .admin-workspace--light .admin-select { border-color: rgba(33,74,48,.2) !important; background: #fbfdf9 !important; color: #173226 !important; }
+		.admin-shell--light .admin-workspace--light input::placeholder, .admin-shell--light .admin-workspace--light textarea::placeholder { color: #799083 !important; }
 		.admin-guard, .account-guard { border: 3px solid #3b5837; border-radius: .35rem; background: linear-gradient(145deg, #142817, #09130c); box-shadow: inset 0 0 0 3px #071008, 0 7px 0 #030805, 0 28px 58px rgba(0,0,0,.3); }
 		.admin-guard__band { height: .24rem; background: linear-gradient(90deg, #62a94d, #b7ee79 45%, #2f8f66); }
 		.admin-guard h1, .account-guard h1 { font-family: var(--font-pixel); letter-spacing: -.02em; }
