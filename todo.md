@@ -477,3 +477,9 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Revisar as rotas públicas, a campanha ativa e a saúde da aplicação na VPS após a atualização; HTTP 200, 11 produtos e ficha VIP Ferro confirmados.
 - [x] Atualizar o registro operacional final e salvar um checkpoint da continuação.
 - [x] Entregar relatório final consolidado com arquivos, comandos e próximos passos.
+
+- [x] Criar modelo de monitoramento para loja, API, bot Discord e servidor Paper, com estado, latência, última verificação e falha.
+- [x] Adicionar persistência, rotas administrativas protegidas e histórico de incidentes do monitoramento.
+- [x] Criar painel administrativo responsivo de uptime, estado atual e falhas recentes.
+- [x] Implementar verificador leve na VPS com intervalo configurável e alertas Discord sem duplicação de incidentes; primeiro ciclo confirmado na VPS.
+- [x] Adicionar testes, documentação operacional, validar desktop/mobile e publicar o monitoramento; 128 testes, TypeScript, build e validação responsiva aprovados.

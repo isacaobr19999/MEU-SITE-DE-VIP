@@ -7,6 +7,7 @@ import { cancelOrderRecord, createCouponRecord, createServerRecord, deleteCoupon
 import { cancelMaintenanceSchedule, enqueueMaintenanceNotificationTest, getMaintenanceControl, getStoreAvailability, listMaintenanceEventExport, scheduleMaintenance, setMaintenanceDiscordChannel, setMaintenanceScheduleTask, setManualMaintenance, setStoreAvailability } from "../db/storeSettings";
 import { listActiveLoginLockouts, listRecentLoginAttempts, releaseLoginLockout } from "../db/loginAttempts";
 import { getMonthlyClosedTicketMetrics } from "../db/ticketTranscripts";
+import { getMonitoringHistory, getMonitoringOverview, recordMonitoringBatch, type MonitoringReport } from "../db/monitoring";
 import { createHeartbeatJob, updateHeartbeatJob } from "../_core/heartbeat";
 import { adminProcedure, router } from "../_core/trpc";
 
@@ -33,9 +34,12 @@ function maintenanceSession(ctx: { req: { headers: { cookie?: string } } }) {
 
 export const adminRouter = router({
   loginAttempts: adminProcedure.input(z.object({ limit: z.number().int().min(1).max(100).default(20) }).optional()).query(async ({ input }) => listRecentLoginAttempts(input?.limit ?? 20)),
+  ingestMonitoring: adminProcedure.input(z.object({ reports: z.array(z.object({ serviceKey: z.string().min(1).max(48), status: z.enum(["ONLINE", "DEGRADED", "OFFLINE"]), latencyMs: z.number().int().min(0).max(120000).nullable().optional(), message: z.string().max(280).nullable().optional() })).min(1).max(8) })).mutation(async ({ input }) => recordMonitoringBatch(input.reports as MonitoringReport[])),
   loginLockouts: adminProcedure.input(z.object({ limit: z.number().int().min(1).max(100).default(25) }).optional()).query(async ({ input }) => listActiveLoginLockouts(input?.limit ?? 25)),
   ticketMetrics: adminProcedure.query(() => getMonthlyClosedTicketMetrics()),
   overview: adminProcedure.query(async () => getAdminOverview()),
+  monitoring: adminProcedure.query(() => getMonitoringOverview()),
+  monitoringHistory: adminProcedure.input(z.object({ limit: z.number().int().min(1).max(200).default(60) }).optional()).query(({ input }) => getMonitoringHistory(input?.limit ?? 60)),
 
   monthlySales: adminProcedure.query(() => getAdminMonthlySales()),
 

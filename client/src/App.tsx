@@ -12,6 +12,7 @@ const NotFound = lazy(() => import("@/pages/NotFound"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const AdminCatalog = lazy(() => import("./pages/AdminCatalog"));
 const AdminOperations = lazy(() => import("./pages/AdminOperations"));
+const AdminMonitoring = lazy(() => import("./pages/AdminMonitoring"));
 const OrderDetail = lazy(() => import("./pages/OrderDetail"));
 const OrderHistory = lazy(() => import("./pages/OrderHistory"));
 const ProductDetail = lazy(() => import("./pages/ProductDetail"));
@@ -41,6 +42,7 @@ function Router() {
         <Route path={"/admin"} component={AdminDashboard} />
         <Route path={"/admin/catalog"} component={AdminCatalog} />
         <Route path={"/admin/operations"} component={AdminOperations} />
+        <Route path={"/admin/monitoring"} component={AdminMonitoring} />
         <Route path={"/admin/community"} component={AdminCommunity} />
         <Route path={"/admin/appearance"} component={AdminAppearance} />
         <Route path={"/rules"} component={RulesPage} />

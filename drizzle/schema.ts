@@ -19,7 +19,7 @@ const productKinds = ["VIP", "COINS", "KIT", "COSMETIC"] as const;
 const serverKinds = ["SURVIVAL", "SKYBLOCK", "BEDWARS", "GLOBAL"] as const;
 const communityServerStatuses = ["UNKNOWN", "ONLINE", "OFFLINE", "MAINTENANCE"] as const;
 const communityPostKinds = ["RULE", "NEWS", "POLICY"] as const;
-const discordNotificationKinds = ["PAYMENT_APPROVED", "DELIVERY_COMPLETED", "DELIVERY_FAILED", "LOGIN_SECURITY_ALERT"] as const;
+const discordNotificationKinds = ["PAYMENT_APPROVED", "DELIVERY_COMPLETED", "DELIVERY_FAILED", "LOGIN_SECURITY_ALERT", "MONITORING_ALERT"] as const;
 const discordNotificationStatuses = ["PENDING", "SENT"] as const;
 const maintenanceModes = ["CLOSED", "CATALOG_ONLY"] as const;
 const maintenanceScheduleStatuses = ["NONE", "SCHEDULED", "ACTIVE", "COMPLETED", "CANCELLED"] as const;
@@ -457,6 +457,55 @@ export const logs = mysqlTable(
     createdAt: timestamp("createdAt").defaultNow().notNull(),
   },
   table => [index("logs_entity_idx").on(table.entityType, table.entityId), index("logs_actor_idx").on(table.actorType, table.actorId), index("logs_created_idx").on(table.createdAt)]
+);
+
+/** Serviços observados pelo monitor da VPS e exibidos no painel administrativo. */
+export const monitoringServices = mysqlTable(
+  "monitoring_services",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    serviceKey: varchar("serviceKey", { length: 48 }).notNull(),
+    label: varchar("label", { length: 96 }).notNull(),
+    kind: mysqlEnum("kind", ["STORE", "API", "DISCORD", "MINECRAFT"] as const).notNull(),
+    endpoint: varchar("endpoint", { length: 512 }),
+    active: boolean("active").default(true).notNull(),
+    currentStatus: mysqlEnum("currentStatus", ["UNKNOWN", "ONLINE", "DEGRADED", "OFFLINE"] as const).default("UNKNOWN").notNull(),
+    lastCheckedAt: timestamp("lastCheckedAt"),
+    lastSuccessAt: timestamp("lastSuccessAt"),
+    lastFailureAt: timestamp("lastFailureAt"),
+    lastLatencyMs: int("lastLatencyMs"),
+    lastMessage: varchar("lastMessage", { length: 280 }),
+    consecutiveFailures: int("consecutiveFailures").default(0).notNull(),
+    updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  },
+  table => [uniqueIndex("monitoring_services_key_unique").on(table.serviceKey), index("monitoring_services_status_idx").on(table.currentStatus, table.active)]
+);
+
+export const monitoringChecks = mysqlTable(
+  "monitoring_checks",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    serviceId: int("serviceId").notNull().references(() => monitoringServices.id, { onDelete: "cascade" }),
+    status: mysqlEnum("status", ["ONLINE", "DEGRADED", "OFFLINE"] as const).notNull(),
+    latencyMs: int("latencyMs"),
+    message: varchar("message", { length: 280 }),
+    checkedAt: timestamp("checkedAt").defaultNow().notNull(),
+  },
+  table => [index("monitoring_checks_service_time_idx").on(table.serviceId, table.checkedAt)]
+);
+
+export const monitoringIncidents = mysqlTable(
+  "monitoring_incidents",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    serviceId: int("serviceId").notNull().references(() => monitoringServices.id, { onDelete: "cascade" }),
+    status: mysqlEnum("status", ["OPEN", "RESOLVED"] as const).default("OPEN").notNull(),
+    openedAt: timestamp("openedAt").defaultNow().notNull(),
+    resolvedAt: timestamp("resolvedAt"),
+    lastMessage: varchar("lastMessage", { length: 280 }),
+    notificationKey: varchar("notificationKey", { length: 160 }).notNull(),
+  },
+  table => [uniqueIndex("monitoring_incidents_notification_unique").on(table.notificationKey), index("monitoring_incidents_service_status_idx").on(table.serviceId, table.status, table.openedAt)]
 );
 
 export type User = typeof users.$inferSelect;

@@ -66,6 +66,21 @@ services:
     volumes:
       - discord_bot_data:/bot/data
 
+  monitoring-agent:
+    image: curlimages/curl:8.12.1
+    restart: unless-stopped
+    environment:
+      MAINTENANCE_SECRET: ${MAINTENANCE_SECRET}
+      MONITOR_INTERVAL_SECONDS: ${MONITOR_INTERVAL_SECONDS:-300}
+      PLAYSTORCRAFT_APP_URL: http://app:3000
+    command: ["/bin/sh", "/opt/monitor/monitor.sh"]
+    depends_on:
+      app:
+        condition: service_started
+    networks: [playstorcraft]
+    volumes:
+      - ./monitor.sh:/opt/monitor/monitor.sh:ro
+
   maintenance-scheduler:
     image: curlimages/curl:8.12.1
     restart: unless-stopped
