@@ -62,6 +62,10 @@ curl -fsSI https://playstorcraft.com.br/status
 
 Abra a página inicial em desktop e celular. Quando houver uma campanha que cumpra todas as regras, o cartão deve indicar código, desconto e validade; em cupons vencidos, inativos, esgotados ou sem produto aplicável, o cartão não deve aparecer. Confirme também um VIP e a tela de detalhe para verificar a apresentação de grupo e duração. A confirmação de pagamento, a regra de desconto e a entrega automática continuam sendo validadas somente no servidor durante o checkout.
 
+### Evidência desta atualização
+
+Em 21 de agosto de 2026, a versão publicada foi verificada no domínio `playstorcraft.com.br` após a recriação do serviço `app`. A página retornou HTTP 200, exibiu os 11 produtos ativos e apresentou a campanha **BEMVINDO10** com **10% de desconto** e validade até **31/08/2026 às 23:59**. A tabela de VIPs também mostrou somente o grupo e a duração já cadastrados, sem benefícios adicionais. Antes da implantação, a suíte Vitest aprovou 126 testes, a verificação TypeScript não encontrou erros e o build de produção foi concluído.
+
 ## Diagnóstico e recuperação
 
 Se a página não responder, consulte primeiro o estado e os últimos logs do serviço, sem expor o arquivo de runtime:
