@@ -467,3 +467,7 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Tornar o teste de configuração do bot Discord determinístico, sem depender de disponibilidade externa durante a suíte unitária.
 - [x] Remover o envio direto de arquivos que exige armazenamento externo e manter a galeria baseada somente em URLs seguras.
 - [x] Publicar a alternativa sem custo com ordenação de galeria e destaque de menor custo por dia.
+- [x] Aplicar links de imagens gratuitas hospedadas no GitHub apenas quando a licença e a disponibilidade pública forem confirmadas; ícones SVG de fallback validados em HTTP 200 e com licença Apache 2.0.
+- [x] Melhorar as descrições dos VIPs usando somente categoria, duração e benefícios já confirmados no catálogo; grupo e período genéricos agora são exibidos de forma estruturada, sem criar vantagens.
+- [x] Exibir destaque promocional apenas para cupons ativos, válidos e aplicáveis, sem criar descontos ou urgência fictícios; a consulta pública filtra estado, janela de validade, limite total e escopo ativo.
+- [x] Atualizar documentação de operação da VPS, testes e GitHub com os novos recursos e o passo a passo de atualização.

@@ -10,7 +10,7 @@ import { STORE_ROUTES } from "@/lib/storeRoutes";
 import { getBestVipValue, getCatalogVisual, getVipBenefits, getVipPreview } from "@/lib/catalogVisuals";
 import { trpc } from "@/lib/trpc";
 import { Link, useLocation } from "wouter";
-import { ArrowUpRight, BadgeCheck, Box, ChevronRight, CreditCard, Gamepad2, Gem, Loader2, Minus, PackageCheck, Plus, Search, ShieldCheck, ShoppingBag, Sparkles, X } from "lucide-react";
+import { ArrowUpRight, BadgeCheck, Box, ChevronRight, CreditCard, Gamepad2, Gem, Loader2, Minus, PackageCheck, Plus, Search, ShieldCheck, ShoppingBag, Sparkles, TicketPercent, X } from "lucide-react";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
@@ -35,7 +35,7 @@ function ProductCard({ product, onAdd }: { product: StoreProduct; onAdd: (produc
   return (
     <article className="product-card product-card--store group overflow-hidden rounded-[1.6rem] transition duration-300 hover:-translate-y-1">
       <div className="product-card__visual relative overflow-hidden">
-        <img src={product.imageUrl || visual.url} alt={product.imageUrl ? "" : visual.alt} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+        <img src={product.imageUrl || visual.url} onError={event => { const image = event.currentTarget; if (image.dataset.catalogFallbackApplied) { image.style.opacity = "0"; return; } image.dataset.catalogFallbackApplied = "true"; image.src = visual.fallbackUrl; image.classList.add("catalog-icon-fallback"); }} alt={product.imageUrl ? "" : visual.alt} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#07111d]/90 via-[#07111d]/20 to-transparent" />
         <div className="absolute inset-x-4 top-4 flex items-center justify-between gap-3"><Badge className="category-art-badge px-3 py-1 text-[10px] font-bold tracking-[.14em] text-emerald-100">{product.imageUrl ? kindLabels[product.kind].toUpperCase() : visual.label.toUpperCase()}</Badge>{product.featured ? <span className="rounded-full bg-amber-300 px-2.5 py-1 text-[9px] font-extrabold tracking-[.12em] text-slate-950">DESTAQUE</span> : null}</div>
         <div className="absolute inset-x-4 bottom-4 flex items-center justify-between"><span className="product-card__duration">{product.durationDays ? `${product.durationDays} dias` : "Permanente"}</span><span className="grid h-8 w-8 place-items-center rounded-full border border-white/20 bg-white/10 text-white backdrop-blur"><Gem size={15} /></span></div>
@@ -73,6 +73,7 @@ export default function Home() {
   const products = trpc.catalog.products.useQuery(productQuery);
   const availableProducts = trpc.catalog.products.useQuery({});
   const featured = trpc.catalog.products.useQuery({ featuredOnly: true });
+  const promotions = trpc.catalog.promotions.useQuery();
   const ranking = trpc.community.ranking.useQuery();
   const availability = trpc.store.availability.useQuery(undefined, { staleTime: 15_000, refetchOnWindowFocus: true });
   const checkoutPayment = trpc.orders.checkout.useMutation({
@@ -98,6 +99,7 @@ export default function Home() {
   const catalogOnly = availability.data?.publicOnline === false && availability.data?.maintenanceMode === "CATALOG_ONLY";
   const vipProducts = useMemo(() => (availableProducts.data ?? []).filter(product => product.kind === "VIP").sort((left, right) => left.priceCents - right.priceCents), [availableProducts.data]);
   const bestVipValue = useMemo(() => getBestVipValue(vipProducts), [vipProducts]);
+  const primaryPromotion = promotions.data?.[0];
 
   useEffect(() => { writeCart(cart); }, [cart]);
   useEffect(() => {
@@ -163,6 +165,7 @@ export default function Home() {
 
       <main className="relative z-10">
         {catalogOnly ? <div className="container pt-5"><div className="rounded-2xl border border-amber-300/25 bg-amber-300/[.08] px-4 py-3 text-sm text-amber-100"><strong>Modo somente catálogo.</strong> {availability.data?.offlineMessage || "Você pode consultar os benefícios, mas compras e pagamentos voltam após a manutenção."}{availability.data?.estimatedReturnAt ? <span className="mt-1 block text-xs text-amber-200">Previsão de retorno: {new Date(availability.data.estimatedReturnAt).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })}</span> : null}</div></div> : null}
+        {primaryPromotion ? <section className="container pt-5"><div className="promo-banner flex flex-col gap-4 rounded-2xl border border-amber-300/30 bg-[linear-gradient(110deg,rgba(251,191,36,.16),rgba(16,185,129,.09))] px-5 py-4 sm:flex-row sm:items-center sm:justify-between"><div className="flex items-start gap-3"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-amber-200/25 bg-amber-300/15 text-amber-100"><TicketPercent size={20} /></span><div><p className="text-[10px] font-bold tracking-[.16em] text-amber-200">CAMPANHA ATIVA</p><p className="mt-1 text-sm leading-6 text-slate-100">Use <strong className="font-mono text-amber-200">{primaryPromotion.code}</strong> e receba <strong>{primaryPromotion.discountLabel}</strong>{primaryPromotion.appliesToAllProducts ? " em produtos elegíveis do catálogo" : " nos produtos participantes"}.</p></div></div><p className="shrink-0 text-xs leading-5 text-amber-100/85">{primaryPromotion.endsAt ? `Válido até ${new Date(primaryPromotion.endsAt).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })}.` : "Válido enquanto a campanha estiver ativa."}<span className="mt-1 block text-amber-200/80">Informe o código no checkout.</span></p></div></section> : null}
 	        <section className="store-hero minecraft-hero container grid items-center gap-8 pb-20 pt-10 sm:gap-10 sm:pt-14 lg:grid-cols-[1.05fr_.95fr] lg:gap-16 lg:pb-28 lg:pt-24">
 	          <div className="max-w-2xl">
 	            <div className="minecraft-kicker mb-6 inline-flex items-center gap-2 border border-emerald-300/20 bg-emerald-300/[.08] px-4 py-2 text-[10px] font-bold tracking-[.16em] text-emerald-100"><span className="h-1.5 w-1.5 bg-emerald-300 shadow-[0_0_12px_currentColor]" /> RECOMPENSAS DO SERVIDOR</div>

@@ -1,6 +1,7 @@
-import { and, asc, desc, eq, like, or } from "drizzle-orm";
-import { categories, productServers, products, servers } from "../../drizzle/schema";
+import { and, asc, count, desc, eq, like, or } from "drizzle-orm";
+import { categories, couponProducts, couponUsage, coupons, productServers, products, servers } from "../../drizzle/schema";
 import { requireDb } from "../db";
+import { getPublicPromotionDiscountLabel, isPublicPromotionCurrent, promotionAppliesToActiveCatalog } from "../domain/publicPromotion";
 
 export type ProductSearchInput = {
   categorySlug?: string;
@@ -60,6 +61,55 @@ export async function listPublicProducts(input: ProductSearchInput = {}) {
     .orderBy(desc(products.featured), asc(products.position), asc(products.name));
 
   return rows;
+}
+
+/**
+ * Expõe somente os dados necessários para apresentar campanhas reais na vitrine.
+ * A validação definitiva do cupom continua ocorrendo no checkout, dentro da transação do pedido.
+ */
+export async function listPublicActivePromotions(now = new Date()) {
+  const db = await requireDb();
+  const [couponRows, assignments, usages, activeProducts] = await Promise.all([
+    db
+      .select({
+        id: coupons.id,
+        code: coupons.code,
+        type: coupons.type,
+        percentageBasisPoints: coupons.percentageBasisPoints,
+        fixedDiscountCents: coupons.fixedDiscountCents,
+        startsAt: coupons.startsAt,
+        endsAt: coupons.endsAt,
+        maxUses: coupons.maxUses,
+        active: coupons.active,
+      })
+      .from(coupons)
+      .where(eq(coupons.active, true)),
+    db.select({ couponId: couponProducts.couponId, productId: couponProducts.productId }).from(couponProducts),
+    db.select({ couponId: couponUsage.couponId, usedCount: count() }).from(couponUsage).groupBy(couponUsage.couponId),
+    db
+      .select({ id: products.id })
+      .from(products)
+      .innerJoin(categories, eq(products.categoryId, categories.id))
+      .where(and(eq(products.active, true), eq(categories.active, true))),
+  ]);
+
+  const productIdsByCoupon = new Map<number, number[]>();
+  for (const assignment of assignments) {
+    productIdsByCoupon.set(assignment.couponId, [...(productIdsByCoupon.get(assignment.couponId) ?? []), assignment.productId]);
+  }
+  const usageByCoupon = new Map(usages.map(usage => [usage.couponId, Number(usage.usedCount)]));
+  const activeProductIds = new Set(activeProducts.map(product => product.id));
+
+  return couponRows
+    .filter(coupon => isPublicPromotionCurrent(coupon, usageByCoupon.get(coupon.id) ?? 0, now))
+    .filter(coupon => promotionAppliesToActiveCatalog(productIdsByCoupon.get(coupon.id) ?? [], activeProductIds))
+    .sort((left, right) => (left.endsAt?.getTime() ?? Number.POSITIVE_INFINITY) - (right.endsAt?.getTime() ?? Number.POSITIVE_INFINITY))
+    .map(coupon => ({
+      code: coupon.code,
+      discountLabel: getPublicPromotionDiscountLabel(coupon),
+      endsAt: coupon.endsAt,
+      appliesToAllProducts: !(productIdsByCoupon.get(coupon.id) ?? []).length,
+    }));
 }
 
 export async function getPublicProductBySlug(slug: string) {

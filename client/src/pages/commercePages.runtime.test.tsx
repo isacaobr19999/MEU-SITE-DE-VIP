@@ -7,6 +7,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   categories: vi.fn(),
   products: vi.fn(),
+  promotions: vi.fn(),
   product: vi.fn(),
   productServers: vi.fn(),
   createOrder: vi.fn(),
@@ -26,6 +27,7 @@ vi.mock("@/lib/trpc", () => ({
     catalog: {
       categories: { useQuery: mocks.categories },
       products: { useQuery: mocks.products },
+      promotions: { useQuery: mocks.promotions },
       product: { useQuery: mocks.product },
       productServers: { useQuery: mocks.productServers },
     },
@@ -57,6 +59,7 @@ beforeEach(() => {
   mocks.auth.mockReturnValue({ user: null, loading: false, isAuthenticated: false });
   mocks.categories.mockReturnValue({ ...queryIdle, data: [] });
   mocks.products.mockImplementation(() => ({ ...queryIdle, data: emptyProducts }));
+  mocks.promotions.mockReturnValue({ ...queryIdle, data: [] });
   mocks.product.mockReturnValue({ ...queryIdle, data: undefined });
   mocks.productServers.mockReturnValue({ ...queryIdle, data: [] });
   mocks.createOrder.mockReturnValue({ mutate: vi.fn(), isPending: false });
