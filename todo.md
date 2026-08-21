@@ -431,3 +431,9 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Consolidar a documentação de operação, manutenção e acessos administrativos para o repositório.
 - [x] Revisar o conteúdo versionado para garantir que não há senhas, tokens, chaves ou arquivos de runtime.
 - [x] Sincronizar o repositório GitHub com toda a documentação e o código atual relevantes; commit `7f3d64b` publicado no branch `main`.
+
+- [x] Verificar as permissões do bot e os cargos de administração/suporte antes de criar o canal privado `#🔒-chat-logs-sitevip`.
+- [x] Criar o canal privado `#🔒-chat-logs-sitevip` com visualização limitada à equipe autorizada.
+- [x] Publicar uma mensagem inicial de finalidade e registrar o identificador e as permissões do canal na documentação operacional.
+- [x] Corrigir os mocks de runtime das páginas de comércio para incluir a consulta de disponibilidade da loja e restaurar a suíte Vitest.
+- [x] Corrigir o mock do catálogo administrativo para incluir a mutação de cupom usada pela interface e concluir a suíte Vitest.

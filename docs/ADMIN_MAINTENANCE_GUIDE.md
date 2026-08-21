@@ -25,6 +25,19 @@ O canal de aviso pode ser definido no painel por ID. Caso não seja definido, o 
 
 > O bot deve manter somente as permissões necessárias no canal de destino, em especial **Ver canal** e **Enviar mensagens**. Não é necessário conceder Administrador para a operação cotidiana.
 
+### ChatLog privado do Site VIP
+
+O canal **`#🔒-chat-logs-sitevip`** (`1540202108177883217`) é destinado a registros de suporte, auditoria e transcrições autorizadas. Ele não deve ser utilizado para dados de autenticação, senhas, tokens, chaves de API ou informações sensíveis de clientes.
+
+| Entidade | Acesso configurado |
+|---|---|
+| `@everyone` | Sem permissão para visualizar o canal. |
+| Cargo `Administrador` | Pode visualizar e enviar mensagens. |
+| Cargo `Moderador` | Pode visualizar e enviar mensagens. |
+| Bot operacional | Pode visualizar e enviar mensagens. |
+
+Caso uma ferramenta de tickets passe a publicar transcrições, ela deverá ser configurada para encaminhá-las exclusivamente para esse canal, preservando as mesmas restrições de acesso.
+
 ## Auditoria de acesso
 
 Cada tentativa de login por senha gera um registro de resultado aprovado ou recusado. A visualização administrativa minimiza o e-mail, mostra o horário e não armazena senha, token ou endereço IP bruto. O acesso ao registro exige uma sessão autenticada com função administrativa.

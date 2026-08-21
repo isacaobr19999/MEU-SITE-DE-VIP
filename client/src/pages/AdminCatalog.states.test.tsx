@@ -15,6 +15,7 @@ const mocks = vi.hoisted(() => ({
   updateProduct: vi.fn(),
   updateServer: vi.fn(),
   updateCoupon: vi.fn(),
+  deleteCoupon: vi.fn(),
 }));
 
 vi.mock("@/_core/hooks/useAuth", () => ({ useAuth: mocks.auth }));
@@ -31,6 +32,7 @@ vi.mock("@/lib/trpc", () => ({
       updateProduct: { useMutation: mocks.updateProduct },
       updateServer: { useMutation: mocks.updateServer },
       updateCoupon: { useMutation: mocks.updateCoupon },
+      deleteCoupon: { useMutation: mocks.deleteCoupon },
     },
   },
 }));
@@ -52,6 +54,7 @@ beforeEach(() => {
   mocks.updateProduct.mockReturnValue(mutation);
   mocks.updateServer.mockReturnValue(mutation);
   mocks.updateCoupon.mockReturnValue(mutation);
+  mocks.deleteCoupon.mockReturnValue(mutation);
   mocks.useUtils.mockReturnValue({
     admin: { categories: invalidation, products: invalidation, servers: invalidation, coupons: invalidation },
     catalog: { categories: invalidation, products: invalidation },
