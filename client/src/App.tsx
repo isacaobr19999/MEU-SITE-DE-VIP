@@ -17,6 +17,7 @@ const OrderHistory = lazy(() => import("./pages/OrderHistory"));
 const ProductDetail = lazy(() => import("./pages/ProductDetail"));
 const Login = lazy(() => import("./pages/Login"));
 const AdminCommunity = lazy(() => import("./pages/AdminCommunity"));
+const AdminAppearance = lazy(() => import("./pages/AdminAppearance"));
 const NewsPage = lazy(() => import("./pages/CommunityContent").then((module) => ({ default: module.NewsPage })));
 const RulesPage = lazy(() => import("./pages/CommunityContent").then((module) => ({ default: module.RulesPage })));
 const PoliciesPage = lazy(() => import("./pages/CommunityContent").then((module) => ({ default: module.PoliciesPage })));
@@ -41,6 +42,7 @@ function Router() {
         <Route path={"/admin/catalog"} component={AdminCatalog} />
         <Route path={"/admin/operations"} component={AdminOperations} />
         <Route path={"/admin/community"} component={AdminCommunity} />
+        <Route path={"/admin/appearance"} component={AdminAppearance} />
         <Route path={"/rules"} component={RulesPage} />
         <Route path={"/news"} component={NewsPage} />
         <Route path={"/policies"} component={PoliciesPage} />

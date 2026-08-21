@@ -206,6 +206,7 @@ export const products = mysqlTable(
     description: text("description"),
     kind: mysqlEnum("kind", productKinds).notNull(),
     imageUrl: varchar("imageUrl", { length: 1024 }),
+    imageUrls: json("imageUrls").$type<string[]>(),
     priceCents: int("priceCents").notNull(),
     durationDays: int("durationDays"),
     luckPermsGroup: varchar("luckPermsGroup", { length: 96 }),

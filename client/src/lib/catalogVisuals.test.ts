@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getCatalogVisual, getVipPreview } from "./catalogVisuals";
+import { getCatalogVisual, getVipBenefits, getVipPreview } from "./catalogVisuals";
 
 describe("catalogVisuals", () => {
   it("associa os tipos e nomes de categoria às ilustrações apropriadas", () => {
@@ -12,5 +12,10 @@ describe("catalogVisuals", () => {
     expect(getVipPreview({ shortDescription: "  Acesso a comandos especiais.  " })).toBe("Acesso a comandos especiais.");
     expect(getVipPreview({ description: "Benefícios oficiais" })).toBe("Benefícios oficiais");
     expect(getVipPreview({})).toBeNull();
+  });
+
+  it("separa detalhes existentes para a comparação sem criar benefícios", () => {
+    expect(getVipBenefits({ description: "Acesso ao chat VIP.\n• Kit semanal; Tag exclusiva" })).toEqual(["Acesso ao chat VIP.", "Kit semanal", "Tag exclusiva"]);
+    expect(getVipBenefits({})).toEqual([]);
   });
 });

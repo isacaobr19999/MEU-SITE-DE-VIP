@@ -32,3 +32,12 @@ export function getVipPreview(source: { shortDescription?: string | null; descri
   const text = source.shortDescription?.trim() || source.description?.trim();
   return text ? text.replace(/\s+/g, " ") : null;
 }
+
+export function getVipBenefits(source: { shortDescription?: string | null; description?: string | null }) {
+  const content = source.description?.trim() || source.shortDescription?.trim() || "";
+  return content
+    .split(/\n+|[•;]|(?<=[.!?])\s+/)
+    .map(item => item.replace(/^[-–]\s*/, "").trim())
+    .filter(Boolean)
+    .slice(0, 4);
+}

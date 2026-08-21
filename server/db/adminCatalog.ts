@@ -18,6 +18,7 @@ export type CreateProductRecord = {
   description?: string;
   kind: "VIP" | "COINS" | "KIT" | "COSMETIC";
   imageUrl?: string;
+  imageUrls?: string[];
   priceCents: number;
   durationDays?: number | null;
   luckPermsGroup?: string;
@@ -59,6 +60,7 @@ export async function createProductRecord(input: CreateProductRecord) {
       description: input.description ?? null,
       kind: input.kind,
       imageUrl: input.imageUrl ?? null,
+      imageUrls: input.imageUrls ?? [],
       priceCents: input.priceCents,
       durationDays: input.durationDays ?? null,
       luckPermsGroup: input.luckPermsGroup ?? null,
