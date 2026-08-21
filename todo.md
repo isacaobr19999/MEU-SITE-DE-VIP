@@ -483,3 +483,7 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Criar painel administrativo responsivo de uptime, estado atual e falhas recentes.
 - [x] Implementar verificador leve na VPS com intervalo configurável e alertas Discord sem duplicação de incidentes; primeiro ciclo confirmado na VPS.
 - [x] Adicionar testes, documentação operacional, validar desktop/mobile e publicar o monitoramento; 128 testes, TypeScript, build e validação responsiva aprovados.
+
+- [x] Adicionar métricas reais de disponibilidade de 7 e 30 dias ao painel de monitoramento.
+- [x] Exibir gráficos responsivos baseados exclusivamente nos checks persistidos.
+- [x] Testar, documentar e publicar o upgrade de métricas sem alterar fluxos comerciais.

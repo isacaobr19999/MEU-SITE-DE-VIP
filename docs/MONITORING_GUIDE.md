@@ -43,7 +43,7 @@ O monitor não precisa de uma porta pública. Ele acessa `http://app:3000` pela 
 
 ## Operação pelo painel
 
-Administradores acessam **Administração → Monitoramento**. Os cartões mostram a quantidade de serviços online, serviços em atenção e incidentes abertos. Cada serviço apresenta seu estado atual, última verificação, latência, mensagem e número de falhas consecutivas. O histórico é atualizado automaticamente a cada 30 segundos no navegador.
+Administradores acessam **Administração → Monitoramento**. Os cartões mostram a quantidade de serviços online, serviços em atenção e incidentes abertos. Cada serviço apresenta seu estado atual, última verificação, latência, mensagem e número de falhas consecutivas. O histórico é atualizado automaticamente a cada 30 segundos no navegador. A seção **Disponibilidade por período** permite alternar entre 7 e 30 dias e calcula, por serviço, a média dos percentuais diários observados. Os gráficos exibem somente dias que possuem checks persistidos; períodos ainda sem dados aparecem claramente como `Ainda não há checks reais neste período`.
 
 Se o painel mostrar `Aguardando`, aguarde o primeiro ciclo de cinco minutos. Se mostrar `Offline` para a loja ou API, verifique primeiro `app`; se mostrar `Atenção` para Discord ou Paper, confirme se o bot publicou um snapshot recente e se o Paper está enviando telemetria.
 

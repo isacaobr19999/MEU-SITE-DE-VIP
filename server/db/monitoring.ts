@@ -1,4 +1,4 @@
-import { and, desc, eq, inArray, lt } from "drizzle-orm";
+import { and, desc, eq, gte, lt } from "drizzle-orm";
 import { discordNotifications, monitoringChecks, monitoringIncidents, monitoringServices } from "../../drizzle/schema";
 import { requireDb } from "../db";
 
@@ -81,6 +81,22 @@ export async function recordMonitoringBatch(reports: MonitoringReport[]) {
   }
   await db.delete(monitoringChecks).where(lt(monitoringChecks.checkedAt, new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)));
   return getMonitoringOverview();
+}
+
+export async function getMonitoringAvailability(days: 7 | 30) {
+  const db = await requireDb();
+  const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+  const rows = await db.select({ serviceKey: monitoringServices.serviceKey, label: monitoringServices.label, status: monitoringChecks.status, checkedAt: monitoringChecks.checkedAt }).from(monitoringChecks).innerJoin(monitoringServices, eq(monitoringChecks.serviceId, monitoringServices.id)).where(gte(monitoringChecks.checkedAt, since)).orderBy(monitoringChecks.checkedAt);
+  const grouped = new Map<string, { serviceKey: string; label: string; date: string; total: number; online: number }>();
+  for (const row of rows) {
+    const date = new Date(row.checkedAt).toISOString().slice(0, 10);
+    const key = `${row.serviceKey}:${date}`;
+    const current = grouped.get(key) ?? { serviceKey: row.serviceKey, label: row.label, date, total: 0, online: 0 };
+    current.total += 1;
+    if (row.status === "ONLINE") current.online += 1;
+    grouped.set(key, current);
+  }
+  return { days, since: since.toISOString(), points: Array.from(grouped.values()).map(point => ({ ...point, uptimePercent: Number(((point.online / point.total) * 100).toFixed(2)) })) };
 }
 
 export async function getMonitoringStatusSnapshot() {

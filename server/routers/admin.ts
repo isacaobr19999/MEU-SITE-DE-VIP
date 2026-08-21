@@ -7,7 +7,7 @@ import { cancelOrderRecord, createCouponRecord, createServerRecord, deleteCoupon
 import { cancelMaintenanceSchedule, enqueueMaintenanceNotificationTest, getMaintenanceControl, getStoreAvailability, listMaintenanceEventExport, scheduleMaintenance, setMaintenanceDiscordChannel, setMaintenanceScheduleTask, setManualMaintenance, setStoreAvailability } from "../db/storeSettings";
 import { listActiveLoginLockouts, listRecentLoginAttempts, releaseLoginLockout } from "../db/loginAttempts";
 import { getMonthlyClosedTicketMetrics } from "../db/ticketTranscripts";
-import { getMonitoringHistory, getMonitoringOverview, recordMonitoringBatch, type MonitoringReport } from "../db/monitoring";
+import { getMonitoringAvailability, getMonitoringHistory, getMonitoringOverview, recordMonitoringBatch, type MonitoringReport } from "../db/monitoring";
 import { createHeartbeatJob, updateHeartbeatJob } from "../_core/heartbeat";
 import { adminProcedure, router } from "../_core/trpc";
 
@@ -40,6 +40,7 @@ export const adminRouter = router({
   overview: adminProcedure.query(async () => getAdminOverview()),
   monitoring: adminProcedure.query(() => getMonitoringOverview()),
   monitoringHistory: adminProcedure.input(z.object({ limit: z.number().int().min(1).max(200).default(60) }).optional()).query(({ input }) => getMonitoringHistory(input?.limit ?? 60)),
+  monitoringAvailability: adminProcedure.input(z.object({ days: z.union([z.literal(7), z.literal(30)]) })).query(({ input }) => getMonitoringAvailability(input.days)),
 
   monthlySales: adminProcedure.query(() => getAdminMonthlySales()),
 
