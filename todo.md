@@ -441,3 +441,6 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Criar bloqueio temporário de login após tentativas administrativas repetidas, sem armazenar senhas, tokens ou IPs brutos.
 - [x] Enviar alerta operacional ao Discord quando um login administrativo for recusado, preservando a privacidade do usuário.
 - [x] Cobrir os controles de login e as notificações com testes, documentar a configuração e publicar a atualização.
+- [x] Criar um painel administrativo para visualizar bloqueios temporários de login e liberar um bloqueio ativo com confirmação.
+- [x] Exibir métricas mensais reais de tickets encerrados, usando somente registros operacionais disponíveis e estado vazio quando não houver dados.
+- [x] Cobrir o painel de bloqueios e as métricas de tickets com testes, revisar em tela responsiva e publicar a atualização.

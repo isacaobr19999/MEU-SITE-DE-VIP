@@ -48,6 +48,8 @@ Após **cinco** falhas consecutivas na mesma janela de quinze minutos, o acesso 
 
 Quando uma conta administrativa falha ao autenticar, a loja registra um alerta minimizado na fila operacional do Discord. O alerta é entregue no canal privado de operações e informa somente o e-mail mascarado, a quantidade de tentativas e, quando aplicável, o término do bloqueio temporário.
 
+Na rota **`/maintenance/security`**, administradores podem consultar os bloqueios ativos por impressão criptográfica parcial e removê-los mediante confirmação. A tela não exibe e-mail, senha, token ou IP. A mesma página mostra os tickets encerrados por mês, calculados somente a partir dos metadados de transcrições recebidas no ChatLog privado; enquanto não houver transcrições reais, o painel exibirá zero.
+
 ## Recuperação de senha
 
 A recuperação por e-mail está **adiada por decisão administrativa**. Para habilitá-la, deve-se configurar um serviço de e-mail transacional com uma credencial específica de aplicativo ou API. Senhas normais de contas de e-mail nunca devem ser usadas ou registradas no projeto.

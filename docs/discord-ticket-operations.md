@@ -26,6 +26,8 @@ Após o fechamento, a equipe deve manter o histórico conforme a retenção conf
 
 As transcrições são encaminhadas automaticamente pelo Ticket Tool para **`#🔒-chat-logs-sitevip`** quando um ticket é fechado ou excluído. Esse canal permanece privado para `Administrador`, `Moderador` e o bot operacional. A equipe deve considerar cada transcrição um registro interno e nunca reproduzir senhas, tokens, chaves ou informações financeiras sensíveis em tickets.
 
+O bot PlayStorCraft sincroniza apenas o identificador da mensagem e a data de encerramento de transcrições reconhecidas nesse canal. O conteúdo das mensagens, anexos e dados do atendimento não são copiados para a loja. Esses metadados compõem a métrica mensal de tickets encerrados em **`/maintenance/security`**.
+
 ## FAQ para publicar no canal de abertura
 
 > **Antes de abrir um ticket**

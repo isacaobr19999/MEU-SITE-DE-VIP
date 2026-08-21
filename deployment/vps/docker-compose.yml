@@ -52,11 +52,13 @@ services:
       DISCORD_INVITE_CHANNEL_ID: ${DISCORD_INVITE_CHANNEL_ID:-}
       DISCORD_STATUS_CHANNEL_ID: ${DISCORD_STATUS_CHANNEL_ID:-}
       DISCORD_OPERATIONS_CHANNEL_ID: ${DISCORD_OPERATIONS_CHANNEL_ID:-}
+      DISCORD_TICKET_TRANSCRIPTS_CHANNEL_ID: ${DISCORD_TICKET_TRANSCRIPTS_CHANNEL_ID:-}
       DISCORD_MANAGED_INVITE: ${DISCORD_MANAGED_INVITE:-false}
       DISCORD_STATUS_INTERVAL_MS: ${DISCORD_STATUS_INTERVAL_MS:-90000}
       PLAYSTORCRAFT_PUBLIC_STATUS_URL: ${PLAYSTORCRAFT_PUBLIC_STATUS_URL:-http://app:3000/api/trpc/community.status?input=%7B%22json%22%3Anull%7D}
       PLAYSTORCRAFT_BRIDGE_URL: http://app:3000/api/integrations/discord/status
       PLAYSTORCRAFT_OPERATIONS_BRIDGE_URL: http://app:3000/api/integrations/discord/operations
+      PLAYSTORCRAFT_TICKET_TRANSCRIPTS_BRIDGE_URL: http://app:3000/api/integrations/discord/ticket-transcripts
     depends_on:
       app:
         condition: service_started

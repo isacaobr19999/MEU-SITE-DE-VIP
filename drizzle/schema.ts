@@ -58,6 +58,14 @@ export const loginLockouts = mysqlTable("login_lockouts", {
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 }, table => [index("login_lockouts_locked_idx").on(table.lockedUntil)]);
 
+/** Metadados mínimos de transcrições encerradas, sem conteúdo de ticket ou dados pessoais de mensagens. */
+export const ticketTranscripts = mysqlTable("ticket_transcripts", {
+  messageId: varchar("messageId", { length: 32 }).primaryKey(),
+  source: varchar("source", { length: 32 }).default("TICKET_TOOL").notNull(),
+  closedAt: timestamp("closedAt").notNull(),
+  syncedAt: timestamp("syncedAt").defaultNow().onUpdateNow().notNull(),
+}, table => [index("ticket_transcripts_closed_idx").on(table.closedAt)]);
+
 /** Configuração singleton da disponibilidade comercial pública. */
 export const storeSettings = mysqlTable("store_settings", {
   id: int("id").primaryKey(),

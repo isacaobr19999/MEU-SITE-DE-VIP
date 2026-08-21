@@ -9,8 +9,10 @@ const inviteUrl = process.env.DISCORD_INVITE_URL?.trim();
 const inviteChannelId = process.env.DISCORD_INVITE_CHANNEL_ID?.trim();
 const statusChannelId = process.env.DISCORD_STATUS_CHANNEL_ID?.trim();
 const operationsChannelId = process.env.DISCORD_OPERATIONS_CHANNEL_ID?.trim();
+const ticketTranscriptsChannelId = process.env.DISCORD_TICKET_TRANSCRIPTS_CHANNEL_ID?.trim();
 const publicStatusUrl = process.env.PLAYSTORCRAFT_PUBLIC_STATUS_URL?.trim();
 const operationsBridgeUrl = process.env.PLAYSTORCRAFT_OPERATIONS_BRIDGE_URL?.trim() || "http://app:3000/api/integrations/discord/operations";
+const ticketTranscriptsBridgeUrl = process.env.PLAYSTORCRAFT_TICKET_TRANSCRIPTS_BRIDGE_URL?.trim() || "http://app:3000/api/integrations/discord/ticket-transcripts";
 const managedInviteEnabled = process.env.DISCORD_MANAGED_INVITE === "true";
 const managedInvitePath = "/bot/data/community-invite.json";
 const presenceEnabled = process.env.DISCORD_ENABLE_PRESENCE !== "false";
@@ -136,6 +138,26 @@ if (!token || !bridgeSecret) {
     console.info(`[Discord bot] ${sentIds.length} notificação(ões) operacional(is) publicada(s).`);
   }
 
+  function isTicketTranscriptMessage(message) {
+    if (!message.author?.bot || message.author.id === client.user?.id) return false;
+    const attachments = [...message.attachments.values()];
+    const embeds = message.embeds ?? [];
+    const hasTranscriptAttachment = attachments.some(attachment => /transcript|ticket/i.test(attachment.name ?? ""));
+    const hasTranscriptLink = embeds.some(embed => /tickettool\.xyz\/transcript/i.test(embed.url ?? "") || /transcript/i.test(embed.title ?? ""));
+    return hasTranscriptAttachment || hasTranscriptLink;
+  }
+
+  async function syncTicketTranscriptMetadata(guild) {
+    if (!ticketTranscriptsChannelId) return;
+    const channel = await guild.channels.fetch(ticketTranscriptsChannelId).catch(() => null);
+    if (!channel || !channel.isTextBased() || typeof channel.messages?.fetch !== "function") return;
+    const messages = await channel.messages.fetch({ limit: 25 });
+    const transcripts = [...messages.values()].filter(isTicketTranscriptMessage).map(message => ({ messageId: message.id, closedAt: message.createdAt.toISOString() }));
+    if (!transcripts.length) return;
+    const response = await fetch(ticketTranscriptsBridgeUrl, { method: "POST", headers: { "content-type": "application/json", "x-playstor-discord-secret": bridgeSecret }, body: JSON.stringify({ transcripts }) });
+    if (!response.ok) throw new Error(`A sincronização de transcrições respondeu HTTP ${response.status}`);
+  }
+
   async function publishStatus() {
     const guild = guildId
       ? await client.guilds.fetch(guildId).catch(() => null)
@@ -168,6 +190,7 @@ if (!token || !bridgeSecret) {
     if (!response.ok) throw new Error(`A ponte respondeu HTTP ${response.status}`);
     await publishMinecraftStatus(guild);
     await publishOperationsNotifications(guild);
+    await syncTicketTranscriptMetadata(guild);
     console.info(`[Discord bot] Status publicado: ${guild.name} (${inviteCounts.memberCount ?? guild.memberCount} membros, ${onlineCount ?? "—"} online).`);
   }
 

@@ -1,5 +1,5 @@
 import { createHmac } from "node:crypto";
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, sql } from "drizzle-orm";
 import { loginAttempts, loginLockouts } from "../../drizzle/schema";
 import { getDb, requireDb } from "../db";
 
@@ -51,6 +51,21 @@ export async function clearLoginFailureState(email: string) {
   const db = await getDb();
   if (!db) return;
   await db.delete(loginLockouts).where(eq(loginLockouts.emailHash, loginFingerprint(email)));
+}
+
+export async function listActiveLoginLockouts(limit = 25) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select({ emailHash: loginLockouts.emailHash, failedAttempts: loginLockouts.failedAttempts, lockedUntil: loginLockouts.lockedUntil, updatedAt: loginLockouts.updatedAt })
+    .from(loginLockouts)
+    .where(sql`${loginLockouts.lockedUntil} > now()`)
+    .orderBy(desc(loginLockouts.lockedUntil))
+    .limit(Math.min(Math.max(limit, 1), 100));
+}
+
+export async function releaseLoginLockout(emailHash: string) {
+  const db = await requireDb();
+  await db.delete(loginLockouts).where(eq(loginLockouts.emailHash, emailHash));
 }
 
 export async function listRecentLoginAttempts(limit = 25) {

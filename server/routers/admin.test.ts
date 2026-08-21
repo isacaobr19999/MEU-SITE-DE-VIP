@@ -32,6 +32,9 @@ describe("adminRouter", () => {
     const caller = appRouter.createCaller(userContext("user"));
 
     await expect(caller.admin.metricsByPeriod({ period: "30d" })).rejects.toMatchObject<Partial<TRPCError>>({ code: "FORBIDDEN" });
+    await expect(caller.admin.ticketMetrics()).rejects.toMatchObject<Partial<TRPCError>>({ code: "FORBIDDEN" });
+    await expect(caller.admin.loginLockouts()).rejects.toMatchObject<Partial<TRPCError>>({ code: "FORBIDDEN" });
+    await expect(caller.admin.releaseLoginLockout({ emailHash: "a".repeat(64) })).rejects.toMatchObject<Partial<TRPCError>>({ code: "FORBIDDEN" });
     await expect(caller.admin.search({ query: "PSC" })).rejects.toMatchObject<Partial<TRPCError>>({ code: "FORBIDDEN" });
   });
 
