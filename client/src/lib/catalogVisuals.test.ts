@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getCatalogVisual, getVipBenefits, getVipPreview } from "./catalogVisuals";
+import { getBestVipValue, getCatalogVisual, getVipBenefits, getVipPreview } from "./catalogVisuals";
 
 describe("catalogVisuals", () => {
   it("associa os tipos e nomes de categoria às ilustrações apropriadas", () => {
@@ -17,5 +17,10 @@ describe("catalogVisuals", () => {
   it("separa detalhes existentes para a comparação sem criar benefícios", () => {
     expect(getVipBenefits({ description: "Acesso ao chat VIP.\n• Kit semanal; Tag exclusiva" })).toEqual(["Acesso ao chat VIP.", "Kit semanal", "Tag exclusiva"]);
     expect(getVipBenefits({})).toEqual([]);
+  });
+
+  it("identifica apenas o VIP com menor custo diário dentre durações cadastradas", () => {
+    expect(getBestVipValue([{ id: 1, priceCents: 3000, durationDays: 30 }, { id: 2, priceCents: 5000, durationDays: 90 }, { id: 3, priceCents: 1000, durationDays: null }])?.id).toBe(2);
+    expect(getBestVipValue([{ id: 4, priceCents: 1000, durationDays: null }])).toBeUndefined();
   });
 });

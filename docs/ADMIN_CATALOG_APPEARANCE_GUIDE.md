@@ -4,6 +4,8 @@
 
 No painel, abra **Catálogo**, escolha um produto e use a seção **Galeria de imagens**. A imagem principal permanece indicada como **Principal**. Para acrescentar uma imagem, informe uma URL HTTPS ou um caminho público iniciado por `/`, como um ativo já disponibilizado em `/manus-storage/`. Clique em uma miniatura para defini-la como imagem principal e use o botão de remoção apenas para itens complementares.
 
+> A versão atual não recebe arquivos diretamente pelo painel, pois isso exigiria contratar e configurar um armazenamento externo na VPS. A galeria por URLs continua disponível sem custo adicional, e as imagens complementares podem ser reordenadas por arrastar e soltar ou pelos controles de direção.
+
 | Regra | Comportamento |
 |---|---|
 | Armazenamento | A loja salva apenas as URLs da galeria no produto; os arquivos não são gravados no banco de dados. |

@@ -458,3 +458,12 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Adicionar uma comparação detalhada de VIPs usando apenas benefícios, duração e preços já cadastrados no catálogo.
 - [x] Exibir uma prévia interativa dos temas claro e escuro nas configurações administrativas antes de aplicar a preferência.
 - [x] Cobrir galeria, comparação e prévia de tema com testes, validação visual responsiva e publicação na VPS.
+- [x] Avaliar o envio direto de imagens ao armazenamento externo; retirado da versão atual por exigir serviço adicional, conforme decisão do administrador.
+- [x] Adicionar controles de ordenação à galeria e preservar a imagem principal de cada produto.
+- [x] Destacar o VIP com menor custo por dia somente quando houver produtos com duração comparável cadastrada.
+- [x] Cobrir a ordenação e o destaque de custo por dia com testes e validação técnica.
+- [x] Atualizar o mock de estados do catálogo para incluir o procedimento de envio de imagem administrativo.
+- [x] Atualizar o mock de cupons do catálogo para incluir o procedimento de envio de imagem administrativo.
+- [x] Tornar o teste de configuração do bot Discord determinístico, sem depender de disponibilidade externa durante a suíte unitária.
+- [x] Remover o envio direto de arquivos que exige armazenamento externo e manter a galeria baseada somente em URLs seguras.
+- [x] Publicar a alternativa sem custo com ordenação de galeria e destaque de menor custo por dia.

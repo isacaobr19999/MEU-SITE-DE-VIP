@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
 import { Boxes, Edit3, ImagePlus, Loader2, Search, ServerCog, Tags, Ticket, Trash2 } from "lucide-react";
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { Link } from "wouter";
 import { toast } from "sonner";
 
@@ -58,6 +58,48 @@ function AdminCatalogContent() {
   const updateServer = trpc.admin.updateServer.useMutation({ onSuccess: () => { toast.success("Servidor atualizado."); setServer(null); refreshCatalog(); }, onError: error => toast.error(error.message) });
   const updateCoupon = trpc.admin.updateCoupon.useMutation({ onSuccess: () => { toast.success("Cupom atualizado."); setCoupon(null); refreshCatalog(); }, onError: error => toast.error(error.message) });
   const deleteCoupon = trpc.admin.deleteCoupon.useMutation({ onSuccess: result => { toast.success(result.deleted ? "Cupom excluído." : "Cupom desativado; o histórico de uso foi preservado."); setCoupon(null); refreshCatalog(); }, onError: error => toast.error(error.message) });
+
+  useEffect(() => {
+    if (!product) return;
+    const timeout = window.setTimeout(() => {
+      const editor = document.querySelector(".product-gallery-editor");
+      if (!editor || editor.querySelector(".gallery-upload-control")) return;
+      Array.from(editor.querySelectorAll(".product-gallery-editor__grid > div")).forEach((card, index, cards) => {
+        if (index === 0 || card.querySelector(".gallery-order-controls")) return;
+        card.setAttribute("draggable", "true");
+        card.setAttribute("title", "Arraste para reordenar a galeria");
+        const reorder = (from: number, target: number) => {
+          if (from === target || from < 0 || target < 0) return;
+          setProduct((current: any) => {
+            if (!current) return current;
+            const imageUrls = [...(current.imageUrls ?? [])];
+            const [moved] = imageUrls.splice(from, 1);
+            imageUrls.splice(target, 0, moved);
+            return { ...current, imageUrls };
+          });
+        };
+        card.addEventListener("dragstart", event => { (event as DragEvent).dataTransfer?.setData("text/plain", String(index - 1)); card.classList.add("is-dragging"); });
+        card.addEventListener("dragend", () => card.classList.remove("is-dragging"));
+        card.addEventListener("dragover", event => event.preventDefault());
+        card.addEventListener("drop", event => { event.preventDefault(); reorder(Number((event as DragEvent).dataTransfer?.getData("text/plain")), index - 1); });
+        const controls = document.createElement("div");
+        controls.className = "gallery-order-controls";
+        const move = (direction: -1 | 1) => {
+          const source = index - 1;
+          const target = source + direction;
+          if (target < 0 || target >= (product.imageUrls?.length ?? 0)) return;
+          reorder(source, target);
+        };
+        const previous = document.createElement("button");
+        previous.type = "button"; previous.textContent = "←"; previous.title = "Mover imagem para a esquerda"; previous.disabled = index === 1; previous.addEventListener("click", () => move(-1));
+        const next = document.createElement("button");
+        next.type = "button"; next.textContent = "→"; next.title = "Mover imagem para a direita"; next.disabled = index === cards.length - 1; next.addEventListener("click", () => move(1));
+        controls.append(previous, next);
+        card.append(controls);
+      });
+    }, 0);
+    return () => window.clearTimeout(timeout);
+  }, [product]);
 
   const openCategory = (item: any) => setCategory({ ...item, description: item.description ?? "", imageUrl: item.imageUrl ?? "" });
   const openServer = (item: any) => setServer({ ...item });

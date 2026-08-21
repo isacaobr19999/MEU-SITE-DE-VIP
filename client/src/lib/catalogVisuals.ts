@@ -41,3 +41,9 @@ export function getVipBenefits(source: { shortDescription?: string | null; descr
     .filter(Boolean)
     .slice(0, 4);
 }
+
+export function getBestVipValue<T extends { id: number; durationDays?: number | null; priceCents: number }>(products: T[]) {
+  const comparable = products.filter(product => Boolean(product.durationDays && product.durationDays > 0 && product.priceCents > 0));
+  if (!comparable.length) return undefined;
+  return comparable.reduce((best, product) => product.priceCents / product.durationDays! < best.priceCents / best.durationDays! ? product : best);
+}
