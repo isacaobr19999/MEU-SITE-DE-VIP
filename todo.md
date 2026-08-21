@@ -486,4 +486,4 @@ Warning: the previous candidate response was rejected because it contained repea
 
 - [x] Adicionar métricas reais de disponibilidade de 7 e 30 dias ao painel de monitoramento.
 - [x] Exibir gráficos responsivos baseados exclusivamente nos checks persistidos.
-- [x] Testar, documentar e publicar o upgrade de métricas sem alterar fluxos comerciais.
+- [x] Testar, documentar e publicar o upgrade de métricas sem alterar fluxos comerciais; 128 testes, TypeScript, build e produção confirmados.
