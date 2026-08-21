@@ -446,3 +446,7 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Cobrir o painel de bloqueios e as métricas de tickets com testes, revisar em tela responsiva e publicar a atualização.
 - [x] Emitir um alerta operacional específico no Discord quando cinco falhas administrativas acionarem o bloqueio temporário.
 - [x] Cobrir o alerta de bloqueio com teste, atualizar a documentação e publicar a configuração na VPS.
+- [x] Auditar a qualidade visual e a responsividade da vitrine, catálogo, produto, carrinho, login, pedidos e áreas administrativas.
+- [x] Refinar tokens visuais, tipografia, componentes, cartões, formulários, feedbacks e navegação sem alterar fluxos comerciais.
+- [x] Corrigir inconsistências de responsividade, foco, contraste e estados de carregamento/erro em desktop e celular.
+- [x] Validar a reformulação com testes, checagem de tipos, revisão visual e publicação na VPS.
