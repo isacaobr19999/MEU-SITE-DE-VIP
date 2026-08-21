@@ -427,3 +427,7 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Registrar tentativas de login aprovadas e recusadas com contexto operacional mínimo e visualização restrita a administradores.
 - [x] Adiado pelo administrador: telas de solicitação e redefinição de senha aguardam a configuração segura de envio de e-mail.
 - [x] Cobrir a auditoria de login e publicar a atualização sem configurar credenciais de e-mail; 17 testes passaram e a rota restrita foi revisada em desktop e celular.
+
+- [x] Consolidar a documentação de operação, manutenção e acessos administrativos para o repositório.
+- [x] Revisar o conteúdo versionado para garantir que não há senhas, tokens, chaves ou arquivos de runtime.
+- [ ] Sincronizar o repositório GitHub com toda a documentação e o código atual relevantes.
