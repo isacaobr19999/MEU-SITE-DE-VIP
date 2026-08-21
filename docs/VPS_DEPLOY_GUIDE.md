@@ -89,3 +89,5 @@ O domínio HTTPS, os segredos do Mercado Pago, a assinatura de webhook, as chave
 [1] [Mercado Pago — Webhooks](https://www.mercadopago.com.br/developers/pt/docs/your-integrations/notifications/webhooks)
 
 [2] [Mercado Pago — Notificações de pagamento](https://www.mercadopago.com.br/developers/pt/docs/checkout-pro/payment-notifications)
+
+A ficha pública de `VIP Ferro` também foi verificada em 21 de agosto de 2026: exibiu o grupo `VIP Ferro`, duração de 30 dias, preço de R$ 9,90 e destino `PlayStorCraft`, sem comandos ou benefícios inventados. Nenhum item foi adicionado ao carrinho durante essa verificação.

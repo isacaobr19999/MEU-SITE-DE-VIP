@@ -471,3 +471,9 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Melhorar as descrições dos VIPs usando somente categoria, duração e benefícios já confirmados no catálogo; grupo e período genéricos agora são exibidos de forma estruturada, sem criar vantagens.
 - [x] Exibir destaque promocional apenas para cupons ativos, válidos e aplicáveis, sem criar descontos ou urgência fictícios; a consulta pública filtra estado, janela de validade, limite total e escopo ativo.
 - [x] Atualizar documentação de operação da VPS, testes e GitHub com os novos recursos e o passo a passo de atualização.
+
+- [ ] Continuar a sincronização documental com o GitHub após corrigir a autenticação da conta.
+- [x] Validar o cupom BEMVINDO10 em fluxo controlado, sem abrir pagamento, cobrança ou entrega; campanha ativa, 10%, 0/30 usos e sem pedido ou pagamento criado.
+- [x] Revisar as rotas públicas, a campanha ativa e a saúde da aplicação na VPS após a atualização; HTTP 200, 11 produtos e ficha VIP Ferro confirmados.
+- [x] Atualizar o registro operacional final e salvar um checkpoint da continuação.
+- [ ] Entregar relatório final consolidado com arquivos, comandos e próximos passos.
