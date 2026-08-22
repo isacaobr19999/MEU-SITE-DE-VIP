@@ -1,9 +1,11 @@
-import { Client, GatewayIntentBits } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Client, GatewayIntentBits, ModalBuilder, REST, Routes, SlashCommandBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 
-const token = process.env.DISCORD_BOT_TOKEN?.trim();
-const guildId = process.env.DISCORD_GUILD_ID?.trim();
+  const token = process.env.DISCORD_BOT_TOKEN?.trim();
+  const applicationId = process.env.DISCORD_APPLICATION_ID?.trim();
+  const guildId = process.env.DISCORD_GUILD_ID?.trim();
 const bridgeSecret = process.env.DISCORD_BOT_BRIDGE_SECRET?.trim();
+const backendUrl = process.env.PLAYSTORCRAFT_BACKEND_URL?.trim() || "http://app:3000";
 const bridgeUrl = process.env.PLAYSTORCRAFT_BRIDGE_URL?.trim() || "http://app:3000/api/integrations/discord/status";
 const inviteUrl = process.env.DISCORD_INVITE_URL?.trim();
 const inviteChannelId = process.env.DISCORD_INVITE_CHANNEL_ID?.trim();
@@ -34,6 +36,22 @@ if (!token || !bridgeSecret) {
   let lastPublishedAt = 0;
   let managedInviteUrl;
   let lastMinecraftMessage = "";
+  const slashCommands = [
+    new SlashCommandBuilder().setName("link").setDescription("Vincula sua conta Discord ao Minecraft.").toJSON(),
+    new SlashCommandBuilder().setName("unlink").setDescription("Desvincula sua conta Discord do Minecraft.").toJSON(),
+  ];
+
+  async function registerLinkCommands() {
+    if (!applicationId) return;
+    const rest = new REST({ version: "10" }).setToken(token);
+    const route = guildId ? Routes.applicationGuildCommands(applicationId, guildId) : Routes.applicationCommands(applicationId);
+    await rest.put(route, { body: slashCommands });
+    console.info("[Discord bot] Comandos /link e /unlink registrados.");
+  }
+
+  function linkButton() {
+    return new ActionRowBuilder().addComponents(new ButtonBuilder().setCustomId("legacy-link:open").setLabel("Informar código").setStyle(ButtonStyle.Success));
+  }
 
   async function readManagedInvite() {
     if (!managedInviteEnabled) return undefined;
@@ -208,8 +226,44 @@ if (!token || !bridgeSecret) {
     }
   }
 
+  client.on("interactionCreate", async interaction => {
+    try {
+      if (interaction.isChatInputCommand() && interaction.commandName === "link") {
+        await interaction.reply({ content: "Use `/discord link` no Minecraft para gerar seu código de 6 dígitos e depois informe-o aqui.", components: [linkButton()], ephemeral: true });
+        return;
+      }
+      if (interaction.isChatInputCommand() && interaction.commandName === "unlink") {
+        const result = await fetch(`${backendUrl}/api/integration/unlink-discord`, { method: "POST", headers: { "content-type": "application/json", "x-integration-key": bridgeSecret }, body: JSON.stringify({ discordUserId: interaction.user.id }) }).then(async response => ({ ok: response.ok, body: await response.json().catch(() => ({})) }));
+        if (!result.ok) throw new Error(result.body.error ?? "UNLINK_FAILED");
+        await interaction.reply({ content: result.body.unlinked ? "Sua conta Minecraft foi desvinculada." : "Nenhum vínculo ativo foi encontrado.", ephemeral: true });
+        return;
+      }
+      if (interaction.isButton() && interaction.customId === "legacy-link:open") {
+        const modal = new ModalBuilder().setCustomId("legacy-link:submit").setTitle("Vincular Minecraft");
+        const code = new TextInputBuilder().setCustomId("code").setLabel("Código de 6 dígitos").setPlaceholder("000000").setMinLength(6).setMaxLength(6).setRequired(true).setStyle(TextInputStyle.Short);
+        modal.addComponents(new ActionRowBuilder().addComponents(code));
+        await interaction.showModal(modal);
+        return;
+      }
+      if (interaction.isModalSubmit() && interaction.customId === "legacy-link:submit") {
+        const code = interaction.fields.getTextInputValue("code");
+        const response = await fetch(`${backendUrl}/api/integration/link-codes/redeem-discord`, { method: "POST", headers: { "content-type": "application/json", "x-integration-key": bridgeSecret }, body: JSON.stringify({ code, discordUserId: interaction.user.id, username: interaction.user.username, globalName: interaction.user.globalName }) });
+        const body = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(body.error ?? "LINK_FAILED");
+        await interaction.reply({ content: `Conta Minecraft vinculada com sucesso: **${body.username ?? "jogador"}**.`, ephemeral: true });
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Não foi possível concluir a operação.";
+      if (interaction.isRepliable()) {
+        if (interaction.replied || interaction.deferred) await interaction.followUp({ content: `Não foi possível concluir: ${message}`, ephemeral: true }).catch(() => {});
+        else await interaction.reply({ content: `Não foi possível concluir: ${message}`, ephemeral: true }).catch(() => {});
+      }
+    }
+  });
+
   client.once("ready", async () => {
     console.info(`[Discord bot] Conectado como ${client.user?.tag ?? "bot"}.`);
+    await registerLinkCommands().catch(error => console.error("[Discord bot] Falha ao registrar comandos de vínculo.", error instanceof Error ? error.message : error));
     await safelyPublish();
     publishTimer = setInterval(safelyPublish, publishIntervalMs);
   });

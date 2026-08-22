@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { createLinkCodeHandler, redeemDiscordLinkCodeHandler } from "./legacyLinks";
+import { createLinkCodeHandler, redeemDiscordLinkCodeHandler, unlinkDiscordHandler } from "./legacyLinks";
 
 function responseMock() {
   const response = { status: vi.fn(), json: vi.fn() };
@@ -17,6 +17,13 @@ describe("legacy link routes", () => {
     await createLinkCodeHandler(requestMock({}, {}), response as never);
     expect(response.status).toHaveBeenCalledWith(401);
     expect(response.json).toHaveBeenCalledWith({ linked: false, created: false, error: "UNAUTHORIZED" });
+  });
+
+  it("rejects unlink without integration credentials before touching the database", async () => {
+    const response = responseMock();
+    await unlinkDiscordHandler(requestMock({}, { discordUserId: "123456789" }), response as never);
+    expect(response.status).toHaveBeenCalledWith(401);
+    expect(response.json).toHaveBeenCalledWith({ unlinked: false, error: "UNAUTHORIZED" });
   });
 
   it("rejects malformed redeem payload with a valid integration credential", async () => {

@@ -505,3 +505,8 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Implementar compatibilidade segura entre os endpoints legacy do MinecraftDiscordPlatform e as rotas atuais da loja.
 - [x] Preservar /discord, permissões, telemetria, entregas e integração Discord com testes reais ou claramente marcados como não executados.
 - [x] Homologar a migração fora da produção, publicar somente após validação e documentar rollback; saúde e rotas legacy validadas em produção, com entrega real ainda não executada.
+
+- [x] Implementar fluxo seguro de criação, resgate e revogação de vínculo Discord no bot, sem expor códigos ou chaves.
+- [x] Adicionar testes do fluxo Discord e validação de permissões, expiração, uso único e revogação.
+- [ ] Homologar entrega e comandos em ambiente seguro, sem cobrança real e sem declarar testes não executados como aprovados.
+- [ ] Atualizar documentação, sincronizar GitHub/VPS e salvar checkpoint final dos aprimoramentos autônomos.

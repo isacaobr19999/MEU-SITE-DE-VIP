@@ -79,8 +79,24 @@ export async function revokeLinkCodeHandler(req: Request, res: Response) {
   return res.status(200).json({ revoked: Number(result[0].affectedRows ?? 0) > 0 });
 }
 
+export async function unlinkDiscordHandler(req: Request, res: Response) {
+  if (!hasValidIntegrationKey(keyFromRequest(req))) return res.status(401).json({ unlinked: false, error: "UNAUTHORIZED" });
+  const input = z.object({ discordUserId: z.string().min(2).max(32) }).safeParse(req.body);
+  if (!input.success) return res.status(400).json({ unlinked: false, error: "INVALID_ACCOUNT" });
+  try {
+    const db = await requireDb();
+    const [account] = await db.select({ id: discordAccounts.id }).from(discordAccounts).where(eq(discordAccounts.discordUserId, input.data.discordUserId)).limit(1);
+    if (!account) return res.status(200).json({ unlinked: false });
+    const result = await db.update(playerDiscordLinks).set({ unlinkedAt: new Date() }).where(and(eq(playerDiscordLinks.discordAccountId, account.id), isNull(playerDiscordLinks.unlinkedAt)));
+    return res.status(200).json({ unlinked: Number(result[0].affectedRows ?? 0) > 0 });
+  } catch (error) {
+    return res.status(503).json({ unlinked: false, error: error instanceof Error ? error.message.slice(0, 120) : "UNLINK_FAILED" });
+  }
+}
+
 export function registerLegacyLinkRoutes(app: Express) {
   app.post("/api/integration/link-codes", createLinkCodeHandler);
   app.post("/api/integration/link-codes/redeem-discord", redeemDiscordLinkCodeHandler);
   app.post("/api/integration/link-codes/revoke", revokeLinkCodeHandler);
+  app.post("/api/integration/unlink-discord", unlinkDiscordHandler);
 }

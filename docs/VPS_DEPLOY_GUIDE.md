@@ -91,3 +91,40 @@ O domínio HTTPS, os segredos do Mercado Pago, a assinatura de webhook, as chave
 [2] [Mercado Pago — Notificações de pagamento](https://www.mercadopago.com.br/developers/pt/docs/checkout-pro/payment-notifications)
 
 A ficha pública de `VIP Ferro` também foi verificada em 21 de agosto de 2026: exibiu o grupo `VIP Ferro`, duração de 30 dias, preço de R$ 9,90 e destino `PlayStorCraft`, sem comandos ou benefícios inventados. Nenhum item foi adicionado ao carrinho durante essa verificação.
+
+## Atualização do bot e vínculo Discord–Minecraft
+
+Quando houver alteração em `discord-bot/index.mjs`, recrie também o serviço do bot para que os comandos slash sejam registrados:
+
+```bash
+docker compose --env-file /root/playstorcraft-runtime/.env -f /opt/playstorcraft/deployment/vps/docker-compose.yml up -d --build --force-recreate discord-bot
+
+docker compose --env-file /root/playstorcraft-runtime/.env -f /opt/playstorcraft/deployment/vps/docker-compose.yml logs --tail=80 discord-bot
+```
+
+O bot precisa receber `DISCORD_BOT_TOKEN`, `DISCORD_APPLICATION_ID`, `DISCORD_GUILD_ID`, `DISCORD_BOT_BRIDGE_SECRET` e `INTEGRATION_API_KEY` somente pelo runtime protegido. A URL interna pode ser ajustada por `PLAYSTORCRAFT_BACKEND_URL`; quando o Compose usa o serviço `app`, o padrão é `http://app:3000`.
+
+O fluxo de homologação é: no Paper, o jogador executa `/discord link`; em seguida, no Discord, usa `/link`, clica em **Informar código** e envia o código de seis dígitos. O bot chama `/api/integration/link-codes/redeem-discord`, que valida expiração, uso único, jogador existente e vínculo ativo. Para testar a remoção, o jogador usa `/unlink` no Discord; a API marca o vínculo como inativo em `player_discord_links` e preserva o histórico. Não registre códigos, tokens ou chaves nos logs, tickets ou commits.
+
+A validação mínima deve confirmar os logs de registro dos comandos, a resposta de sucesso ou erro explícito no Discord, a criação ou atualização do vínculo no banco e a rejeição de código expirado, já utilizado ou inválido. Essa homologação não deve criar pedidos, pagamentos ou entregas reais.
+
+> O endpoint legacy exige o cabeçalho `x-integration-key`. Uma resposta HTTP 401 indica chave ausente, incorreta ou não propagada para o contêiner; não substitua a chave por valores no código-fonte.
+
+## Rollback do bot
+
+Se o bot não iniciar após uma atualização, preserve os logs e restaure o último checkpoint pelo painel de gerenciamento ou pelo procedimento de rollback versionado. Não utilize `docker compose down -v`, pois volumes do MySQL e dados do Paper não devem ser removidos.
+
+> Estado desta documentação em 22 de agosto de 2026: o fluxo de código, resgate e desvinculação está coberto por testes automatizados. A homologação com um jogador real no servidor Paper e a publicação da nova imagem do bot ainda devem ser executadas pelo operador da VPS.
+
+## Variáveis adicionais do bot
+
+| Variável | Obrigatória | Finalidade |
+| --- | --- | --- |
+| `DISCORD_APPLICATION_ID` | Para registrar slash commands | ID da aplicação Discord que possui o bot. |
+| `PLAYSTORCRAFT_BACKEND_URL` | Não | URL interna ou HTTPS da API; padrão `http://app:3000`. |
+| `INTEGRATION_API_KEY` | Sim | Chave compartilhada com o plugin legacy e o bot, fornecida apenas pelo runtime. |
+| `DISCORD_BOT_BRIDGE_SECRET` | Sim | Segredo das rotas operacionais atuais do bot. |
+| `DISCORD_GUILD_ID` | Recomendável | Faz o registro imediato dos comandos no servidor configurado. |
+| `DISCORD_BOT_TOKEN` | Sim | Token privado usado somente pelo serviço do bot. |
+
+Nunca cole valores dessas variáveis em issues, mensagens, commits ou arquivos versionados.
