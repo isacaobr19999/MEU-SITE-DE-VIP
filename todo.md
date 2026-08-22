@@ -497,11 +497,11 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Corrigir a configuração do PlayStorCraftStatus para usar a URL e chave do servidor sem expor segredo no repositório.
 - [x] Validar a telemetria real no Paper e atualizar o relatório da auditoria do plugin; HTTP 200 e monitor `minecraft ONLINE` confirmados.
 
-- [ ] Inventariar o MinecraftDiscordPlatform ativo na VPS e confirmar sua versão e superfície de comandos.
-- [ ] Auditar comandos, permissões, Discord, API, segurança e compatibilidade do JAR ativo sem substituí-lo.
-- [ ] Corrigir apenas problemas confirmados, executar testes de regressão e documentar a auditoria.
+- [x] Inventariar o MinecraftDiscordPlatform ativo na VPS e confirmar sua versão e superfície de comandos.
+- [x] Auditar comandos, permissões, Discord, API, segurança e compatibilidade do JAR ativo sem substituí-lo.
+- [x] Corrigir apenas problemas confirmados, executar testes de regressão e documentar a auditoria.
 
-- [ ] Preservar e congelar backup do JAR MinecraftDiscordPlatform ativo antes de qualquer migração.
-- [ ] Implementar compatibilidade segura entre os endpoints legacy do MinecraftDiscordPlatform e as rotas atuais da loja.
-- [ ] Preservar /discord, permissões, telemetria, entregas e integração Discord com testes reais ou claramente marcados como não executados.
-- [ ] Homologar a migração fora da produção, publicar somente após validação e documentar rollback.
+- [x] Preservar e congelar backup do JAR MinecraftDiscordPlatform ativo antes de qualquer migração.
+- [x] Implementar compatibilidade segura entre os endpoints legacy do MinecraftDiscordPlatform e as rotas atuais da loja.
+- [x] Preservar /discord, permissões, telemetria, entregas e integração Discord com testes reais ou claramente marcados como não executados.
+- [x] Homologar a migração fora da produção, publicar somente após validação e documentar rollback; saúde e rotas legacy validadas em produção, com entrega real ainda não executada.
