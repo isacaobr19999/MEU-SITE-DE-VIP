@@ -487,3 +487,12 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Adicionar métricas reais de disponibilidade de 7 e 30 dias ao painel de monitoramento.
 - [x] Exibir gráficos responsivos baseados exclusivamente nos checks persistidos.
 - [x] Testar, documentar e publicar o upgrade de métricas sem alterar fluxos comerciais; 128 testes, TypeScript, build e produção confirmados.
+
+- [x] Identificar qual plugin e quais fontes estão disponíveis para auditoria mecânica completa.
+- [x] Auditar compilação, Paper/plugin.yml, comandos, permissões, integrações, banco, desempenho, segurança, stress e regressão somente com testes executados; áreas não executadas foram marcadas no relatório.
+- [x] Corrigir problemas confirmados no plugin, recompilar e repetir os testes afetados.
+- [x] Produzir relatório final com evidências, gravidade e percentual baseado exclusivamente nos testes realizados.
+
+- [x] Corrigir a identificação/documentação do JAR ativo para não confundir MinecraftDiscordPlatform com PlayStorCraft.
+- [x] Corrigir a configuração do PlayStorCraftStatus para usar a URL e chave do servidor sem expor segredo no repositório.
+- [x] Validar a telemetria real no Paper e atualizar o relatório da auditoria do plugin; HTTP 200 e monitor `minecraft ONLINE` confirmados.
