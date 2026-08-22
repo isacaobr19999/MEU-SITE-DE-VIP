@@ -4,6 +4,9 @@ import { createServer } from "http";
 import net from "net";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { ingestMonitoringRoute } from "../routes/monitoring";
+import { integrationHealthHandler } from "../integration/legacyHealth";
+import { registerLegacyIntegrationRoutes } from "../integration/legacyEvents";
+import { registerLegacyLinkRoutes } from "../integration/legacyLinks";
 import { registerLocalAuthRoutes } from "../localAuth";
 import { registerStorageProxy } from "./storageProxy";
 import { appRouter } from "../routers";
@@ -63,6 +66,9 @@ async function startServer() {
   app.post("/api/scheduled/commerce-maintenance", commerceMaintenance);
   app.post("/api/scheduled/store-maintenance", storeMaintenanceScheduler);
   app.post("/api/internal/monitoring", ingestMonitoringRoute);
+  app.get("/api/integration/health", integrationHealthHandler);
+  registerLegacyIntegrationRoutes(app);
+  registerLegacyLinkRoutes(app);
   // tRPC API
   app.use(
     "/api/trpc",

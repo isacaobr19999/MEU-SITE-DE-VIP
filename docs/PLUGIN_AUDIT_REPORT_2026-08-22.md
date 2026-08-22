@@ -45,3 +45,19 @@ cd ../minecraft-status-plugin
 ```
 
 A auditoria não incluiu pagamento, entrega real de produto ou stress em produção. Esses testes devem ocorrer em servidor de validação, com produtos de teste e sem concluir cobrança real.
+
+## Auditoria adicional do MinecraftDiscordPlatform ativo
+
+O JAR copiado da VPS possui SHA-256 `c36c10f2f22fcf77fe783d9732d16ee621e771bba2e3e3649c1fcbd3ca3a82cb` e declara `MinecraftDiscordPlatform` v0.1.0, com comando `/discord <link|unlink>`, permissão `minecraftdiscord.account` e integração opcional com LuckPerms, Vault, PlaceholderAPI e Essentials. O bytecode usa `http://localhost:3000` como valor padrão, a configuração ativa possui `integration-api-key` vazio e o cliente espera `x-integration-key` nos endpoints `/api/integration/events`, `/api/integration/link-codes` e `/api/integration/admin/commands/result`.
+
+A API atual do projeto expõe rotas diferentes: `/api/integrations/discord/status`, protegida por `x-playstor-discord-secret`, e `/api/minecraft/status`, protegida por `x-playstor-server-key`. Testes POST públicos aos endpoints legacy retornaram o fallback HTML da SPA, enquanto as rotas atuais sem credencial retornaram HTTP 401. Isso confirma uma **incompatibilidade de contrato**, não um erro de permissão que deva ser resolvido adivinhando uma chave.
+
+Por segurança, o JAR ativo não foi substituído, desativado nem recebeu a chave do bot. A correção definitiva exige uma destas decisões: disponibilizar o código-fonte e o contrato do MinecraftDiscordPlatform para adaptação; migrar suas funções para as rotas atuais mantendo `/discord`; ou manter o JAR apenas como legado e usar `PlayStorCraftStatus` mais o bot atual. A primeira e a segunda opções devem ser homologadas fora da produção antes de trocar o arquivo ativo.
+
+## Adaptação legacy implementada
+
+O backend passou a oferecer compatibilidade controlada para o contrato usado pelo JAR ativo: `GET /api/integration/health`, `POST /api/integration/events`, `POST /api/integration/link-codes`, `POST /api/integration/link-codes/redeem-discord` e `POST /api/integration/link-codes/revoke`. Os eventos são autenticados por `x-integration-key`, registrados com idempotência e traduzem `server.heartbeat` para o status público do Paper. Mensagens de chat não são persistidas em texto; apenas metadados mínimos podem ser registrados.
+
+Foram criadas as tabelas `integration_events`, `discord_accounts`, `minecraft_link_codes` e `player_discord_links` por migrações não destrutivas. A chave `INTEGRATION_API_KEY` foi adicionada ao Compose e ao runtime protegido; nenhum valor foi incluído no repositório. O app respondeu `{"ok":true,"service":"minecraft-discord-platform"}` com autenticação válida, e os logs do Paper confirmaram `Minecraft Discord Platform enabled for server primary` sem novos `401` após a migração do banco.
+
+A correção foi publicada na VPS sem substituir o JAR ativo. Os testes locais finais passaram: **47 arquivos e 129 testes**, TypeScript sem erros. A homologação real de `/discord link`, `/discord unlink`, resgate por usuário Discord, comandos administrativos e entrega de produto continua necessária antes de declarar esses fluxos como aprovados em produção.

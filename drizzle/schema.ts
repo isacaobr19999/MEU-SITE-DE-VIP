@@ -24,8 +24,26 @@ const discordNotificationStatuses = ["PENDING", "SENT"] as const;
 const maintenanceModes = ["CLOSED", "CATALOG_ONLY"] as const;
 const maintenanceScheduleStatuses = ["NONE", "SCHEDULED", "ACTIVE", "COMPLETED", "CANCELLED"] as const;
 const maintenanceEventKinds = ["SCHEDULED", "STARTED", "ENDED", "CANCELLED", "UPDATED"] as const;
+const integrationEventStatuses = ["RECEIVED", "PROCESSED", "FAILED"] as const;
 
 /** Identidade de usuários autenticados e papéis de acesso. */
+/** Eventos recebidos do contrato legacy do MinecraftDiscordPlatform; a chave idempotente evita reprocessamento. */
+export const integrationEvents = mysqlTable(
+  "integration_events",
+  {
+    id: varchar("id", { length: 64 }).primaryKey(),
+    idempotencyKey: varchar("idempotencyKey", { length: 128 }).notNull(),
+    type: varchar("type", { length: 96 }).notNull(),
+    origin: varchar("origin", { length: 32 }).notNull(),
+    payload: json("payload").notNull(),
+    status: mysqlEnum("status", integrationEventStatuses).default("RECEIVED").notNull(),
+    failureReason: varchar("failureReason", { length: 255 }),
+    processedAt: timestamp("processedAt"),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+  },
+  table => [uniqueIndex("integration_events_idempotency_unique").on(table.idempotencyKey), index("integration_events_type_status_idx").on(table.type, table.status), index("integration_events_created_idx").on(table.createdAt)]
+);
+
 export const users = mysqlTable("users", {
   id: int("id").autoincrement().primaryKey(),
   openId: varchar("openId", { length: 64 }).notNull().unique(),
@@ -116,6 +134,44 @@ export const players = mysqlTable(
     uniqueIndex("players_uuid_unique").on(table.uuid),
     index("players_user_idx").on(table.userId),
   ]
+);
+
+export const discordAccounts = mysqlTable(
+  "discord_accounts",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    discordUserId: varchar("discordUserId", { length: 32 }).notNull(),
+    globalName: varchar("globalName", { length: 128 }),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+    updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  },
+  table => [uniqueIndex("discord_accounts_user_id_unique").on(table.discordUserId)]
+);
+
+export const minecraftLinkCodes = mysqlTable(
+  "minecraft_link_codes",
+  {
+    code: varchar("code", { length: 6 }).primaryKey(),
+    playerId: int("playerId").notNull().references(() => players.id, { onDelete: "cascade" }),
+    target: mysqlEnum("target", ["DISCORD", "SITE"]).default("DISCORD").notNull(),
+    expiresAt: timestamp("expiresAt").notNull(),
+    usedAt: timestamp("usedAt"),
+    discordAccountId: int("discordAccountId").references(() => discordAccounts.id, { onDelete: "set null" }),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+  },
+  table => [index("minecraft_link_codes_expiry_idx").on(table.expiresAt, table.usedAt), index("minecraft_link_codes_player_idx").on(table.playerId, table.usedAt)]
+);
+
+export const playerDiscordLinks = mysqlTable(
+  "player_discord_links",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    playerId: int("playerId").notNull().references(() => players.id, { onDelete: "cascade" }),
+    discordAccountId: int("discordAccountId").notNull().references(() => discordAccounts.id, { onDelete: "cascade" }),
+    linkedAt: timestamp("linkedAt").defaultNow().notNull(),
+    unlinkedAt: timestamp("unlinkedAt"),
+  },
+  table => [index("player_discord_links_player_idx").on(table.playerId, table.unlinkedAt), index("player_discord_links_discord_idx").on(table.discordAccountId, table.unlinkedAt)]
 );
 
 export const categories = mysqlTable(
