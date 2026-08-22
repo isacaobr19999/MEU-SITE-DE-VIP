@@ -2,9 +2,10 @@ import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Client, GatewayIntentBits
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 
   const token = process.env.DISCORD_BOT_TOKEN?.trim();
-  const applicationId = process.env.DISCORD_APPLICATION_ID?.trim();
+  const applicationId = process.env.DISCORD_APPLICATION_ID?.trim() || (token ? Buffer.from(token.split(".")[0], "base64url").toString("utf8") : undefined);
   const guildId = process.env.DISCORD_GUILD_ID?.trim();
 const bridgeSecret = process.env.DISCORD_BOT_BRIDGE_SECRET?.trim();
+const integrationKey = process.env.INTEGRATION_API_KEY?.trim();
 const backendUrl = process.env.PLAYSTORCRAFT_BACKEND_URL?.trim() || "http://app:3000";
 const bridgeUrl = process.env.PLAYSTORCRAFT_BRIDGE_URL?.trim() || "http://app:3000/api/integrations/discord/status";
 const inviteUrl = process.env.DISCORD_INVITE_URL?.trim();
@@ -21,11 +22,11 @@ const presenceEnabled = process.env.DISCORD_ENABLE_PRESENCE !== "false";
 const publishIntervalMs = Math.max(60_000, Number(process.env.DISCORD_STATUS_INTERVAL_MS) || 90_000);
 
 function keepDisabledServiceAlive() {
-  console.warn("[Discord bot] Aguardando DISCORD_BOT_TOKEN, DISCORD_GUILD_ID e DISCORD_BOT_BRIDGE_SECRET no runtime. Nenhuma conexão com o Discord será aberta.");
+  console.warn("[Discord bot] Aguardando credenciais Discord e integração legacy no runtime. Nenhuma conexão com o Discord será aberta.");
   setInterval(() => console.info("[Discord bot] Serviço em espera por credenciais."), 6 * 60 * 60 * 1000);
 }
 
-if (!token || !bridgeSecret) {
+if (!token || !bridgeSecret || !integrationKey) {
   keepDisabledServiceAlive();
 } else {
   const intents = [GatewayIntentBits.Guilds];
@@ -233,7 +234,7 @@ if (!token || !bridgeSecret) {
         return;
       }
       if (interaction.isChatInputCommand() && interaction.commandName === "unlink") {
-        const result = await fetch(`${backendUrl}/api/integration/unlink-discord`, { method: "POST", headers: { "content-type": "application/json", "x-integration-key": bridgeSecret }, body: JSON.stringify({ discordUserId: interaction.user.id }) }).then(async response => ({ ok: response.ok, body: await response.json().catch(() => ({})) }));
+        const result = await fetch(`${backendUrl}/api/integration/unlink-discord`, { method: "POST", headers: { "content-type": "application/json", "x-integration-key": integrationKey }, body: JSON.stringify({ discordUserId: interaction.user.id }) }).then(async response => ({ ok: response.ok, body: await response.json().catch(() => ({})) }));
         if (!result.ok) throw new Error(result.body.error ?? "UNLINK_FAILED");
         await interaction.reply({ content: result.body.unlinked ? "Sua conta Minecraft foi desvinculada." : "Nenhum vínculo ativo foi encontrado.", ephemeral: true });
         return;
@@ -247,7 +248,7 @@ if (!token || !bridgeSecret) {
       }
       if (interaction.isModalSubmit() && interaction.customId === "legacy-link:submit") {
         const code = interaction.fields.getTextInputValue("code");
-        const response = await fetch(`${backendUrl}/api/integration/link-codes/redeem-discord`, { method: "POST", headers: { "content-type": "application/json", "x-integration-key": bridgeSecret }, body: JSON.stringify({ code, discordUserId: interaction.user.id, username: interaction.user.username, globalName: interaction.user.globalName }) });
+        const response = await fetch(`${backendUrl}/api/integration/link-codes/redeem-discord`, { method: "POST", headers: { "content-type": "application/json", "x-integration-key": integrationKey }, body: JSON.stringify({ code, discordUserId: interaction.user.id, username: interaction.user.username, globalName: interaction.user.globalName }) });
         const body = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(body.error ?? "LINK_FAILED");
         await interaction.reply({ content: `Conta Minecraft vinculada com sucesso: **${body.username ?? "jogador"}**.`, ephemeral: true });
