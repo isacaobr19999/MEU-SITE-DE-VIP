@@ -13,11 +13,12 @@ A **PlayStorCraft** é uma loja Minecraft auto-hospedada. O projeto reúne catá
 
 ## Início rápido para uma nova VPS
 
-O procedimento detalhado, incluindo transferência de banco, assets, bot Discord e Paper, está em **[docs/vps-migration-runbook.md](docs/vps-migration-runbook.md)**. Em resumo, prepare uma VPS Ubuntu, clone o repositório, crie o arquivo de runtime a partir de [`deployment/vps/runtime.template`](deployment/vps/runtime.template), restaure os backups, inicie os serviços e finalize DNS/HTTPS.
+O procedimento principal de instalação e operação está em **[docs/VPS_INSTALLATION_AND_OPERATIONS.md](docs/VPS_INSTALLATION_AND_OPERATIONS.md)**. Ele cobre preparação da VPS, Docker, runtime privado, Nginx, DNS, HTTPS, Mercado Pago, Discord, Paper, atualização, backup, restauração e rollback. O [runbook de migração](docs/vps-migration-runbook.md) detalha o corte entre VPSs.
 
 | Documento | Finalidade |
 | --- | --- |
-| [Guia de migração para VPS](docs/vps-migration-runbook.md) | Instalação limpa, migração, corte de DNS, recuperação e validação. |
+| [Guia completo de VPS](docs/VPS_INSTALLATION_AND_OPERATIONS.md) | Instalação, configuração, operação, atualização, backup, restauração e rollback. |
+| [Guia de migração para VPS](docs/vps-migration-runbook.md) | Transferência entre VPSs, corte de DNS, recuperação e validação. |
 | [Modelo de runtime](deployment/vps/runtime.template) | Lista completa de variáveis sem valores reais. |
 | [Backup da VPS](deployment/vps/backup-playstorcraft.sh) | Gera dump MySQL, cópia de assets, estado do bot e manifesto de integridade. |
 | [Verificação da VPS](deployment/vps/verify-playstorcraft.sh) | Confere serviços, HTTPS, cabeçalhos e rotas operacionais. |
