@@ -527,3 +527,5 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Adicionar opção de copiar o código de vínculo e melhorar as mensagens de sucesso no Discord e no Minecraft, preservando expiração, uso único e segurança; implementado no bot e publicado na VPS.
 
 - [x] Homologar o novo vínculo de `_Nube`: o Paper consumiu `chat.discord`, exibiu a confirmação no Minecraft e a fila ficou vazia, sem pedido ou pagamento.
+
+- [x] Corrigir a falha da consulta de produtos em destaque e da listagem da home: `products.imageUrls` estava ausente no banco local; migration `0016` aplicada, VPS conferida, 49 suítes/135 testes, TypeScript, build e home validados sem perda de dados.
