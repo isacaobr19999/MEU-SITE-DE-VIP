@@ -529,3 +529,5 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Homologar o novo vínculo de `_Nube`: o Paper consumiu `chat.discord`, exibiu a confirmação no Minecraft e a fila ficou vazia, sem pedido ou pagamento.
 
 - [x] Corrigir a falha da consulta de produtos em destaque e da listagem da home: `products.imageUrls` estava ausente no banco local; migration `0016` aplicada, VPS conferida, 49 suítes/135 testes, TypeScript, build e home validados sem perda de dados.
+
+- [x] Corrigir a área Aparência do painel administrativo: seletores do workspace ajustados, persistência/evento cobertos por teste e rota protegida validada; a preferência continua restrita ao painel.
