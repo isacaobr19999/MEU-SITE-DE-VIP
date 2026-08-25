@@ -1,0 +1,1 @@
+ALTER TABLE `discord_accounts` DROP INDEX `discord_accounts_discordUserId_unique`;

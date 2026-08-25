@@ -5,7 +5,9 @@ import { COOKIE_NAME } from "@shared/const";
 import { createCategoryRecord, createProductRecord, listAdminCategories } from "../db/adminCatalog";
 import { cancelOrderRecord, createCouponRecord, createServerRecord, deleteCouponRecord, getAdminMetricsByPeriod, getAdminMonthlySales, getAdminOrderDetail, getAdminOverview, getAdminProductPriceCents, listAdminCoupons, listAdminDeliveries, listAdminLogs, listAdminOrderExport, listAdminOrders, listAdminPlayers, listAdminProducts, listAdminServers, listAdminUsers, listPlayerHistory, retryDeliveryRecord, searchAdminRecords, setAdminRole, setProductStatus, updateCategoryRecord, updateCouponRecord, updateProductRecord, updateServerRecord, writeAdminAuditLog } from "../db/admin";
 import { cancelMaintenanceSchedule, enqueueMaintenanceNotificationTest, getMaintenanceControl, getStoreAvailability, listMaintenanceEventExport, scheduleMaintenance, setMaintenanceDiscordChannel, setMaintenanceScheduleTask, setManualMaintenance, setStoreAvailability } from "../db/storeSettings";
-import { listRecentLoginAttempts } from "../db/loginAttempts";
+import { listActiveLoginLockouts, listRecentLoginAttempts, releaseLoginLockout } from "../db/loginAttempts";
+import { getMonthlyClosedTicketMetrics } from "../db/ticketTranscripts";
+import { getMonitoringAvailability, getMonitoringHistory, getMonitoringOverview, recordMonitoringBatch, type MonitoringReport } from "../db/monitoring";
 import { createHeartbeatJob, updateHeartbeatJob } from "../_core/heartbeat";
 import { adminProcedure, router } from "../_core/trpc";
 
@@ -17,7 +19,7 @@ const productInput = z.object({ categoryId: z.number().int().positive(), name: z
 });
 export const adminProductUpdatePriceCents = z.number().int().min(0).max(100_000_000);
 const productUpdateInput = productInput.safeExtend({ priceCents: adminProductUpdatePriceCents });
-const productContentInput = z.object({ shortDescription: z.string().trim().max(280).optional(), description: z.string().trim().max(8000).optional(), imageUrl: adminMediaUrl.optional(), position: z.number().int().min(0).max(9999).default(0) });
+const productContentInput = z.object({ shortDescription: z.string().trim().max(280).optional(), description: z.string().trim().max(8000).optional(), imageUrl: adminMediaUrl.optional(), imageUrls: z.array(adminMediaUrl).max(12).optional(), position: z.number().int().min(0).max(9999).default(0) });
 const couponInput = z.object({ code: z.string().trim().toUpperCase().regex(/^[A-Z0-9_-]+$/).min(3).max(48), description: z.string().trim().max(280).optional(), type: z.enum(["PERCENTAGE", "FIXED"]), percentageBasisPoints: z.number().int().min(1).max(10_000).optional(), fixedDiscountCents: z.number().int().min(1).max(100_000_000).optional(), startsAt: z.date().nullable().optional(), endsAt: z.date().nullable().optional(), maxUses: z.number().int().min(1).nullable().optional(), maxUsesPerPlayer: z.number().int().min(1).max(100).default(1), active: z.boolean().default(true), productIds: z.array(z.number().int().positive()).optional() }).superRefine((value, issue) => { if (value.type === "PERCENTAGE" && !value.percentageBasisPoints) issue.addIssue({ code: "custom", message: "Informe o percentual de desconto", path: ["percentageBasisPoints"] }); if (value.type === "FIXED" && !value.fixedDiscountCents) issue.addIssue({ code: "custom", message: "Informe o valor fixo de desconto", path: ["fixedDiscountCents"] }); if (value.startsAt && value.endsAt && value.endsAt <= value.startsAt) issue.addIssue({ code: "custom", message: "A expiração deve ocorrer depois do início do cupom.", path: ["endsAt"] }); });
 const maintenanceInput = z.object({ mode: z.enum(["CLOSED", "CATALOG_ONLY"]), offlineMessage: z.string().trim().min(8).max(280), reason: z.string().trim().max(280).optional() });
 const maintenanceScheduleInput = maintenanceInput.extend({ startAt: z.date(), endAt: z.date() }).superRefine((value, issue) => { if (value.startAt <= new Date()) issue.addIssue({ code: "custom", path: ["startAt"], message: "Escolha um início futuro para o agendamento." }); if (value.endAt <= value.startAt) issue.addIssue({ code: "custom", path: ["endAt"], message: "O encerramento deve ocorrer depois do início." }); });
@@ -32,7 +34,13 @@ function maintenanceSession(ctx: { req: { headers: { cookie?: string } } }) {
 
 export const adminRouter = router({
   loginAttempts: adminProcedure.input(z.object({ limit: z.number().int().min(1).max(100).default(20) }).optional()).query(async ({ input }) => listRecentLoginAttempts(input?.limit ?? 20)),
+  ingestMonitoring: adminProcedure.input(z.object({ reports: z.array(z.object({ serviceKey: z.string().min(1).max(48), status: z.enum(["ONLINE", "DEGRADED", "OFFLINE"]), latencyMs: z.number().int().min(0).max(120000).nullable().optional(), message: z.string().max(280).nullable().optional() })).min(1).max(8) })).mutation(async ({ input }) => recordMonitoringBatch(input.reports as MonitoringReport[])),
+  loginLockouts: adminProcedure.input(z.object({ limit: z.number().int().min(1).max(100).default(25) }).optional()).query(async ({ input }) => listActiveLoginLockouts(input?.limit ?? 25)),
+  ticketMetrics: adminProcedure.query(() => getMonthlyClosedTicketMetrics()),
   overview: adminProcedure.query(async () => getAdminOverview()),
+  monitoring: adminProcedure.query(() => getMonitoringOverview()),
+  monitoringHistory: adminProcedure.input(z.object({ limit: z.number().int().min(1).max(200).default(60) }).optional()).query(({ input }) => getMonitoringHistory(input?.limit ?? 60)),
+  monitoringAvailability: adminProcedure.input(z.object({ days: z.union([z.literal(7), z.literal(30)]) })).query(({ input }) => getMonitoringAvailability(input.days)),
 
   monthlySales: adminProcedure.query(() => getAdminMonthlySales()),
 
@@ -64,6 +72,11 @@ export const adminRouter = router({
   storeAvailability: adminProcedure.query(getStoreAvailability),
   maintenanceControl: adminProcedure.query(getMaintenanceControl),
   exportMaintenanceHistory: adminProcedure.query(listMaintenanceEventExport),
+  releaseLoginLockout: adminProcedure.input(z.object({ emailHash: z.string().regex(/^[a-f0-9]{64}$/) })).mutation(async ({ ctx, input }) => {
+    await releaseLoginLockout(input.emailHash);
+    await audit(ctx, "login_lockout.released", "login_lockout", input.emailHash.slice(0, 12));
+    return { released: true };
+  }),
   setStoreAvailability: adminProcedure.input(z.object({ publicOnline: z.boolean(), offlineMessage: z.string().trim().min(8).max(280).optional() })).mutation(async ({ ctx, input }) => {
     const settings = await setStoreAvailability(input);
     await audit(ctx, input.publicOnline ? "store.activated" : "store.deactivated", "store_settings", "1", { publicOnline: input.publicOnline });

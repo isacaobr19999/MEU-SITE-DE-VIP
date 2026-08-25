@@ -3,6 +3,10 @@ import express from "express";
 import { createServer } from "http";
 import net from "net";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
+import { ingestMonitoringRoute } from "../routes/monitoring";
+import { integrationHealthHandler } from "../integration/legacyHealth";
+import { registerLegacyIntegrationRoutes } from "../integration/legacyEvents";
+import { registerLegacyLinkRoutes } from "../integration/legacyLinks";
 import { registerLocalAuthRoutes } from "../localAuth";
 import { registerStorageProxy } from "./storageProxy";
 import { appRouter } from "../routers";
@@ -11,6 +15,7 @@ import { mercadoPagoWebhook } from "../webhooks/mercadoPago";
 import { claimMinecraftDeliveries, completeMinecraftDelivery, deferMinecraftDelivery, failMinecraftDelivery, syncMinecraftPlayerRoute, updateMinecraftStatusRoute } from "../minecraft";
 import { updateCommunityStatusRoute } from "../community";
 import { acknowledgeDiscordNotificationsRoute, listDiscordNotificationsRoute } from "../discordNotifications";
+import { recordTicketTranscriptsRoute } from "../ticketTranscripts";
 import { commerceMaintenance } from "../scheduled/commerceMaintenance";
 import { storeMaintenanceScheduler } from "../scheduled/storeMaintenance";
 import { serveStatic, setupVite } from "./vite";
@@ -55,10 +60,15 @@ async function startServer() {
   app.post("/api/minecraft/deliveries/fail", failMinecraftDelivery);
   app.post("/api/minecraft/deliveries/defer", deferMinecraftDelivery);
   app.post("/api/integrations/discord/status", updateCommunityStatusRoute);
+  app.post("/api/integrations/discord/ticket-transcripts", recordTicketTranscriptsRoute);
   app.get("/api/integrations/discord/operations", listDiscordNotificationsRoute);
   app.post("/api/integrations/discord/operations/ack", acknowledgeDiscordNotificationsRoute);
   app.post("/api/scheduled/commerce-maintenance", commerceMaintenance);
   app.post("/api/scheduled/store-maintenance", storeMaintenanceScheduler);
+  app.post("/api/internal/monitoring", ingestMonitoringRoute);
+  app.get("/api/integration/health", integrationHealthHandler);
+  registerLegacyIntegrationRoutes(app);
+  registerLegacyLinkRoutes(app);
   // tRPC API
   app.use(
     "/api/trpc",

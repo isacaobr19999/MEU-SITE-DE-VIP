@@ -1,7 +1,8 @@
 import { randomBytes, scryptSync, timingSafeEqual } from "crypto";
 import type { Express, Request, Response } from "express";
 import * as db from "./db";
-import { recordLoginAttempt } from "./db/loginAttempts";
+import { clearLoginFailureState, getLoginLockout, maskLoginEmail, recordLoginAttempt, registerFailedLogin } from "./db/loginAttempts";
+import { enqueueDiscordNotification } from "./db/discordNotifications";
 import { sdk } from "./_core/sdk";
 import { COOKIE_NAME, ONE_YEAR_MS } from "../shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
@@ -40,9 +41,26 @@ export function registerLocalAuthRoutes(app: Express) {
     if (typeof email !== "string" || typeof password !== "string") return res.status(400).json({ error: "Credenciais inválidas." });
     const normalizedEmail = email.trim().toLowerCase();
     const user = await db.getUserByEmail(normalizedEmail);
+    const lockedUntil = await getLoginLockout(normalizedEmail);
+    if (lockedUntil) {
+      void recordLoginAttempt({ email: normalizedEmail, userId: user?.id, success: false }).catch(() => undefined);
+      return res.status(429).json({ error: "Muitas tentativas de acesso. Aguarde alguns minutos antes de tentar novamente." });
+    }
     const success = Boolean(user?.passwordHash && verifyPassword(password, user.passwordHash));
     void recordLoginAttempt({ email: normalizedEmail, userId: user?.id, success }).catch(() => undefined);
-    if (!success || !user) return res.status(401).json({ error: "E-mail ou senha inválidos." });
+    if (!success || !user) {
+      const failure = await registerFailedLogin(normalizedEmail).catch(() => ({ failedAttempts: 0, lockedUntil: null }));
+      if (user?.role === "admin" && failure.lockedUntil) {
+        void enqueueDiscordNotification({
+          eventType: "LOGIN_SECURITY_ALERT",
+          dedupeKey: `admin-login-lockout:${user.id}:${failure.lockedUntil.toISOString()}`,
+          payload: { emailHint: maskLoginEmail(normalizedEmail), failedAttempts: failure.failedAttempts, lockedUntil: failure.lockedUntil?.toISOString() ?? null },
+        }).catch(() => undefined);
+      }
+      if (failure.lockedUntil) return res.status(429).json({ error: "Muitas tentativas de acesso. Aguarde alguns minutos antes de tentar novamente." });
+      return res.status(401).json({ error: "E-mail ou senha inválidos." });
+    }
+    void clearLoginFailureState(normalizedEmail).catch(() => undefined);
     res.json(await startSession(req, res, user));
   });
 }

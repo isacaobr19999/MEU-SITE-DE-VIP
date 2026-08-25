@@ -3,8 +3,10 @@ export type StoreProduct = {
   name: string;
   slug: string;
   shortDescription: string | null;
+  description?: string | null;
   kind: "VIP" | "COINS" | "KIT" | "COSMETIC";
   imageUrl: string | null;
+  imageUrls?: string[] | null;
   priceCents: number;
   durationDays: number | null;
   featured: boolean;

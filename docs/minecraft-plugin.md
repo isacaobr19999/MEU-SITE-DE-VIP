@@ -4,11 +4,11 @@ O módulo em `minecraft-plugin/` é um plugin Paper independente. Ele consulta a
 
 ## Status de ativação
 
-A loja já possui uma entrega técnica aprovada e em estado `PENDING`, preservada com segurança para o primeiro servidor Paper configurado. Como ainda não há servidor Minecraft disponível, a instalação do plugin e a coleta da entrega ficarão aguardando somente a disponibilização do acesso ao servidor. Quando ele existir, o responsável precisa informar o painel de hospedagem ou um acesso administrativo seguro; a chave individual do servidor será revelada pelo painel da loja no momento da configuração e não deve ser enviada por mensagem.
+Há dois módulos distintos no projeto: `minecraft-plugin/` é o plugin de entregas `PlayStorCraft`, enquanto `minecraft-status-plugin/` é o plugin de telemetria `PlayStorCraftStatus`. Eles não devem ser confundidos com `PlayStorCraft-Site.jar`, que no servidor atual contém o plugin `MinecraftDiscordPlatform` v0.1.0. A substituição desse JAR exige uma decisão explícita, pois ele pode fornecer integrações de Discord e conta atualmente usadas pelo servidor.
 
 ## Instalação
 
-Compile o módulo com Java 21 e Gradle, copie o JAR gerado para `plugins/` em um servidor Paper 1.20.6 ou compatível e reinicie. Em `plugins/PlayStorCraft/config.yml`, defina a URL HTTPS da loja e a chave específica do servidor revelada no painel administrativo.
+Compile cada módulo com Java 21 e o Wrapper Gradle correspondente, copie o JAR gerado para `plugins/` e reinicie o Paper. Para o módulo de entregas, configure `plugins/PlayStorCraft/config.yml`. Para a telemetria, configure `plugins/PlayStorCraftStatus/config.yml` com a mesma URL HTTPS e a chave individual do servidor. Na VPS atual, a URL da telemetria foi corrigida para `https://playstorcraft.com.br` e a chave foi copiada localmente do plugin de entregas sem ser registrada no repositório; a aplicação da mudança depende do próximo reinício do Paper.
 
 > Não configure comandos de prefixo, scoreboard ou tablist neste plugin. A PlayStorCraft trata exclusivamente de compras e entregas; assim, não conflita com TAB ou plugins de chat.
 

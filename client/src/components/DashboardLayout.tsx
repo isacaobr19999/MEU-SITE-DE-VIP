@@ -21,18 +21,21 @@ import {
 } from "@/components/ui/sidebar";
 import { startLogin } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
-import { BookOpenText, Boxes, ClipboardList, LayoutDashboard, LogOut, PanelLeft, ShoppingBag } from "lucide-react";
+import { Activity, BookOpenText, Boxes, ClipboardList, LayoutDashboard, LogOut, Moon, PanelLeft, Settings2, ShoppingBag, Sun } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
 import { Button } from "./ui/button";
 import { BrandMark } from "./BrandMark";
+import { ADMIN_THEME_EVENT, ADMIN_THEME_STORAGE_KEY, parseAdminTheme, persistAdminTheme, type AdminTheme } from "@/lib/adminTheme";
 
 const menuItems = [
   { icon: LayoutDashboard, label: "Painel", path: "/admin" },
   { icon: Boxes, label: "Catálogo", path: "/admin/catalog" },
   { icon: ClipboardList, label: "Operações", path: "/admin/operations" },
+  { icon: Activity, label: "Monitoramento", path: "/admin/monitoring" },
   { icon: BookOpenText, label: "Comunidade", path: "/admin/community" },
+  { icon: Settings2, label: "Aparência", path: "/admin/appearance" },
   { icon: ShoppingBag, label: "Loja pública", path: "/" },
 ];
 
@@ -118,6 +121,13 @@ function DashboardLayoutContent({
   const sidebarRef = useRef<HTMLDivElement>(null);
   const activeMenuItem = menuItems.find(item => item.path === location);
   const isMobile = useIsMobile();
+  const [adminTheme, setAdminTheme] = useState<AdminTheme>(() => parseAdminTheme(localStorage.getItem(ADMIN_THEME_STORAGE_KEY)));
+
+  useEffect(() => {
+    const onThemeChange = (event: Event) => setAdminTheme(parseAdminTheme((event as CustomEvent<AdminTheme>).detail));
+    window.addEventListener(ADMIN_THEME_EVENT, onThemeChange);
+    return () => window.removeEventListener(ADMIN_THEME_EVENT, onThemeChange);
+  }, []);
 
   useEffect(() => {
     if (isCollapsed) {
@@ -157,10 +167,10 @@ function DashboardLayoutContent({
 
   return (
     <>
-      <div className="relative" ref={sidebarRef}>
+      <div className={`admin-shell relative ${adminTheme === "light" ? "admin-shell--light" : ""}`} ref={sidebarRef}>
         <Sidebar
           collapsible="icon"
-          className="border-r border-white/10 bg-[#091827]/95 backdrop-blur-xl"
+          className={`border-r border-white/10 bg-[#091827]/95 backdrop-blur-xl ${adminTheme === "light" ? "admin-sidebar--light" : ""}`}
           disableTransition={isResizing}
         >
           <SidebarHeader className="h-[4.75rem] justify-center border-b border-white/[.07]">
@@ -200,6 +210,10 @@ function DashboardLayoutContent({
           </SidebarContent>
 
           <SidebarFooter className="border-t border-white/[.07] p-3">
+            <Button type="button" variant="outline" size="sm" onClick={() => persistAdminTheme(adminTheme === "dark" ? "light" : "dark")} className="admin-theme-toggle mb-2 w-full justify-start gap-2 border-white/10 text-slate-300 hover:bg-white/[.05]" aria-label={adminTheme === "dark" ? "Ativar tema claro do painel" : "Ativar tema escuro do painel"}>
+              {adminTheme === "dark" ? <Sun size={15} /> : <Moon size={15} />}
+              <span className="group-data-[collapsible=icon]:hidden">{adminTheme === "dark" ? "Tema claro" : "Tema escuro"}</span>
+            </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="flex w-full items-center gap-3 rounded-xl p-2 text-left transition-colors hover:bg-white/[.04] group-data-[collapsible=icon]:justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">
@@ -240,9 +254,9 @@ function DashboardLayoutContent({
         />
       </div>
 
-      <SidebarInset className="admin-workspace">
+      <SidebarInset className={`admin-workspace ${adminTheme === "light" ? "admin-workspace--light" : ""}`}>
         {isMobile && (
-          <div className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-white/[.07] bg-[#091827]/95 px-3 backdrop-blur">
+          <div className={`sticky top-0 z-40 flex h-16 items-center justify-between border-b border-white/[.07] bg-[#091827]/95 px-3 backdrop-blur ${adminTheme === "light" ? "admin-mobilebar--light" : ""}`}>
             <div className="flex items-center gap-2">
               <SidebarTrigger className="h-9 w-9 rounded-lg border border-white/10 bg-white/[.04]" />
               <div className="flex items-center gap-3">
@@ -253,6 +267,7 @@ function DashboardLayoutContent({
                 </div>
               </div>
             </div>
+            <Button type="button" variant="ghost" size="icon" onClick={() => persistAdminTheme(adminTheme === "dark" ? "light" : "dark")} className="admin-theme-toggle h-9 w-9" aria-label={adminTheme === "dark" ? "Ativar tema claro do painel" : "Ativar tema escuro do painel"}>{adminTheme === "dark" ? <Sun size={16} /> : <Moon size={16} />}</Button>
           </div>
         )}
         <main className="flex-1 p-4 sm:p-6 lg:p-8">{children}</main>

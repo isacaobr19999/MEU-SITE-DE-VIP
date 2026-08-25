@@ -121,7 +121,8 @@
 .status-orb { display: grid; place-items: center; width: 3.25rem; height: 3.25rem; border-radius: 1rem; border: 1px solid rgba(110,231,183,.2); background: rgba(16,185,129,.08); color: #6ee7b7; box-shadow: 0 0 26px rgba(16,185,129,.09); }
 .field-shell { border: 1px solid rgba(148,163,184,.18); background: rgba(15,23,42,.72); box-shadow: inset 0 1px rgba(255,255,255,.025); transition: border-color .18s ease, background-color .18s ease, box-shadow .18s ease; }
 .field-shell:focus-within { border-color: rgba(110,231,183,.72); background: rgba(15,32,50,.86); box-shadow: 0 0 0 4px rgba(110,231,183,.08); }
-.catalog-section { position: relative; border-top: 1px solid rgba(148,163,184,.10); border-bottom: 1px solid rgba(148,163,184,.10); background: linear-gradient(180deg, rgba(5,14,24,.3), rgba(15,30,47,.5) 50%, rgba(5,14,24,.28)); }
+  .catalog-section { position: relative; border-top: 1px solid rgba(148,163,184,.10); border-bottom: 1px solid rgba(148,163,184,.10); background: linear-gradient(180deg, rgba(5,14,24,.3), rgba(15,30,47,.5) 50%, rgba(5,14,24,.28)); }
+  .catalog-icon-fallback { padding: 22%; object-fit: contain !important; background: radial-gradient(circle at 50% 38%, rgba(110,231,183,.18), transparent 58%), #0a1724; filter: invert(88%) sepia(32%) saturate(714%) hue-rotate(94deg) brightness(101%) contrast(91%); }
 .product-card { position: relative; overflow: hidden; border: 1px solid rgba(148,163,184,.14); background: linear-gradient(155deg, rgba(18,38,58,.86), rgba(8,19,32,.88)); box-shadow: inset 0 1px rgba(255,255,255,.035), 0 18px 44px rgba(0,0,0,.12); }
 .product-card::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(140deg, rgba(110,231,183,.075), transparent 30%, transparent 72%, rgba(56,189,248,.055)); opacity: 0; transition: opacity .22s ease; }
 .product-card:hover { border-color: rgba(110,231,183,.35); box-shadow: inset 0 1px rgba(255,255,255,.045), 0 20px 55px rgba(0,0,0,.24), 0 0 0 1px rgba(110,231,183,.04); }
@@ -331,7 +332,115 @@
 	.product-detail-page { background-color: #07100b; }
 	.product-detail-fact, .minecraft-info-strip { border: 2px solid #3c5638 !important; border-radius: .25rem !important; background: rgba(13,29,15,.82) !important; box-shadow: inset 0 1px rgba(199,242,155,.06), 0 3px 0 #061006; }
 	.cart-drawer, .checkout-sheet { border-color: #3c5939; border-radius: .35rem; background: linear-gradient(145deg, #132516, #081109); box-shadow: inset 0 0 0 2px #061006, -18px 0 48px rgba(0,0,0,.34); }
-	@media (max-width: 639px) { .minecraft-heading { text-shadow: 2px 2px 0 rgba(3,10,5,.72); } .minecraft-store .product-card--store { border-width: 2px; } .minecraft-frame { border-width: 2px !important; } }
+		@media (max-width: 639px) { .minecraft-heading { text-shadow: 2px 2px 0 rgba(3,10,5,.72); } .minecraft-store .product-card--store { border-width: 2px; } .minecraft-frame { border-width: 2px !important; } }
+		/* Páginas utilitárias no mesmo universo visual da vitrine: painéis de missão e inventário. */
+		.minecraft-utility-page { background-color: #07100b; background-image: radial-gradient(circle at 84% 2%, rgba(83,148,68,.12), transparent 28rem), radial-gradient(circle at 6% 50%, rgba(20,93,84,.11), transparent 30rem), linear-gradient(145deg, #07100b, #07111d 55%, #06100a); }
+		.minecraft-utility-page .store-header { background: linear-gradient(180deg, rgba(16,31,19,.98), rgba(7,16,11,.96)); }
+		.minecraft-backlink { border-bottom: 1px dashed transparent; color: #cbe9b9; font-family: var(--font-pixel); font-size: .82rem; letter-spacing: .02em; }
+		.minecraft-backlink:hover { border-color: #86b96a; color: #e3f8d4; }
+		.minecraft-utility-hero { position: relative; overflow: hidden; border: 3px solid #3d5936; border-radius: .35rem; background-color: #112015; background-image: linear-gradient(135deg, rgba(133,172,85,.11) 25%, transparent 25%), linear-gradient(315deg, rgba(133,172,85,.07) 25%, transparent 25%), linear-gradient(145deg, #1b341c, #0a160d); background-size: 26px 26px, 26px 26px, auto; box-shadow: inset 0 0 0 3px #09130b, inset 0 0 0 5px rgba(173,213,123,.09), 0 7px 0 #030805, 0 26px 52px rgba(0,0,0,.24); }
+		.minecraft-utility-hero::after { position: absolute; right: -1rem; bottom: -4rem; width: 17rem; height: 17rem; background: radial-gradient(circle, rgba(126,184,87,.22), transparent 68%); content: ""; pointer-events: none; }
+		.minecraft-utility-hero > * { position: relative; z-index: 1; }
+		.minecraft-utility-hero > .absolute { position: absolute; }
+		.minecraft-utility-icon { border: 2px solid #628151 !important; border-radius: .25rem !important; background: #17331a !important; box-shadow: inset 0 1px rgba(220,255,191,.12), 0 3px 0 #071207; }
+		.minecraft-utility-title { font-family: var(--font-pixel); letter-spacing: -.025em; line-height: .98; text-shadow: 3px 3px 0 rgba(3,10,5,.72), 0 0 18px rgba(106,183,79,.14); }
+		.minecraft-utility-card { border: 2px solid #365233 !important; border-radius: .3rem !important; background-color: #0e1c11 !important; background-image: linear-gradient(145deg, rgba(144,185,92,.07), transparent 45%), linear-gradient(145deg, #182b19, #0a140d) !important; box-shadow: inset 0 0 0 2px #081109, 0 4px 0 #030805, 0 18px 36px rgba(0,0,0,.16) !important; }
+		.minecraft-utility-card:hover { border-color: #6f9e55 !important; }
+		.minecraft-utility-card [class*="rounded-xl"] { border-radius: .25rem; }
+		.minecraft-utility-stat { border: 2px solid #304a2f !important; border-radius: .25rem !important; background: rgba(4,12,6,.58) !important; box-shadow: inset 0 1px rgba(215,247,179,.06); }
+		.minecraft-empty-state { border: 2px dashed #476a3d !important; border-radius: .3rem !important; background: linear-gradient(145deg, rgba(27,54,26,.78), rgba(7,16,10,.9)) !important; box-shadow: inset 0 0 0 2px rgba(4,11,5,.72), 0 4px 0 #030805; }
+		.minecraft-utility-page .section-kicker { color: #a6e67a; }
+		.minecraft-auth-page { background-color: #07100b; background-image: radial-gradient(circle at 10% 6%, rgba(77,149,67,.16), transparent 25rem), radial-gradient(circle at 90% 92%, rgba(18,119,107,.11), transparent 28rem), linear-gradient(145deg, #07100b, #07111d 58%, #06100a); }
+		.minecraft-auth-panel { border: 3px solid #3c5937 !important; border-radius: .35rem !important; background: linear-gradient(145deg, #142817, #09130c) !important; box-shadow: inset 0 0 0 3px #071008, 0 7px 0 #030805, 0 28px 58px rgba(0,0,0,.31) !important; }
+		.minecraft-auth-story { background-color: #1d411f !important; background-image: linear-gradient(135deg, rgba(205,249,145,.18) 25%, transparent 25%), linear-gradient(315deg, rgba(117,182,74,.17) 25%, transparent 25%), linear-gradient(145deg, #b7ed88, #4ea348 62%, #1e7132) !important; background-size: 24px 24px, 24px 24px, auto !important; }
+		.minecraft-auth-page .field-shell { border: 2px solid #344e31; border-radius: .25rem; background: rgba(5,14,7,.64); }
+		.minecraft-auth-page .field-shell:focus-within { border-color: #8cc76a; box-shadow: 0 0 0 4px rgba(135,198,98,.11); }
+		.minecraft-auth-tabs { border: 2px solid #30492e !important; border-radius: .28rem !important; background: #09140b !important; }
+		.minecraft-auth-tabs button { border-radius: .15rem !important; }
+		.category-art-badge { border: 1px solid rgba(209,242,189,.28) !important; border-radius: .2rem !important; background: rgba(7,18,10,.82) !important; box-shadow: 0 2px 0 rgba(2,8,4,.68); backdrop-filter: blur(10px); }
+		.vip-preview { border: 1px solid rgba(139,201,96,.28); border-radius: .3rem; background: linear-gradient(145deg, rgba(58,95,42,.28), rgba(7,16,10,.72)); padding: .65rem .72rem; }
+		.vip-preview > div { font-family: var(--font-pixel); font-size: .6rem; letter-spacing: .04em; color: #a8e875; }
+		.vip-preview strong { color: #e0f7d1; font-family: var(--font-mono); font-size: .66rem; }
+		.vip-preview p { display: -webkit-box; overflow: hidden; margin-top: .45rem; -webkit-box-orient: vertical; -webkit-line-clamp: 2; color: #c8d7c2; font-size: .72rem; line-height: 1.4; }
+		.vip-detail-preview { display: grid; gap: .6rem; border: 2px solid #466c3a; border-radius: .3rem; background: linear-gradient(145deg, rgba(38,72,33,.76), rgba(8,18,10,.9)); padding: .85rem .95rem; box-shadow: inset 0 0 0 2px rgba(5,13,7,.7), 0 3px 0 #040a05; }
+		.vip-detail-preview p { color: #9dda76; font-family: var(--font-pixel); font-size: .65rem; letter-spacing: .05em; }
+		.vip-detail-preview strong { display: block; margin-top: .22rem; color: #f1fbe9; font-size: .85rem; }
+		.vip-detail-preview > span { color: #c8d7c2; font-size: .82rem; line-height: 1.55; }
+		/* Alternância visual restrita ao painel administrativo; a vitrine pública não é afetada. */
+		.admin-shell--light .admin-workspace--light { background: radial-gradient(circle at 100% 0, rgba(95,181,121,.16), transparent 26rem), linear-gradient(180deg, #f7fbf4, #eef5ed); color: #153025; }
+		.admin-sidebar--light { border-color: rgba(33,74,48,.16) !important; background: rgba(250,253,248,.97) !important; color: #173226 !important; }
+		.admin-shell--light [data-sidebar="sidebar"] { --sidebar: #f9fcf7; --sidebar-foreground: #173226; --sidebar-accent: #e6f2e2; --sidebar-accent-foreground: #173226; --sidebar-border: rgba(33,74,48,.15); --sidebar-ring: #39865b; }
+		.admin-shell--light .admin-mobilebar--light { border-color: rgba(33,74,48,.14); background: rgba(250,253,248,.95); color: #173226; }
+		.admin-shell--light .admin-theme-toggle { border-color: rgba(33,74,48,.16); background: rgba(234,246,230,.75); color: #28563b; }
+		.admin-shell--light .admin-theme-toggle:hover { background: #dff0d9; color: #173226; }
+		.admin-shell--light .surface-panel, .admin-shell--light .surface-panel--soft, .admin-shell--light .admin-metric-card, .admin-shell--light .admin-focus-card, .admin-shell--light .admin-quick-action, .admin-shell--light .admin-compact-item, .admin-shell--light .admin-shortcut, .admin-shell--light .admin-list, .admin-shell--light .monthly-chart { border-color: rgba(33,74,48,.16) !important; background: rgba(255,255,255,.9) !important; box-shadow: 0 14px 34px rgba(30,67,43,.08), inset 0 1px rgba(255,255,255,.75) !important; }
+		.admin-shell--light .admin-workspace--light .text-white, .admin-shell--light .admin-workspace--light .text-slate-100, .admin-shell--light .admin-workspace--light .text-slate-200 { color: #153025 !important; }
+		.admin-shell--light .admin-workspace--light .text-slate-300, .admin-shell--light .admin-workspace--light .text-slate-400, .admin-shell--light .admin-workspace--light .text-slate-500, .admin-shell--light .admin-workspace--light .text-muted-foreground { color: #557062 !important; }
+		.admin-shell--light .admin-workspace--light .bg-white\/\[\.025\], .admin-shell--light .admin-workspace--light .bg-white\/\[\.04\], .admin-shell--light .admin-workspace--light .bg-black\/15 { background: rgba(230,242,226,.65) !important; }
+		.admin-shell--light .admin-workspace--light input, .admin-shell--light .admin-workspace--light textarea, .admin-shell--light .admin-workspace--light select, .admin-shell--light .admin-workspace--light .admin-select { border-color: rgba(33,74,48,.2) !important; background: #fbfdf9 !important; color: #173226 !important; }
+		.admin-shell--light .admin-workspace--light input::placeholder, .admin-shell--light .admin-workspace--light textarea::placeholder { color: #799083 !important; }
+		.vip-compare-card { border: 1px solid rgba(110,231,183,.2); border-radius: 1rem; background: rgba(255,255,255,.025); padding: 1rem; }
+		.vip-compare-card h3 { color: #f8fafc; font-size: 1rem; font-weight: 800; }
+		.vip-compare-card p { margin-top: .2rem; color: #94a3b8; font-size: .75rem; }
+		.vip-compare-card strong { color: #a7f3d0; font-family: var(--font-mono); font-size: .9rem; }
+		.vip-compare-card ul { display: grid; gap: .38rem; margin-top: .9rem; color: #cbd5e1; font-size: .78rem; line-height: 1.4; }
+		.vip-compare-card li { display: flex; gap: .42rem; }
+		.vip-compare-card li::before { content: "◆"; color: #6ee7b7; font-size: .58rem; margin-top: .15rem; }
+		.vip-compare-card a { display: inline-flex; align-items: center; gap: .3rem; margin-top: 1rem; color: #a7f3d0; font-size: .74rem; font-weight: 800; }
+		.vip-value-badge { display: inline-flex; align-items: center; border: 1px solid rgba(253,224,71,.36); border-radius: 999px; background: rgba(253,224,71,.1); color: #fef08a; font-family: var(--font-mono); font-size: .56rem; font-weight: 800; letter-spacing: .07em; padding: .24rem .42rem; vertical-align: middle; }
+		.product-gallery-editor { border: 1px solid rgba(148,163,184,.15); border-radius: .9rem; background: rgba(255,255,255,.025); padding: .75rem; }
+		.product-gallery-editor > p { margin-top: .5rem; color: #94a3b8; font-size: .7rem; line-height: 1.4; }
+		.product-gallery-editor__grid, .product-gallery-public { display: flex; gap: .5rem; margin-top: .75rem; overflow-x: auto; padding-bottom: .2rem; }
+		.product-gallery-editor__grid > div { position: relative; flex: 0 0 4.6rem; }
+		.product-gallery-editor__grid > div[draggable="true"] { cursor: grab; }
+		.product-gallery-editor__grid > div.is-dragging { opacity: .38; }
+		.product-gallery-editor__grid img, .product-gallery-public img { width: 100%; height: 4.5rem; border: 1px solid rgba(148,163,184,.22); border-radius: .55rem; object-fit: cover; }
+		.product-gallery-editor__grid .is-primary img { border-color: #6ee7b7; box-shadow: 0 0 0 2px rgba(110,231,183,.14); }
+		.product-gallery-editor__grid span { display: block; margin-top: .25rem; color: #94a3b8; font-size: .58rem; text-align: center; }
+		.product-gallery-editor__grid > div > button:last-child { position: absolute; right: -.25rem; top: -.25rem; display: grid; width: 1.35rem; height: 1.35rem; place-items: center; border-radius: 999px; background: #ef4444; color: white; }
+		.gallery-order-controls { display: flex; justify-content: center; gap: .2rem; margin-top: .25rem; }
+		.gallery-order-controls button { width: 1.35rem; height: 1.2rem; border: 1px solid rgba(148,163,184,.25); border-radius: .3rem; color: #cbd5e1; font-size: .65rem; line-height: 1; }
+		.gallery-order-controls button:disabled { cursor: not-allowed; opacity: .32; }
+		.product-gallery-public button { flex: 0 0 3.5rem; opacity: .62; transition: opacity .18s ease, transform .18s ease; }
+		.product-gallery-public button.is-active { opacity: 1; transform: translateY(-2px); }
+		.product-gallery-public button.is-active img { border-color: #6ee7b7; }
+		.product-gallery-public img { height: 3.4rem; }
+		.admin-page-header { border: 1px solid rgba(148,163,184,.14); border-radius: 1.5rem; background: linear-gradient(145deg, rgba(22,53,51,.78), rgba(10,21,35,.85)); padding: 1.5rem; }
+		.admin-page-header h1 { margin-top: .42rem; color: #f8fafc; font-family: var(--font-display); font-size: clamp(1.65rem, 4vw, 2.25rem); font-weight: 800; letter-spacing: -.05em; }
+		.admin-page-header > p:last-child { margin-top: .55rem; max-width: 42rem; color: #94a3b8; font-size: .86rem; line-height: 1.55; }
+		.theme-preview-card { border: 1px solid rgba(148,163,184,.16); border-radius: 1.4rem; background: rgba(12,27,43,.78); padding: 1rem; transition: border-color .2s ease, transform .2s ease, box-shadow .2s ease; }
+		.theme-preview-card.is-selected { border-color: rgba(110,231,183,.62); box-shadow: 0 0 0 3px rgba(110,231,183,.09); }
+		.theme-preview-card__screen { overflow: hidden; border: 1px solid rgba(148,163,184,.17); border-radius: .9rem; }
+		.theme-preview-card__bar { display: flex; align-items: center; gap: .4rem; height: 2.25rem; padding: 0 .7rem; }
+		.theme-preview-card__bar i { width: 2rem; height: .42rem; border-radius: 99px; }
+		.theme-preview-card__body { display: grid; grid-template-columns: 28% 1fr; min-height: 9rem; }
+		.theme-preview-card__body aside { display: grid; align-content: start; gap: .55rem; padding: .8rem; }
+		.theme-preview-card__body aside b { height: .45rem; border-radius: 99px; }
+		.theme-preview-card__body > div { display: grid; grid-template-columns: repeat(2, 1fr); align-content: start; gap: .55rem; padding: .8rem; }
+		.theme-preview-card__body > div > span { height: 2.5rem; border-radius: .45rem; }
+		.theme-preview-card__body > div > div { grid-column: 1 / -1; height: 3rem; border-radius: .45rem; }
+		.theme-preview-card--dark .theme-preview-card__screen { background: #0b1725; }
+		.theme-preview-card--dark .theme-preview-card__bar { background: #102335; color: #a7f3d0; }
+		.theme-preview-card--dark i, .theme-preview-card--dark aside b { background: #35506a; }
+		.theme-preview-card--dark aside { background: #0d1e30; }
+		.theme-preview-card--dark .theme-preview-card__body > div { background: #0b1725; }
+		.theme-preview-card--dark .theme-preview-card__body > div > span, .theme-preview-card--dark .theme-preview-card__body > div > div { background: #17304a; }
+		.theme-preview-card--light { background: #f9fcf7; color: #173226; }
+		.theme-preview-card--light .theme-preview-card__screen { background: #f6faf3; }
+		.theme-preview-card--light .theme-preview-card__bar { background: #eef7ea; color: #36784e; }
+		.theme-preview-card--light i, .theme-preview-card--light aside b { background: #abc4b0; }
+		.theme-preview-card--light aside { background: #edf5e9; }
+		.theme-preview-card--light .theme-preview-card__body > div { background: #fafdfa; }
+		.theme-preview-card--light .theme-preview-card__body > div > span, .theme-preview-card--light .theme-preview-card__body > div > div { background: #d9ead8; }
+		.theme-preview-card h2 { margin-top: .38rem; color: inherit; font-size: 1.08rem; font-weight: 800; }
+		.theme-preview-card p:not(.section-kicker) { margin-top: .42rem; color: #94a3b8; font-size: .76rem; line-height: 1.45; }
+		.theme-preview-card--light p:not(.section-kicker) { color: #597463; }
+		.theme-preview-card__check { display: grid; flex: 0 0 auto; width: 2rem; height: 2rem; place-items: center; border-radius: 999px; background: #6ee7b7; color: #06261e; }
+		.admin-guard, .account-guard { border: 3px solid #3b5837; border-radius: .35rem; background: linear-gradient(145deg, #142817, #09130c); box-shadow: inset 0 0 0 3px #071008, 0 7px 0 #030805, 0 28px 58px rgba(0,0,0,.3); }
+		.admin-guard__band { height: .24rem; background: linear-gradient(90deg, #62a94d, #b7ee79 45%, #2f8f66); }
+		.admin-guard h1, .account-guard h1 { font-family: var(--font-pixel); letter-spacing: -.02em; }
+		@media (max-width: 639px) { .minecraft-utility-hero { border-width: 2px; } .minecraft-utility-title { text-shadow: 2px 2px 0 rgba(3,10,5,.72); } .minecraft-utility-card { border-width: 2px !important; } .minecraft-auth-panel { border-width: 2px !important; } }
+		.font-pixel { font-family: var(--font-pixel); letter-spacing: -.015em; }
 
 .admin-list { overflow: hidden; border: 1px solid rgba(148,163,184,.14); border-radius: 1.15rem; background: rgba(10,25,41,.7); box-shadow: inset 0 1px rgba(255,255,255,.03); }
 .admin-list h3 { padding: 1rem 1.1rem; font-family: var(--font-display); font-size: .88rem; font-weight: 700; color: white; border-bottom: 1px solid rgba(148,163,184,.12); }

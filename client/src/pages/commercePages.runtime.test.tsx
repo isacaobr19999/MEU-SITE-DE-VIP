@@ -7,6 +7,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   categories: vi.fn(),
   products: vi.fn(),
+  promotions: vi.fn(),
   product: vi.fn(),
   productServers: vi.fn(),
   createOrder: vi.fn(),
@@ -16,6 +17,7 @@ const mocks = vi.hoisted(() => ({
   auth: vi.fn(),
   community: vi.fn(),
   ranking: vi.fn(),
+  availability: vi.fn(),
 }));
 
 vi.mock("@/_core/hooks/useAuth", () => ({ useAuth: mocks.auth }));
@@ -25,6 +27,7 @@ vi.mock("@/lib/trpc", () => ({
     catalog: {
       categories: { useQuery: mocks.categories },
       products: { useQuery: mocks.products },
+      promotions: { useQuery: mocks.promotions },
       product: { useQuery: mocks.product },
       productServers: { useQuery: mocks.productServers },
     },
@@ -35,6 +38,7 @@ vi.mock("@/lib/trpc", () => ({
       byId: { useQuery: mocks.byId },
     },
     community: { status: { useQuery: mocks.community }, ranking: { useQuery: mocks.ranking } },
+    store: { availability: { useQuery: mocks.availability } },
   },
 }));
 vi.mock("wouter", async () => {
@@ -48,12 +52,14 @@ import OrderHistory from "./OrderHistory";
 import ProductDetail from "./ProductDetail";
 
 const queryIdle = { data: undefined, isLoading: false, isError: false, refetch: vi.fn() };
+const emptyProducts: unknown[] = [];
 
 beforeEach(() => {
   vi.clearAllMocks();
   mocks.auth.mockReturnValue({ user: null, loading: false, isAuthenticated: false });
   mocks.categories.mockReturnValue({ ...queryIdle, data: [] });
-  mocks.products.mockImplementation((input?: { featuredOnly?: boolean }) => input?.featuredOnly ? { ...queryIdle, data: [] } : { ...queryIdle, data: [] });
+  mocks.products.mockImplementation(() => ({ ...queryIdle, data: emptyProducts }));
+  mocks.promotions.mockReturnValue({ ...queryIdle, data: [] });
   mocks.product.mockReturnValue({ ...queryIdle, data: undefined });
   mocks.productServers.mockReturnValue({ ...queryIdle, data: [] });
   mocks.createOrder.mockReturnValue({ mutate: vi.fn(), isPending: false });
@@ -62,28 +68,29 @@ beforeEach(() => {
   mocks.byId.mockReturnValue({ ...queryIdle, data: undefined });
   mocks.community.mockReturnValue({ ...queryIdle, data: null });
   mocks.ranking.mockReturnValue({ ...queryIdle, data: [] });
+  mocks.availability.mockReturnValue({ ...queryIdle, data: { publicOnline: true, maintenanceMode: "CLOSED" } });
 });
 
 describe("páginas de comércio em runtime", () => {
   it("exibe loading, vazio e erro no catálogo", () => {
-    mocks.products.mockImplementation((input?: { featuredOnly?: boolean }) => input?.featuredOnly ? { ...queryIdle, data: [] } : { ...queryIdle, isLoading: true });
+    mocks.products.mockImplementation((input?: { featuredOnly?: boolean }) => input?.featuredOnly ? { ...queryIdle, data: emptyProducts } : { ...queryIdle, isLoading: true });
     const loadingView = render(<Home />);
     expect(loadingView.container.querySelector(".animate-spin")).toBeInTheDocument();
     loadingView.unmount();
 
-    mocks.products.mockImplementation((input?: { featuredOnly?: boolean }) => input?.featuredOnly ? { ...queryIdle, data: [] } : { ...queryIdle, data: [] });
+    mocks.products.mockImplementation(() => ({ ...queryIdle, data: emptyProducts }));
     const emptyView = render(<Home />);
     expect(screen.getByText("A loja está sendo preparada")).toBeInTheDocument();
     emptyView.unmount();
 
-    mocks.products.mockImplementation((input?: { featuredOnly?: boolean }) => input?.featuredOnly ? { ...queryIdle, data: [] } : { ...queryIdle, isError: true });
+    mocks.products.mockImplementation((input?: { featuredOnly?: boolean }) => input?.featuredOnly ? { ...queryIdle, data: emptyProducts } : { ...queryIdle, isError: true });
     render(<Home />);
     expect(screen.getByText("Não foi possível carregar o catálogo")).toBeInTheDocument();
   });
 
   it("mantém o carrinho utilizável enquanto o catálogo está carregando", () => {
     window.history.pushState({}, "", "/cart");
-    mocks.products.mockImplementation((input?: { featuredOnly?: boolean }) => input?.featuredOnly ? { ...queryIdle, data: [] } : { ...queryIdle, isLoading: true });
+    mocks.products.mockImplementation((input?: { featuredOnly?: boolean }) => input?.featuredOnly ? { ...queryIdle, data: emptyProducts } : { ...queryIdle, isLoading: true });
 
     const cartView = render(<Home />);
 

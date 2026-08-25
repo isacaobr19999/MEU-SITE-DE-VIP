@@ -19,13 +19,31 @@ const productKinds = ["VIP", "COINS", "KIT", "COSMETIC"] as const;
 const serverKinds = ["SURVIVAL", "SKYBLOCK", "BEDWARS", "GLOBAL"] as const;
 const communityServerStatuses = ["UNKNOWN", "ONLINE", "OFFLINE", "MAINTENANCE"] as const;
 const communityPostKinds = ["RULE", "NEWS", "POLICY"] as const;
-const discordNotificationKinds = ["PAYMENT_APPROVED", "DELIVERY_COMPLETED", "DELIVERY_FAILED"] as const;
+const discordNotificationKinds = ["PAYMENT_APPROVED", "DELIVERY_COMPLETED", "DELIVERY_FAILED", "LOGIN_SECURITY_ALERT", "MONITORING_ALERT"] as const;
 const discordNotificationStatuses = ["PENDING", "SENT"] as const;
 const maintenanceModes = ["CLOSED", "CATALOG_ONLY"] as const;
 const maintenanceScheduleStatuses = ["NONE", "SCHEDULED", "ACTIVE", "COMPLETED", "CANCELLED"] as const;
 const maintenanceEventKinds = ["SCHEDULED", "STARTED", "ENDED", "CANCELLED", "UPDATED"] as const;
+const integrationEventStatuses = ["RECEIVED", "PROCESSED", "FAILED"] as const;
 
 /** Identidade de usuários autenticados e papéis de acesso. */
+/** Eventos recebidos do contrato legacy do MinecraftDiscordPlatform; a chave idempotente evita reprocessamento. */
+export const integrationEvents = mysqlTable(
+  "integration_events",
+  {
+    id: varchar("id", { length: 64 }).primaryKey(),
+    idempotencyKey: varchar("idempotencyKey", { length: 128 }).notNull(),
+    type: varchar("type", { length: 96 }).notNull(),
+    origin: varchar("origin", { length: 32 }).notNull(),
+    payload: json("payload").notNull(),
+    status: mysqlEnum("status", integrationEventStatuses).default("RECEIVED").notNull(),
+    failureReason: varchar("failureReason", { length: 255 }),
+    processedAt: timestamp("processedAt"),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+  },
+  table => [uniqueIndex("integration_events_idempotency_unique").on(table.idempotencyKey), index("integration_events_type_status_idx").on(table.type, table.status), index("integration_events_created_idx").on(table.createdAt)]
+);
+
 export const users = mysqlTable("users", {
   id: int("id").autoincrement().primaryKey(),
   openId: varchar("openId", { length: 64 }).notNull().unique(),
@@ -48,6 +66,23 @@ export const loginAttempts = mysqlTable("login_attempts", {
   method: mysqlEnum("method", ["PASSWORD"]).default("PASSWORD").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 }, table => [index("login_attempts_created_idx").on(table.createdAt), index("login_attempts_user_created_idx").on(table.userId, table.createdAt)]);
+
+/** Estado mínimo para limitar tentativas repetidas sem persistir e-mail, senha, token ou IP bruto. */
+export const loginLockouts = mysqlTable("login_lockouts", {
+  emailHash: varchar("emailHash", { length: 64 }).primaryKey(),
+  failedAttempts: int("failedAttempts").default(0).notNull(),
+  windowStartedAt: timestamp("windowStartedAt").defaultNow().notNull(),
+  lockedUntil: timestamp("lockedUntil"),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, table => [index("login_lockouts_locked_idx").on(table.lockedUntil)]);
+
+/** Metadados mínimos de transcrições encerradas, sem conteúdo de ticket ou dados pessoais de mensagens. */
+export const ticketTranscripts = mysqlTable("ticket_transcripts", {
+  messageId: varchar("messageId", { length: 32 }).primaryKey(),
+  source: varchar("source", { length: 32 }).default("TICKET_TOOL").notNull(),
+  closedAt: timestamp("closedAt").notNull(),
+  syncedAt: timestamp("syncedAt").defaultNow().onUpdateNow().notNull(),
+}, table => [index("ticket_transcripts_closed_idx").on(table.closedAt)]);
 
 /** Configuração singleton da disponibilidade comercial pública. */
 export const storeSettings = mysqlTable("store_settings", {
@@ -99,6 +134,44 @@ export const players = mysqlTable(
     uniqueIndex("players_uuid_unique").on(table.uuid),
     index("players_user_idx").on(table.userId),
   ]
+);
+
+export const discordAccounts = mysqlTable(
+  "discord_accounts",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    discordUserId: varchar("discordUserId", { length: 32 }).notNull(),
+    globalName: varchar("globalName", { length: 128 }),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+    updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  },
+  table => [uniqueIndex("discord_accounts_user_id_unique").on(table.discordUserId)]
+);
+
+export const minecraftLinkCodes = mysqlTable(
+  "minecraft_link_codes",
+  {
+    code: varchar("code", { length: 6 }).primaryKey(),
+    playerId: int("playerId").notNull().references(() => players.id, { onDelete: "cascade" }),
+    target: mysqlEnum("target", ["DISCORD", "SITE"]).default("DISCORD").notNull(),
+    expiresAt: timestamp("expiresAt").notNull(),
+    usedAt: timestamp("usedAt"),
+    discordAccountId: int("discordAccountId").references(() => discordAccounts.id, { onDelete: "set null" }),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+  },
+  table => [index("minecraft_link_codes_expiry_idx").on(table.expiresAt, table.usedAt), index("minecraft_link_codes_player_idx").on(table.playerId, table.usedAt)]
+);
+
+export const playerDiscordLinks = mysqlTable(
+  "player_discord_links",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    playerId: int("playerId").notNull().references(() => players.id, { onDelete: "cascade" }),
+    discordAccountId: int("discordAccountId").notNull().references(() => discordAccounts.id, { onDelete: "cascade" }),
+    linkedAt: timestamp("linkedAt").defaultNow().notNull(),
+    unlinkedAt: timestamp("unlinkedAt"),
+  },
+  table => [index("player_discord_links_player_idx").on(table.playerId, table.unlinkedAt), index("player_discord_links_discord_idx").on(table.discordAccountId, table.unlinkedAt)]
 );
 
 export const categories = mysqlTable(
@@ -189,6 +262,7 @@ export const products = mysqlTable(
     description: text("description"),
     kind: mysqlEnum("kind", productKinds).notNull(),
     imageUrl: varchar("imageUrl", { length: 1024 }),
+    imageUrls: json("imageUrls").$type<string[]>(),
     priceCents: int("priceCents").notNull(),
     durationDays: int("durationDays"),
     luckPermsGroup: varchar("luckPermsGroup", { length: 96 }),
@@ -439,6 +513,55 @@ export const logs = mysqlTable(
     createdAt: timestamp("createdAt").defaultNow().notNull(),
   },
   table => [index("logs_entity_idx").on(table.entityType, table.entityId), index("logs_actor_idx").on(table.actorType, table.actorId), index("logs_created_idx").on(table.createdAt)]
+);
+
+/** Serviços observados pelo monitor da VPS e exibidos no painel administrativo. */
+export const monitoringServices = mysqlTable(
+  "monitoring_services",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    serviceKey: varchar("serviceKey", { length: 48 }).notNull(),
+    label: varchar("label", { length: 96 }).notNull(),
+    kind: mysqlEnum("kind", ["STORE", "API", "DISCORD", "MINECRAFT"] as const).notNull(),
+    endpoint: varchar("endpoint", { length: 512 }),
+    active: boolean("active").default(true).notNull(),
+    currentStatus: mysqlEnum("currentStatus", ["UNKNOWN", "ONLINE", "DEGRADED", "OFFLINE"] as const).default("UNKNOWN").notNull(),
+    lastCheckedAt: timestamp("lastCheckedAt"),
+    lastSuccessAt: timestamp("lastSuccessAt"),
+    lastFailureAt: timestamp("lastFailureAt"),
+    lastLatencyMs: int("lastLatencyMs"),
+    lastMessage: varchar("lastMessage", { length: 280 }),
+    consecutiveFailures: int("consecutiveFailures").default(0).notNull(),
+    updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  },
+  table => [uniqueIndex("monitoring_services_key_unique").on(table.serviceKey), index("monitoring_services_status_idx").on(table.currentStatus, table.active)]
+);
+
+export const monitoringChecks = mysqlTable(
+  "monitoring_checks",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    serviceId: int("serviceId").notNull().references(() => monitoringServices.id, { onDelete: "cascade" }),
+    status: mysqlEnum("status", ["ONLINE", "DEGRADED", "OFFLINE"] as const).notNull(),
+    latencyMs: int("latencyMs"),
+    message: varchar("message", { length: 280 }),
+    checkedAt: timestamp("checkedAt").defaultNow().notNull(),
+  },
+  table => [index("monitoring_checks_service_time_idx").on(table.serviceId, table.checkedAt)]
+);
+
+export const monitoringIncidents = mysqlTable(
+  "monitoring_incidents",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    serviceId: int("serviceId").notNull().references(() => monitoringServices.id, { onDelete: "cascade" }),
+    status: mysqlEnum("status", ["OPEN", "RESOLVED"] as const).default("OPEN").notNull(),
+    openedAt: timestamp("openedAt").defaultNow().notNull(),
+    resolvedAt: timestamp("resolvedAt"),
+    lastMessage: varchar("lastMessage", { length: 280 }),
+    notificationKey: varchar("notificationKey", { length: 160 }).notNull(),
+  },
+  table => [uniqueIndex("monitoring_incidents_notification_unique").on(table.notificationKey), index("monitoring_incidents_service_status_idx").on(table.serviceId, table.status, table.openedAt)]
 );
 
 export type User = typeof users.$inferSelect;

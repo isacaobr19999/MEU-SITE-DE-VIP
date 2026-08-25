@@ -26,6 +26,7 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       APP_BASE_URL: ${APP_BASE_URL}
       MINECRAFT_API_KEY_PEPPER: ${MINECRAFT_API_KEY_PEPPER}
+      INTEGRATION_API_KEY: ${INTEGRATION_API_KEY}
       DISCORD_BOT_BRIDGE_SECRET: ${DISCORD_BOT_BRIDGE_SECRET:-}
       MAINTENANCE_SECRET: ${MAINTENANCE_SECRET}
       MERCADO_PAGO_ACCESS_TOKEN: ${MERCADO_PAGO_ACCESS_TOKEN}
@@ -45,24 +46,44 @@ services:
     restart: unless-stopped
     environment:
       DISCORD_BOT_TOKEN: ${DISCORD_BOT_TOKEN:-}
+      DISCORD_APPLICATION_ID: ${DISCORD_APPLICATION_ID:-}
       DISCORD_GUILD_ID: ${DISCORD_GUILD_ID:-}
       DISCORD_BOT_BRIDGE_SECRET: ${DISCORD_BOT_BRIDGE_SECRET:-}
+      INTEGRATION_API_KEY: ${INTEGRATION_API_KEY:-}
+      PLAYSTORCRAFT_BACKEND_URL: http://app:3000
       DISCORD_ENABLE_PRESENCE: ${DISCORD_ENABLE_PRESENCE:-true}
       DISCORD_INVITE_URL: ${DISCORD_INVITE_URL:-}
       DISCORD_INVITE_CHANNEL_ID: ${DISCORD_INVITE_CHANNEL_ID:-}
       DISCORD_STATUS_CHANNEL_ID: ${DISCORD_STATUS_CHANNEL_ID:-}
       DISCORD_OPERATIONS_CHANNEL_ID: ${DISCORD_OPERATIONS_CHANNEL_ID:-}
+      DISCORD_TICKET_TRANSCRIPTS_CHANNEL_ID: ${DISCORD_TICKET_TRANSCRIPTS_CHANNEL_ID:-}
       DISCORD_MANAGED_INVITE: ${DISCORD_MANAGED_INVITE:-false}
       DISCORD_STATUS_INTERVAL_MS: ${DISCORD_STATUS_INTERVAL_MS:-90000}
       PLAYSTORCRAFT_PUBLIC_STATUS_URL: ${PLAYSTORCRAFT_PUBLIC_STATUS_URL:-http://app:3000/api/trpc/community.status?input=%7B%22json%22%3Anull%7D}
       PLAYSTORCRAFT_BRIDGE_URL: http://app:3000/api/integrations/discord/status
       PLAYSTORCRAFT_OPERATIONS_BRIDGE_URL: http://app:3000/api/integrations/discord/operations
+      PLAYSTORCRAFT_TICKET_TRANSCRIPTS_BRIDGE_URL: http://app:3000/api/integrations/discord/ticket-transcripts
     depends_on:
       app:
         condition: service_started
     networks: [playstorcraft]
     volumes:
       - discord_bot_data:/bot/data
+
+  monitoring-agent:
+    image: curlimages/curl:8.12.1
+    restart: unless-stopped
+    environment:
+      MAINTENANCE_SECRET: ${MAINTENANCE_SECRET}
+      MONITOR_INTERVAL_SECONDS: ${MONITOR_INTERVAL_SECONDS:-300}
+      PLAYSTORCRAFT_APP_URL: http://app:3000
+    command: ["/bin/sh", "/opt/monitor/monitor.sh"]
+    depends_on:
+      app:
+        condition: service_started
+    networks: [playstorcraft]
+    volumes:
+      - ./monitor.sh:/opt/monitor/monitor.sh:ro
 
   maintenance-scheduler:
     image: curlimages/curl:8.12.1

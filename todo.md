@@ -442,3 +442,81 @@ Warning: the previous candidate response was rejected because it contained repea
 - [ ] Fortalecer documentação de releases, backups e restauração verificável.
 - [ ] Preparar homologação segura dos fluxos Discord/Minecraft sem cobrança real e sem declarar testes não executados como aprovados.
 - [ ] Executar testes, revisão mobile/desktop e documentar limites dos upgrades.
+- [x] Verificar as permissões do bot e os cargos de administração/suporte antes de criar o canal privado `#🔒-chat-logs-sitevip`.
+- [x] Criar o canal privado `#🔒-chat-logs-sitevip` com visualização limitada à equipe autorizada.
+- [x] Publicar uma mensagem inicial de finalidade e registrar o identificador e as permissões do canal na documentação operacional.
+- [x] Corrigir os mocks de runtime das páginas de comércio para incluir a consulta de disponibilidade da loja e restaurar a suíte Vitest.
+- [x] Corrigir o mock do catálogo administrativo para incluir a mutação de cupom usada pela interface e concluir a suíte Vitest.
+- [x] Configurar o encaminhamento de transcrições encerradas do Ticket Tool para o canal privado `#🔒-chat-logs-sitevip`.
+- [x] Criar bloqueio temporário de login após tentativas administrativas repetidas, sem armazenar senhas, tokens ou IPs brutos.
+- [x] Enviar alerta operacional ao Discord quando um login administrativo for recusado, preservando a privacidade do usuário.
+- [x] Cobrir os controles de login e as notificações com testes, documentar a configuração e publicar a atualização.
+- [x] Criar um painel administrativo para visualizar bloqueios temporários de login e liberar um bloqueio ativo com confirmação.
+- [x] Exibir métricas mensais reais de tickets encerrados, usando somente registros operacionais disponíveis e estado vazio quando não houver dados.
+- [x] Cobrir o painel de bloqueios e as métricas de tickets com testes, revisar em tela responsiva e publicar a atualização.
+- [x] Emitir um alerta operacional específico no Discord quando cinco falhas administrativas acionarem o bloqueio temporário.
+- [x] Cobrir o alerta de bloqueio com teste, atualizar a documentação e publicar a configuração na VPS.
+- [x] Auditar a qualidade visual e a responsividade da vitrine, catálogo, produto, carrinho, login, pedidos e áreas administrativas.
+- [x] Refinar tokens visuais, tipografia, componentes, cartões, formulários, feedbacks e navegação sem alterar fluxos comerciais.
+- [x] Corrigir inconsistências de responsividade, foco, contraste e estados de carregamento/erro em desktop e celular.
+- [x] Validar a reformulação com testes, checagem de tipos, revisão visual e publicação na VPS.
+- [x] Criar ilustrações de categoria coerentes para VIP, Cash e Booster, hospedadas como ativos estáticos externos.
+- [x] Exibir prévias claras e acessíveis dos benefícios de cada VIP no catálogo e no detalhe do produto, com base em dados reais do catálogo.
+- [x] Adicionar seletor de tema claro e escuro, restrito às áreas administrativas, com preferência persistida por sessão local.
+- [x] Cobrir as novas interações com testes, validar em desktop e celular e publicar a atualização.
+- [x] Criar uma galeria administrável de imagens por produto, com seleção, remoção e imagem principal sem armazenar arquivos no banco.
+- [x] Adicionar uma comparação detalhada de VIPs usando apenas benefícios, duração e preços já cadastrados no catálogo.
+- [x] Exibir uma prévia interativa dos temas claro e escuro nas configurações administrativas antes de aplicar a preferência.
+- [x] Cobrir galeria, comparação e prévia de tema com testes, validação visual responsiva e publicação na VPS.
+- [x] Avaliar o envio direto de imagens ao armazenamento externo; retirado da versão atual por exigir serviço adicional, conforme decisão do administrador.
+- [x] Adicionar controles de ordenação à galeria e preservar a imagem principal de cada produto.
+- [x] Destacar o VIP com menor custo por dia somente quando houver produtos com duração comparável cadastrada.
+- [x] Cobrir a ordenação e o destaque de custo por dia com testes e validação técnica.
+- [x] Atualizar o mock de estados do catálogo para incluir o procedimento de envio de imagem administrativo.
+- [x] Atualizar o mock de cupons do catálogo para incluir o procedimento de envio de imagem administrativo.
+- [x] Tornar o teste de configuração do bot Discord determinístico, sem depender de disponibilidade externa durante a suíte unitária.
+- [x] Remover o envio direto de arquivos que exige armazenamento externo e manter a galeria baseada somente em URLs seguras.
+- [x] Publicar a alternativa sem custo com ordenação de galeria e destaque de menor custo por dia.
+- [x] Aplicar links de imagens gratuitas hospedadas no GitHub apenas quando a licença e a disponibilidade pública forem confirmadas; ícones SVG de fallback validados em HTTP 200 e com licença Apache 2.0.
+- [x] Melhorar as descrições dos VIPs usando somente categoria, duração e benefícios já confirmados no catálogo; grupo e período genéricos agora são exibidos de forma estruturada, sem criar vantagens.
+- [x] Exibir destaque promocional apenas para cupons ativos, válidos e aplicáveis, sem criar descontos ou urgência fictícios; a consulta pública filtra estado, janela de validade, limite total e escopo ativo.
+- [x] Atualizar documentação de operação da VPS, testes e GitHub com os novos recursos e o passo a passo de atualização.
+
+- [x] Continuar a sincronização documental com o GitHub após corrigir a autenticação da conta; commit `a4f884b` enviado para `main`.
+- [x] Validar o cupom BEMVINDO10 em fluxo controlado, sem abrir pagamento, cobrança ou entrega; campanha ativa, 10%, 0/30 usos e sem pedido ou pagamento criado.
+- [x] Revisar as rotas públicas, a campanha ativa e a saúde da aplicação na VPS após a atualização; HTTP 200, 11 produtos e ficha VIP Ferro confirmados.
+- [x] Atualizar o registro operacional final e salvar um checkpoint da continuação.
+- [x] Entregar relatório final consolidado com arquivos, comandos e próximos passos.
+
+- [x] Criar modelo de monitoramento para loja, API, bot Discord e servidor Paper, com estado, latência, última verificação e falha.
+- [x] Adicionar persistência, rotas administrativas protegidas e histórico de incidentes do monitoramento.
+- [x] Criar painel administrativo responsivo de uptime, estado atual e falhas recentes.
+- [x] Implementar verificador leve na VPS com intervalo configurável e alertas Discord sem duplicação de incidentes; primeiro ciclo confirmado na VPS.
+- [x] Adicionar testes, documentação operacional, validar desktop/mobile e publicar o monitoramento; 128 testes, TypeScript, build e validação responsiva aprovados.
+
+- [x] Adicionar métricas reais de disponibilidade de 7 e 30 dias ao painel de monitoramento.
+- [x] Exibir gráficos responsivos baseados exclusivamente nos checks persistidos.
+- [x] Testar, documentar e publicar o upgrade de métricas sem alterar fluxos comerciais; 128 testes, TypeScript, build e produção confirmados.
+
+- [x] Identificar qual plugin e quais fontes estão disponíveis para auditoria mecânica completa.
+- [x] Auditar compilação, Paper/plugin.yml, comandos, permissões, integrações, banco, desempenho, segurança, stress e regressão somente com testes executados; áreas não executadas foram marcadas no relatório.
+- [x] Corrigir problemas confirmados no plugin, recompilar e repetir os testes afetados.
+- [x] Produzir relatório final com evidências, gravidade e percentual baseado exclusivamente nos testes realizados.
+
+- [x] Corrigir a identificação/documentação do JAR ativo para não confundir MinecraftDiscordPlatform com PlayStorCraft.
+- [x] Corrigir a configuração do PlayStorCraftStatus para usar a URL e chave do servidor sem expor segredo no repositório.
+- [x] Validar a telemetria real no Paper e atualizar o relatório da auditoria do plugin; HTTP 200 e monitor `minecraft ONLINE` confirmados.
+
+- [x] Inventariar o MinecraftDiscordPlatform ativo na VPS e confirmar sua versão e superfície de comandos.
+- [x] Auditar comandos, permissões, Discord, API, segurança e compatibilidade do JAR ativo sem substituí-lo.
+- [x] Corrigir apenas problemas confirmados, executar testes de regressão e documentar a auditoria.
+
+- [x] Preservar e congelar backup do JAR MinecraftDiscordPlatform ativo antes de qualquer migração.
+- [x] Implementar compatibilidade segura entre os endpoints legacy do MinecraftDiscordPlatform e as rotas atuais da loja.
+- [x] Preservar /discord, permissões, telemetria, entregas e integração Discord com testes reais ou claramente marcados como não executados.
+- [x] Homologar a migração fora da produção, publicar somente após validação e documentar rollback; saúde e rotas legacy validadas em produção, com entrega real ainda não executada.
+
+- [x] Implementar fluxo seguro de criação, resgate e revogação de vínculo Discord no bot, sem expor códigos ou chaves.
+- [x] Adicionar testes do fluxo Discord e validação de permissões, expiração, uso único e revogação.
+- [ ] Homologar entrega e comandos em ambiente seguro, sem cobrança real e sem declarar testes não executados como aprovados.
+- [ ] Atualizar documentação, sincronizar GitHub/VPS e salvar checkpoint final dos aprimoramentos autônomos.
