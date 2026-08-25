@@ -521,4 +521,9 @@ Warning: the previous candidate response was rejected because it contained repea
 - [ ] Homologar entrega e comandos em ambiente seguro, sem cobrança real e sem declarar testes não executados como aprovados.
 - [ ] Atualizar documentação, sincronizar GitHub/VPS e salvar checkpoint final dos aprimoramentos autônomos.
 
-- [ ] Corrigir a confirmação de vínculo Discord–Minecraft para que apareça no Minecraft após o sucesso no Discord; investigar fluxo, testar e homologar sem pagamento real.
+- [x] Corrigir a confirmação de vínculo Discord–Minecraft: fila autenticada publicada e mensagem entregue pelo polling legacy; homologação final com novo vínculo permanece registrada como etapa manual.
+- [x] Adicionar opção efêmera de copiar o código no Discord e melhorar as mensagens de geração e sucesso do vínculo.
+
+- [x] Adicionar opção de copiar o código de vínculo e melhorar as mensagens de sucesso no Discord e no Minecraft, preservando expiração, uso único e segurança; implementado no bot e publicado na VPS.
+
+- [x] Homologar o novo vínculo de `_Nube`: o Paper consumiu `chat.discord`, exibiu a confirmação no Minecraft e a fila ficou vazia, sem pedido ou pagamento.

@@ -41,3 +41,7 @@ O RCON foi habilitado no Paper em 25 de agosto de 2026 para permitir diagnóstic
 O bot Discord agora apresenta o código em formato destacado, informa que ele expira em 10 minutos e pode ser usado uma única vez. Após o resgate, a resposta efêmera informa o jogador vinculado, orienta o uso de `/unlink` e oferece o botão **Copiar código**; a ação apenas reapresenta o código ao próprio usuário em uma resposta efêmera e não grava o valor em logs.
 
 A confirmação no Minecraft é entregue pela fila legacy autenticada como `chat.discord`. Como o plugin legacy transforma esse tipo em `say [Discord] ...`, a confirmação aparece no chat do Paper para os jogadores online. A homologação final deve ser feita com um novo vínculo, pois vínculos já usados não são reprocessados.
+
+## Evidência da correção — 25/08/2026
+
+Após um novo vínculo de `_Nube`, o Paper registrou a execução do evento `chat.discord` e exibiu no chat: `Conta Minecraft vinculada com sucesso: _Nube.`. O banco registrou o novo vínculo e a fila ficou vazia após o retorno de execução, confirmando consumo idempotente da confirmação. Nenhum pedido, pagamento ou entrega foi criado durante este teste.
