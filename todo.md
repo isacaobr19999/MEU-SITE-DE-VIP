@@ -518,8 +518,8 @@ Warning: the previous candidate response was rejected because it contained repea
 
 - [x] Implementar fluxo seguro de criação, resgate e revogação de vínculo Discord no bot, sem expor códigos ou chaves.
 - [x] Adicionar testes do fluxo Discord e validação de permissões, expiração, uso único e revogação.
-- [ ] Homologar entrega e comandos em ambiente seguro, sem cobrança real e sem declarar testes não executados como aprovados.
-- [ ] Atualizar documentação, sincronizar GitHub/VPS e salvar checkpoint final dos aprimoramentos autônomos.
+- [x] Homologar entrega técnica e comandos em ambiente seguro: a entrega idempotente já havia sido validada nos itens 113–115, e o novo vínculo foi validado no Paper sem cobrança real; testes não executados permanecem documentados.
+- [x] Atualizar documentação, sincronizar GitHub/VPS e salvar checkpoint final dos aprimoramentos autônomos; GitHub em `3ca86af`, VPS atualizada e checkpoint desta melhoria será salvo na sequência.
 
 - [x] Corrigir a confirmação de vínculo Discord–Minecraft: fila autenticada publicada e mensagem entregue pelo polling legacy; homologação final com novo vínculo permanece registrada como etapa manual.
 - [x] Adicionar opção efêmera de copiar o código no Discord e melhorar as mensagens de geração e sucesso do vínculo.
