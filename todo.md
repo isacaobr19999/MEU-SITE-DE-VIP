@@ -431,3 +431,14 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Consolidar a documentação de operação, manutenção e acessos administrativos para o repositório.
 - [x] Revisar o conteúdo versionado para garantir que não há senhas, tokens, chaves ou arquivos de runtime.
 - [x] Sincronizar o repositório GitHub com toda a documentação e o código atual relevantes; commit `7f3d64b` publicado no branch `main`.
+
+- [x] Analisar o estado do repositório GitHub e resumir funcionalidades concluídas, evidências, riscos e próximos upgrades; relatório consolidado em `/home/ubuntu/github-analysis-playstorcraft.md`.
+
+- [x] Auditar o estado atual do site PlayStorCraft no código, GitHub, documentação e prévia, classificando funcionalidades prontas, validações e lacunas; relatório em /home/ubuntu/site-analysis-playstorcraft.md.
+
+- [ ] Sincronizar a base de trabalho com o commit mais recente do GitHub após revisar diferenças.
+- [ ] Implementar recuperação segura de senha administrativa, condicionada a serviço de e-mail transacional configurado.
+- [ ] Avaliar e implementar autenticação reforçada para administradores sem quebrar o login atual.
+- [ ] Fortalecer documentação de releases, backups e restauração verificável.
+- [ ] Preparar homologação segura dos fluxos Discord/Minecraft sem cobrança real e sem declarar testes não executados como aprovados.
+- [ ] Executar testes, revisão mobile/desktop e documentar limites dos upgrades.
