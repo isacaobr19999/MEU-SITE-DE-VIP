@@ -533,3 +533,5 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Corrigir a área Aparência do painel administrativo: seletores do workspace ajustados, persistência/evento cobertos por teste e rota protegida validada; a preferência continua restrita ao painel.
 
 - [x] Adicionar no plugin de vínculo uma apresentação clicável do código no Minecraft: componente Adventure com `copy_to_clipboard`, teste JUnit, JAR `3.0.4` publicado no GitHub e instalado no Paper; falta apenas a confirmação manual do clique no cliente.
+
+- [x] Atualizar no GitHub a documentação completa de instalação, configuração, deploy, operação, backup e recuperação da PlayStorCraft em uma VPS Ubuntu, sem segredos; guia consolidado publicado no commit `032621e` da branch `main`.
