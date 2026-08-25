@@ -5,6 +5,7 @@ import { discordAccounts, minecraftLinkCodes, playerDiscordLinks, players } from
 import { requireDb } from "../db";
 import { syncMinecraftPlayer } from "../db/players";
 import { hasValidIntegrationKey } from "./legacyHealth";
+import { enqueueLinkConfirmation } from "./legacyCommands";
 
 function keyFromRequest(req: Request) {
   const header = req.header("x-integration-key");
@@ -63,6 +64,7 @@ export async function redeemDiscordLinkCodeHandler(req: Request, res: Response) 
       await tx.update(minecraftLinkCodes).set({ usedAt: new Date(), discordAccountId }).where(eq(minecraftLinkCodes.code, input.data.code));
       return { minecraftPlayerId: code.player.id, username: code.player.username, uuid: code.player.uuid, discordUserId: input.data.discordUserId };
     });
+    await enqueueLinkConfirmation({ code: input.data.code, username: result.username });
     return res.status(200).json({ linked: true, ...result });
   } catch (error) {
     const message = error instanceof Error ? error.message : "LINK_FAILED";

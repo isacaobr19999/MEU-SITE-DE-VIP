@@ -31,3 +31,7 @@ Não iniciar checkout do Mercado Pago, não usar cartão ou PIX, não ativar pro
 ## Estado atual
 
 A aplicação contém as rotas legacy, os testes automatizados e a integração do bot. A execução mecânica de comandos e entrega no servidor de validação ainda depende de uma janela controlada com acesso ao Paper e deve ser realizada pelo operador autorizado.
+
+## RCON restrito na VPS
+
+O RCON foi habilitado no Paper em 25 de agosto de 2026 para permitir diagnóstico e comandos controlados. A senha é aleatória, fica somente no runtime do servidor com permissão 600, a porta 25575 não é publicada pelo Docker nem liberada para acesso externo, e o acesso administrativo ocorre por túnel SSH. Foram confirmados os comandos de leitura `list`, `plugins` e `version`; o comando `discord` respondeu que exige um jogador, portanto o vínculo real ainda precisa ser executado dentro do Minecraft com uma conta de teste.

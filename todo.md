@@ -520,3 +520,5 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Adicionar testes do fluxo Discord e validação de permissões, expiração, uso único e revogação.
 - [ ] Homologar entrega e comandos em ambiente seguro, sem cobrança real e sem declarar testes não executados como aprovados.
 - [ ] Atualizar documentação, sincronizar GitHub/VPS e salvar checkpoint final dos aprimoramentos autônomos.
+
+- [ ] Corrigir a confirmação de vínculo Discord–Minecraft para que apareça no Minecraft após o sucesso no Discord; investigar fluxo, testar e homologar sem pagamento real.

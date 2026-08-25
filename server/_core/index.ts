@@ -7,6 +7,7 @@ import { ingestMonitoringRoute } from "../routes/monitoring";
 import { integrationHealthHandler } from "../integration/legacyHealth";
 import { registerLegacyIntegrationRoutes } from "../integration/legacyEvents";
 import { registerLegacyLinkRoutes } from "../integration/legacyLinks";
+import { registerLegacyCommandRoutes } from "../integration/legacyCommands";
 import { registerLocalAuthRoutes } from "../localAuth";
 import { registerStorageProxy } from "./storageProxy";
 import { appRouter } from "../routers";
@@ -69,6 +70,7 @@ async function startServer() {
   app.get("/api/integration/health", integrationHealthHandler);
   registerLegacyIntegrationRoutes(app);
   registerLegacyLinkRoutes(app);
+  registerLegacyCommandRoutes(app);
   // tRPC API
   app.use(
     "/api/trpc",
