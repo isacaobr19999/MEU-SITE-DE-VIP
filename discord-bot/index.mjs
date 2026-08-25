@@ -1,5 +1,6 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Client, GatewayIntentBits, ModalBuilder, REST, Routes, SlashCommandBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { copyCodeButton, linkCodeMessage, linkSuccessMessage } from "./linkMessages.mjs";
 
   const token = process.env.DISCORD_BOT_TOKEN?.trim();
   const applicationId = process.env.DISCORD_APPLICATION_ID?.trim() || (token ? Buffer.from(token.split(".")[0], "base64url").toString("utf8") : undefined);
@@ -239,6 +240,12 @@ if (!token || !bridgeSecret || !integrationKey) {
         await interaction.reply({ content: result.body.unlinked ? "Sua conta Minecraft foi desvinculada." : "Nenhum vínculo ativo foi encontrado.", ephemeral: true });
         return;
       }
+      if (interaction.isButton() && interaction.customId.startsWith("legacy-link:copy:")) {
+        const code = interaction.customId.slice("legacy-link:copy:".length);
+        if (!/^\d{6}$/.test(code)) throw new Error("Código inválido.");
+        await interaction.reply({ content: `📋 Código pronto para copiar:\n\`${code}\``, ephemeral: true });
+        return;
+      }
       if (interaction.isButton() && interaction.customId === "legacy-link:open") {
         const modal = new ModalBuilder().setCustomId("legacy-link:submit").setTitle("Vincular Minecraft");
         const code = new TextInputBuilder().setCustomId("code").setLabel("Código de 6 dígitos").setPlaceholder("000000").setMinLength(6).setMaxLength(6).setRequired(true).setStyle(TextInputStyle.Short);
@@ -251,7 +258,7 @@ if (!token || !bridgeSecret || !integrationKey) {
         const response = await fetch(`${backendUrl}/api/integration/link-codes/redeem-discord`, { method: "POST", headers: { "content-type": "application/json", "x-integration-key": integrationKey }, body: JSON.stringify({ code, discordUserId: interaction.user.id, username: interaction.user.username, globalName: interaction.user.globalName }) });
         const body = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(body.error ?? "LINK_FAILED");
-        await interaction.reply({ content: `Conta Minecraft vinculada com sucesso: **${body.username ?? "jogador"}**.`, ephemeral: true });
+        await interaction.reply({ content: linkSuccessMessage(body.username), components: [copyCodeButton(code)], ephemeral: true });
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : "Não foi possível concluir a operação.";

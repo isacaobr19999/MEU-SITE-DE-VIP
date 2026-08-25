@@ -35,3 +35,9 @@ A aplicação contém as rotas legacy, os testes automatizados e a integração 
 ## RCON restrito na VPS
 
 O RCON foi habilitado no Paper em 25 de agosto de 2026 para permitir diagnóstico e comandos controlados. A senha é aleatória, fica somente no runtime do servidor com permissão 600, a porta 25575 não é publicada pelo Docker nem liberada para acesso externo, e o acesso administrativo ocorre por túnel SSH. Foram confirmados os comandos de leitura `list`, `plugins` e `version`; o comando `discord` respondeu que exige um jogador, portanto o vínculo real ainda precisa ser executado dentro do Minecraft com uma conta de teste.
+
+## Mensagens e cópia do código
+
+O bot Discord agora apresenta o código em formato destacado, informa que ele expira em 10 minutos e pode ser usado uma única vez. Após o resgate, a resposta efêmera informa o jogador vinculado, orienta o uso de `/unlink` e oferece o botão **Copiar código**; a ação apenas reapresenta o código ao próprio usuário em uma resposta efêmera e não grava o valor em logs.
+
+A confirmação no Minecraft é entregue pela fila legacy autenticada como `chat.discord`. Como o plugin legacy transforma esse tipo em `say [Discord] ...`, a confirmação aparece no chat do Paper para os jogadores online. A homologação final deve ser feita com um novo vínculo, pois vínculos já usados não são reprocessados.
