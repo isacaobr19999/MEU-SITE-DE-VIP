@@ -436,12 +436,12 @@ Warning: the previous candidate response was rejected because it contained repea
 
 - [x] Auditar o estado atual do site PlayStorCraft no código, GitHub, documentação e prévia, classificando funcionalidades prontas, validações e lacunas; relatório em /home/ubuntu/site-analysis-playstorcraft.md.
 
-- [ ] Sincronizar a base de trabalho com o commit mais recente do GitHub após revisar diferenças.
-- [ ] Implementar recuperação segura de senha administrativa, condicionada a serviço de e-mail transacional configurado.
-- [ ] Avaliar e implementar autenticação reforçada para administradores sem quebrar o login atual.
-- [ ] Fortalecer documentação de releases, backups e restauração verificável.
-- [ ] Preparar homologação segura dos fluxos Discord/Minecraft sem cobrança real e sem declarar testes não executados como aprovados.
-- [ ] Executar testes, revisão mobile/desktop e documentar limites dos upgrades.
+- [x] Sincronizar a base de trabalho com o commit mais recente do GitHub após revisar diferenças; merge concluído no commit local `28a9908` a partir do GitHub `b3b582c`.
+- [x] Adiada pelo usuário: recuperação de senha administrativa por e-mail não será configurada nesta etapa.
+- [x] Avaliar a autenticação administrativa existente: scrypt, comparação em tempo constante, auditoria, bloqueio temporário e alerta Discord já estão ativos; nenhuma alteração de login foi necessária.
+- [x] Fortalecer documentação de releases, backups e restauração verificável em `CHANGELOG.md` e `docs/RELEASE_AND_BACKUP_GUIDE.md`.
+- [x] Preparar homologação segura dos fluxos Discord/Minecraft em `docs/SAFE_DISCORD_MINECRAFT_HOMOLOGATION.md`, sem declarar testes não executados como aprovados.
+- [x] Executar testes, revisão mobile/desktop e documentar limites dos upgrades; 48 arquivos e 132 testes passaram, com `pnpm check`, `pnpm build` e revisão visual concluídos.
 - [x] Verificar as permissões do bot e os cargos de administração/suporte antes de criar o canal privado `#🔒-chat-logs-sitevip`.
 - [x] Criar o canal privado `#🔒-chat-logs-sitevip` com visualização limitada à equipe autorizada.
 - [x] Publicar uma mensagem inicial de finalidade e registrar o identificador e as permissões do canal na documentação operacional.
