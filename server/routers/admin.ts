@@ -3,7 +3,7 @@ import { z } from "zod";
 import { parse as parseCookie } from "cookie";
 import { COOKIE_NAME } from "@shared/const";
 import { createCategoryRecord, createProductRecord, listAdminCategories } from "../db/adminCatalog";
-import { cancelOrderRecord, createCouponRecord, createServerRecord, deleteCouponRecord, getAdminMetricsByPeriod, getAdminMonthlySales, getAdminOrderDetail, getAdminOverview, getAdminProductPriceCents, listAdminCoupons, listAdminDeliveries, listAdminLogs, listAdminOrderExport, listAdminOrders, listAdminPlayers, listAdminProducts, listAdminServers, listAdminUsers, listPlayerHistory, retryDeliveryRecord, searchAdminRecords, setAdminRole, setProductStatus, updateCategoryRecord, updateCouponRecord, updateProductRecord, updateServerRecord, writeAdminAuditLog } from "../db/admin";
+import { cancelOrderRecord, createCouponRecord, createServerRecord, deleteCouponRecord, duplicateProductAsDraft, getAdminDeliveryDetail, getAdminMetricsByPeriod, getAdminMonthlySales, getAdminOperationsCenter, getAdminOrderDetail, getAdminOverview, getAdminPerformanceReport, getAdminPlayerProfile, getAdminProductPriceCents, listAdminCoupons, listAdminDeliveries, listAdminLogs, listAdminOrderExport, listAdminOrders, listAdminPlayers, listAdminProducts, listAdminServers, listAdminUsers, listPlayerHistory, retryDeliveryRecord, searchAdminRecords, setAdminRole, setProductStatus, updateCategoryRecord, updateCouponRecord, updateProductRecord, updateServerRecord, writeAdminAuditLog } from "../db/admin";
 import { cancelMaintenanceSchedule, enqueueMaintenanceNotificationTest, getMaintenanceControl, getStoreAvailability, listMaintenanceEventExport, scheduleMaintenance, setMaintenanceDiscordChannel, setMaintenanceScheduleTask, setManualMaintenance, setStoreAvailability } from "../db/storeSettings";
 import { listActiveLoginLockouts, listRecentLoginAttempts, releaseLoginLockout } from "../db/loginAttempts";
 import { getMonthlyClosedTicketMetrics } from "../db/ticketTranscripts";
@@ -46,6 +46,9 @@ export const adminRouter = router({
 
   metricsByPeriod: adminProcedure.input(z.object({ period: z.enum(["7d", "30d", "90d"]) })).query(({ input }) => getAdminMetricsByPeriod(input.period)),
 
+  operationsCenter: adminProcedure.query(getAdminOperationsCenter),
+  performanceReport: adminProcedure.input(z.object({ period: z.enum(["7d", "30d", "90d"]) })).query(({ input }) => getAdminPerformanceReport(input.period)),
+
   search: adminProcedure.input(z.object({ query: z.string().trim().min(2).max(80) })).query(({ input }) => searchAdminRecords(input.query)),
 
   exportOrders: adminProcedure.query(async ({ ctx }) => {
@@ -64,7 +67,17 @@ export const adminRouter = router({
   }),
   players: adminProcedure.query(listAdminPlayers),
   playerHistory: adminProcedure.input(z.object({ playerId: z.number().int().positive() })).query(({ input }) => listPlayerHistory(input.playerId)),
+  playerProfile: adminProcedure.input(z.object({ playerId: z.number().int().positive() })).query(async ({ input }) => {
+    const profile = await getAdminPlayerProfile(input.playerId);
+    if (!profile) throw new TRPCError({ code: "NOT_FOUND", message: "Jogador não localizado" });
+    return profile;
+  }),
   deliveries: adminProcedure.query(listAdminDeliveries),
+  deliveryDetail: adminProcedure.input(z.object({ id: z.string().uuid() })).query(async ({ input }) => {
+    const result = await getAdminDeliveryDetail(input.id);
+    if (!result) throw new TRPCError({ code: "NOT_FOUND", message: "Entrega não localizada" });
+    return result;
+  }),
   servers: adminProcedure.query(listAdminServers),
   coupons: adminProcedure.query(listAdminCoupons),
   logs: adminProcedure.query(listAdminLogs),
@@ -149,6 +162,11 @@ export const adminRouter = router({
     await setProductStatus(input.id, input.active);
     await audit(ctx, "product.status_changed", "product", String(input.id), { active: input.active });
     return { success: true };
+  }),
+  duplicateProduct: adminProcedure.input(z.object({ id: z.number().int().positive() })).mutation(async ({ ctx, input }) => {
+    const duplicate = await duplicateProductAsDraft(input.id);
+    await audit(ctx, "product.duplicated_as_draft", "product", String(duplicate.id), { sourceProductId: input.id, slug: duplicate.slug });
+    return duplicate;
   }),
   cancelOrder: adminProcedure.input(z.object({ id: z.string().uuid() })).mutation(async ({ ctx, input }) => {
     try { await cancelOrderRecord(input.id); } catch (error) { throw new TRPCError({ code: "BAD_REQUEST", message: error instanceof Error ? error.message : "Não foi possível cancelar o pedido" }); }

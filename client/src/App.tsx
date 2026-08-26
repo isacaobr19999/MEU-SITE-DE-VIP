@@ -19,6 +19,10 @@ const ProductDetail = lazy(() => import("./pages/ProductDetail"));
 const Login = lazy(() => import("./pages/Login"));
 const AdminCommunity = lazy(() => import("./pages/AdminCommunity"));
 const AdminAppearance = lazy(() => import("./pages/AdminAppearance"));
+const AdminCommandCenter = lazy(() => import("./pages/AdminCommandCenter"));
+const AdminPlayerProfile = lazy(() => import("./pages/AdminPlayerProfile"));
+const AdminDeliveryDetail = lazy(() => import("./pages/AdminDeliveryDetail"));
+const AdminInsights = lazy(() => import("./pages/AdminInsights"));
 const NewsPage = lazy(() => import("./pages/CommunityContent").then((module) => ({ default: module.NewsPage })));
 const RulesPage = lazy(() => import("./pages/CommunityContent").then((module) => ({ default: module.RulesPage })));
 const PoliciesPage = lazy(() => import("./pages/CommunityContent").then((module) => ({ default: module.PoliciesPage })));
@@ -45,6 +49,10 @@ function Router() {
         <Route path={"/admin/monitoring"} component={AdminMonitoring} />
         <Route path={"/admin/community"} component={AdminCommunity} />
         <Route path={"/admin/appearance"} component={AdminAppearance} />
+        <Route path={"/admin/command-center"} component={AdminCommandCenter} />
+        <Route path={"/admin/players/:id"} component={AdminPlayerProfile} />
+        <Route path={"/admin/deliveries/:id"} component={AdminDeliveryDetail} />
+        <Route path={"/admin/insights"} component={AdminInsights} />
         <Route path={"/rules"} component={RulesPage} />
         <Route path={"/news"} component={NewsPage} />
         <Route path={"/policies"} component={PoliciesPage} />

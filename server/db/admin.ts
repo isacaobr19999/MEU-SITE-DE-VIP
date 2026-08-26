@@ -1,8 +1,6 @@
 import { and, asc, count, desc, eq, gte, inArray, isNull, like, or, sql } from "drizzle-orm";
 import { randomBytes } from "node:crypto";
-import { adminUsers, categories,   couponProducts,
-  couponUsage,
- coupons, deliveries, logs, orderItems, orders, players, productServers, products, servers, users } from "../../drizzle/schema";
+import { adminUsers, categories, couponProducts, couponUsage, coupons, deliveries, discordAccounts, logs, orderItems, orders, playerDiscordLinks, players, productServers, products, servers, users, vipGrants } from "../../drizzle/schema";
 import { hashSecret } from "../services/secretHash";
 import { requireDb } from "../db";
 
@@ -66,18 +64,69 @@ function escapeLikeTerm(value: string) {
 export async function searchAdminRecords(query: string) {
   const db = await requireDb();
   const term = `%${escapeLikeTerm(query.trim())}%`;
-  const [orderRows, playerRows, couponRows] = await Promise.all([
+  const [orderRows, playerRows, couponRows, productRows, deliveryRows, logRows] = await Promise.all([
     db.select({ id: orders.id, orderNumber: orders.orderNumber, status: orders.status, totalCents: orders.totalCents, playerName: players.username }).from(orders).innerJoin(players, eq(orders.playerId, players.id)).where(or(like(orders.orderNumber, term), like(players.username, term))).orderBy(desc(orders.createdAt)).limit(5),
     db.select({ id: players.id, username: players.username, uuid: players.uuid, email: players.email }).from(players).where(or(like(players.username, term), like(players.uuid, term), like(players.email, term))).orderBy(desc(players.createdAt)).limit(5),
     db.select({ id: coupons.id, code: coupons.code, description: coupons.description, active: coupons.active }).from(coupons).where(and(isNull(coupons.archivedAt), or(like(coupons.code, term), like(coupons.description, term)))).orderBy(desc(coupons.createdAt)).limit(5),
+    db.select({ id: products.id, name: products.name, slug: products.slug, active: products.active, priceCents: products.priceCents }).from(products).where(or(like(products.name, term), like(products.slug, term))).orderBy(desc(products.updatedAt)).limit(5),
+    db.select({ id: deliveries.id, status: deliveries.status, orderNumber: orders.orderNumber, playerName: players.username, serverName: servers.name }).from(deliveries).innerJoin(orders, eq(deliveries.orderId, orders.id)).innerJoin(players, eq(deliveries.playerId, players.id)).innerJoin(servers, eq(deliveries.serverId, servers.id)).where(or(like(orders.orderNumber, term), like(players.username, term), like(servers.name, term), like(deliveries.id, term))).orderBy(desc(deliveries.createdAt)).limit(5),
+    db.select({ id: logs.id, action: logs.action, entityType: logs.entityType, entityId: logs.entityId, createdAt: logs.createdAt }).from(logs).where(or(like(logs.action, term), like(logs.entityType, term), like(logs.entityId, term))).orderBy(desc(logs.createdAt)).limit(5),
   ]);
-  return { orders: orderRows, players: playerRows, coupons: couponRows };
+  return { orders: orderRows, players: playerRows, coupons: couponRows, products: productRows, deliveries: deliveryRows, logs: logRows };
+}
+
+export async function getAdminOperationsCenter() {
+  const db = await requireDb();
+  const [overview, attentionDeliveries, recentOrders, recentAudit] = await Promise.all([
+    getAdminOverview(),
+    db.select({ id: deliveries.id, status: deliveries.status, attemptCount: deliveries.attemptCount, maxAttempts: deliveries.maxAttempts, nextAttemptAt: deliveries.nextAttemptAt, lastError: deliveries.lastError, updatedAt: deliveries.updatedAt, orderNumber: orders.orderNumber, playerName: players.username, playerId: players.id, serverName: servers.name }).from(deliveries).innerJoin(orders, eq(deliveries.orderId, orders.id)).innerJoin(players, eq(deliveries.playerId, players.id)).innerJoin(servers, eq(deliveries.serverId, servers.id)).where(inArray(deliveries.status, ["FAILED", "PENDING", "RETRYING", "CLAIMED", "PROCESSING"])).orderBy(desc(deliveries.updatedAt)).limit(8),
+    db.select({ id: orders.id, orderNumber: orders.orderNumber, status: orders.status, totalCents: orders.totalCents, paidAt: orders.paidAt, createdAt: orders.createdAt, playerName: players.username, playerId: players.id }).from(orders).innerJoin(players, eq(orders.playerId, players.id)).orderBy(desc(orders.createdAt)).limit(8),
+    db.select({ id: logs.id, action: logs.action, entityType: logs.entityType, entityId: logs.entityId, createdAt: logs.createdAt, actorType: logs.actorType }).from(logs).orderBy(desc(logs.createdAt)).limit(12),
+  ]);
+  return { overview, attentionDeliveries, recentOrders, recentAudit };
+}
+
+export async function getAdminPlayerProfile(playerId: number) {
+  const db = await requireDb();
+  const [profile] = await db.select({ id: players.id, username: players.username, uuid: players.uuid, email: players.email, lastSeenAt: players.lastSeenAt, createdAt: players.createdAt, updatedAt: players.updatedAt, discordUserId: discordAccounts.discordUserId, discordGlobalName: discordAccounts.globalName, discordLinkedAt: playerDiscordLinks.linkedAt }).from(players).leftJoin(playerDiscordLinks, and(eq(playerDiscordLinks.playerId, players.id), isNull(playerDiscordLinks.unlinkedAt))).leftJoin(discordAccounts, eq(playerDiscordLinks.discordAccountId, discordAccounts.id)).where(eq(players.id, playerId)).limit(1);
+  if (!profile) return undefined;
+  const completedStatuses = ["PAID", "PROCESSING", "COMPLETED"] as const;
+  const [ordersRows, deliveryRows, grants, auditRows, spending] = await Promise.all([
+    db.select({ id: orders.id, orderNumber: orders.orderNumber, status: orders.status, subtotalCents: orders.subtotalCents, discountCents: orders.discountCents, totalCents: orders.totalCents, createdAt: orders.createdAt, paidAt: orders.paidAt, completedAt: orders.completedAt, couponCode: coupons.code }).from(orders).leftJoin(coupons, eq(orders.couponId, coupons.id)).where(eq(orders.playerId, playerId)).orderBy(desc(orders.createdAt)).limit(50),
+    db.select({ id: deliveries.id, status: deliveries.status, attemptCount: deliveries.attemptCount, maxAttempts: deliveries.maxAttempts, nextAttemptAt: deliveries.nextAttemptAt, completedAt: deliveries.completedAt, lastError: deliveries.lastError, orderNumber: orders.orderNumber, productName: orderItems.productName, serverName: servers.name, createdAt: deliveries.createdAt }).from(deliveries).innerJoin(orders, eq(deliveries.orderId, orders.id)).innerJoin(orderItems, eq(deliveries.orderItemId, orderItems.id)).innerJoin(servers, eq(deliveries.serverId, servers.id)).where(eq(deliveries.playerId, playerId)).orderBy(desc(deliveries.createdAt)).limit(50),
+    db.select({ id: vipGrants.id, groupName: vipGrants.groupName, startsAt: vipGrants.startsAt, expiresAt: vipGrants.expiresAt, revokedAt: vipGrants.revokedAt, productName: products.name, serverName: servers.name }).from(vipGrants).innerJoin(products, eq(vipGrants.productId, products.id)).innerJoin(servers, eq(vipGrants.serverId, servers.id)).where(eq(vipGrants.playerId, playerId)).orderBy(desc(vipGrants.createdAt)).limit(30),
+    db.select({ id: logs.id, action: logs.action, entityType: logs.entityType, createdAt: logs.createdAt, actorType: logs.actorType }).from(logs).where(and(eq(logs.entityType, "player"), eq(logs.entityId, String(playerId)))).orderBy(desc(logs.createdAt)).limit(20),
+    db.select({ paidOrders: count(), totalPaidCents: sql<number>`coalesce(sum(${orders.totalCents}), 0)` }).from(orders).where(and(eq(orders.playerId, playerId), inArray(orders.status, completedStatuses))),
+  ]);
+  const activeVipGrants = grants.filter(grant => !grant.revokedAt && (!grant.expiresAt || grant.expiresAt > new Date())).length;
+  const pendingDeliveries = deliveryRows.filter(delivery => ["PENDING", "RETRYING", "CLAIMED", "PROCESSING", "FAILED"].includes(delivery.status)).length;
+  return { profile, orders: ordersRows, deliveries: deliveryRows, vipGrants: grants, audit: auditRows, summary: { paidOrders: Number(spending[0]?.paidOrders ?? 0), totalPaidCents: Number(spending[0]?.totalPaidCents ?? 0), activeVipGrants, pendingDeliveries } };
+}
+
+export async function getAdminDeliveryDetail(id: string) {
+  const db = await requireDb();
+  const [delivery] = await db.select({ id: deliveries.id, status: deliveries.status, attemptCount: deliveries.attemptCount, maxAttempts: deliveries.maxAttempts, nextAttemptAt: deliveries.nextAttemptAt, completedAt: deliveries.completedAt, lastError: deliveries.lastError, commandTemplates: deliveries.commandTemplates, createdAt: deliveries.createdAt, updatedAt: deliveries.updatedAt, orderId: orders.id, orderNumber: orders.orderNumber, orderStatus: orders.status, playerId: players.id, playerName: players.username, playerUuid: players.uuid, productName: orderItems.productName, durationDays: orderItems.durationDays, serverName: servers.name, serverKind: servers.kind }).from(deliveries).innerJoin(orders, eq(deliveries.orderId, orders.id)).innerJoin(players, eq(deliveries.playerId, players.id)).innerJoin(orderItems, eq(deliveries.orderItemId, orderItems.id)).innerJoin(servers, eq(deliveries.serverId, servers.id)).where(eq(deliveries.id, id)).limit(1);
+  if (!delivery) return undefined;
+  const audit = await db.select({ id: logs.id, action: logs.action, actorType: logs.actorType, createdAt: logs.createdAt }).from(logs).where(and(eq(logs.entityType, "delivery"), eq(logs.entityId, id))).orderBy(desc(logs.createdAt)).limit(30);
+  return { delivery, audit };
+}
+
+export async function getAdminPerformanceReport(period: AdminMetricsPeriod) {
+  const db = await requireDb();
+  const startAt = metricsPeriodStart(period);
+  const completedStatuses = ["PAID", "PROCESSING", "COMPLETED"] as const;
+  const [productRows, couponRows, deliveryRows] = await Promise.all([
+    db.select({ productName: orderItems.productName, units: sql<number>`coalesce(sum(${orderItems.quantity}), 0)`, revenueCents: sql<number>`coalesce(sum(${orderItems.unitPriceCents} * ${orderItems.quantity}), 0)` }).from(orderItems).innerJoin(orders, eq(orderItems.orderId, orders.id)).where(and(inArray(orders.status, completedStatuses), gte(orders.paidAt, startAt))).groupBy(orderItems.productName).orderBy(desc(sql`sum(${orderItems.unitPriceCents} * ${orderItems.quantity})`)).limit(8),
+    db.select({ couponId: coupons.id, code: coupons.code, uses: count(couponUsage.id), discountCents: sql<number>`coalesce(sum(${couponUsage.discountCents}), 0)`, revenueCents: sql<number>`coalesce(sum(${orders.totalCents}), 0)` }).from(couponUsage).innerJoin(coupons, eq(couponUsage.couponId, coupons.id)).innerJoin(orders, eq(couponUsage.orderId, orders.id)).where(and(inArray(orders.status, completedStatuses), gte(orders.paidAt, startAt))).groupBy(coupons.id, coupons.code).orderBy(desc(sql`sum(${orders.totalCents})`)).limit(8),
+    db.select({ status: deliveries.status, total: count() }).from(deliveries).where(gte(deliveries.createdAt, startAt)).groupBy(deliveries.status),
+  ]);
+  return { period, startAt, topProducts: productRows.map(row => ({ ...row, units: Number(row.units ?? 0), revenueCents: Number(row.revenueCents ?? 0) })), coupons: couponRows.map(row => ({ ...row, uses: Number(row.uses ?? 0), discountCents: Number(row.discountCents ?? 0), revenueCents: Number(row.revenueCents ?? 0) })), deliveryStatus: deliveryRows.map(row => ({ status: row.status, total: Number(row.total ?? 0) })) };
 }
 
 export async function listAdminProducts() {
   const db = await requireDb();
   const [rows, assignments] = await Promise.all([
-    db.select({ id: products.id, categoryId: products.categoryId, name: products.name, slug: products.slug, shortDescription: products.shortDescription, description: products.description, imageUrl: products.imageUrl, priceCents: products.priceCents, kind: products.kind, durationDays: products.durationDays, luckPermsGroup: products.luckPermsGroup, deliveryCommands: products.deliveryCommands, active: products.active, featured: products.featured, categoryName: categories.name, position: products.position }).from(products).innerJoin(categories, eq(products.categoryId, categories.id)).orderBy(asc(products.position), asc(products.name)),
+    db.select({ id: products.id, categoryId: products.categoryId, name: products.name, slug: products.slug, shortDescription: products.shortDescription, description: products.description, imageUrl: products.imageUrl, imageUrls: products.imageUrls, priceCents: products.priceCents, kind: products.kind, durationDays: products.durationDays, luckPermsGroup: products.luckPermsGroup, deliveryCommands: products.deliveryCommands, active: products.active, featured: products.featured, categoryName: categories.name, position: products.position }).from(products).innerJoin(categories, eq(products.categoryId, categories.id)).orderBy(asc(products.position), asc(products.name)),
     db.select({ productId: productServers.productId, serverId: productServers.serverId }).from(productServers),
   ]);
   return rows.map(row => ({ ...row, serverIds: assignments.filter(assignment => assignment.productId === row.id).map(assignment => assignment.serverId) }));
@@ -272,11 +321,44 @@ export async function updateCouponRecord(id: number, input: { code: string; desc
   });
 }
 
-export async function updateProductRecord(id: number, input: { categoryId: number; name: string; slug: string; shortDescription?: string; description?: string; imageUrl?: string; kind: "VIP" | "COINS" | "KIT" | "COSMETIC"; priceCents: number; durationDays?: number | null; luckPermsGroup?: string; deliveryCommands: string[]; featured: boolean; active: boolean; position: number; serverIds: number[] }) {
+export async function updateProductRecord(id: number, input: { categoryId: number; name: string; slug: string; shortDescription?: string; description?: string; imageUrl?: string; imageUrls?: string[]; kind: "VIP" | "COINS" | "KIT" | "COSMETIC"; priceCents: number; durationDays?: number | null; luckPermsGroup?: string; deliveryCommands: string[]; featured: boolean; active: boolean; position: number; serverIds: number[] }) {
   const db = await requireDb();
   await db.transaction(async tx => {
-    await tx.update(products).set({ categoryId: input.categoryId, name: input.name, slug: input.slug, shortDescription: input.shortDescription ?? null, description: input.description ?? null, imageUrl: input.imageUrl ?? null, kind: input.kind, priceCents: input.priceCents, durationDays: input.durationDays ?? null, luckPermsGroup: input.luckPermsGroup ?? null, deliveryCommands: input.deliveryCommands, featured: input.featured, active: input.active, position: input.position }).where(eq(products.id, id));
+    await tx.update(products).set({ categoryId: input.categoryId, name: input.name, slug: input.slug, shortDescription: input.shortDescription ?? null, description: input.description ?? null, imageUrl: input.imageUrl ?? null, ...(input.imageUrls === undefined ? {} : { imageUrls: input.imageUrls }), kind: input.kind, priceCents: input.priceCents, durationDays: input.durationDays ?? null, luckPermsGroup: input.luckPermsGroup ?? null, deliveryCommands: input.deliveryCommands, featured: input.featured, active: input.active, position: input.position }).where(eq(products.id, id));
     await tx.delete(productServers).where(eq(productServers.productId, id));
     await tx.insert(productServers).values(input.serverIds.map(serverId => ({ productId: id, serverId })));
+  });
+}
+
+/** Duplica a configuração comercial sem publicar nem reutilizar o slug do produto original. */
+export async function duplicateProductAsDraft(id: number) {
+  const db = await requireDb();
+  return db.transaction(async tx => {
+    const [source] = await tx.select().from(products).where(eq(products.id, id)).limit(1);
+    if (!source) throw new Error("Produto não localizado.");
+    const sourceServers = await tx.select({ serverId: productServers.serverId }).from(productServers).where(eq(productServers.productId, id));
+    if (!sourceServers.length) throw new Error("O produto não possui destino configurado para duplicação.");
+    const suffix = randomBytes(3).toString("hex");
+    const slugBase = source.slug.slice(0, 150);
+    const result = await tx.insert(products).values({
+      categoryId: source.categoryId,
+      name: `${source.name} (rascunho)`.slice(0, 160),
+      slug: `${slugBase}-draft-${suffix}`,
+      shortDescription: source.shortDescription,
+      description: source.description,
+      imageUrl: source.imageUrl,
+      imageUrls: source.imageUrls,
+      kind: source.kind,
+      priceCents: source.priceCents,
+      durationDays: source.durationDays,
+      luckPermsGroup: source.luckPermsGroup,
+      deliveryCommands: source.deliveryCommands,
+      featured: false,
+      active: false,
+      position: source.position + 1,
+    });
+    const duplicatedId = Number(result[0].insertId);
+    await tx.insert(productServers).values(sourceServers.map(({ serverId }) => ({ productId: duplicatedId, serverId })));
+    return { id: duplicatedId, name: `${source.name} (rascunho)`, slug: `${slugBase}-draft-${suffix}` };
   });
 }

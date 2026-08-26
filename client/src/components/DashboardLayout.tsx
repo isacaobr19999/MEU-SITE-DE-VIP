@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/sidebar";
 import { startLogin } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
-import { Activity, BookOpenText, Boxes, ClipboardList, LayoutDashboard, LogOut, Moon, PanelLeft, Settings2, ShoppingBag, Sun } from "lucide-react";
+import { Activity, BarChart3, BookOpenText, Boxes, ClipboardList, LayoutDashboard, LogOut, Moon, PanelLeft, RadioTower, Settings2, ShoppingBag, Sun } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
@@ -31,8 +31,10 @@ import { ADMIN_THEME_EVENT, ADMIN_THEME_STORAGE_KEY, parseAdminTheme, persistAdm
 
 const menuItems = [
   { icon: LayoutDashboard, label: "Painel", path: "/admin" },
+  { icon: RadioTower, label: "Comando", path: "/admin/command-center" },
   { icon: Boxes, label: "Catálogo", path: "/admin/catalog" },
   { icon: ClipboardList, label: "Operações", path: "/admin/operations" },
+  { icon: BarChart3, label: "Relatórios", path: "/admin/insights" },
   { icon: Activity, label: "Monitoramento", path: "/admin/monitoring" },
   { icon: BookOpenText, label: "Comunidade", path: "/admin/community" },
   { icon: Settings2, label: "Aparência", path: "/admin/appearance" },
@@ -119,7 +121,8 @@ function DashboardLayoutContent({
   const isCollapsed = state === "collapsed";
   const [isResizing, setIsResizing] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
-  const activeMenuItem = menuItems.find(item => item.path === location);
+  const isOperationsDetail = location.startsWith("/admin/players/") || location.startsWith("/admin/deliveries/");
+  const activeMenuItem = menuItems.find(item => item.path === location) ?? (isOperationsDetail ? menuItems.find(item => item.path === "/admin/operations") : undefined);
   const isMobile = useIsMobile();
   const [adminTheme, setAdminTheme] = useState<AdminTheme>(() => parseAdminTheme(localStorage.getItem(ADMIN_THEME_STORAGE_KEY)));
 
@@ -189,7 +192,7 @@ function DashboardLayoutContent({
           <SidebarContent className="gap-0">
             <SidebarMenu className="px-3 py-4">
               {menuItems.map(item => {
-                const isActive = location === item.path;
+                const isActive = location === item.path || (item.path === "/admin/operations" && isOperationsDetail);
                 return (
                   <SidebarMenuItem key={item.path}>
                     <SidebarMenuButton

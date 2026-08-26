@@ -5,6 +5,7 @@ const mocks = vi.hoisted(() => ({
   cancelOrderRecord: vi.fn(),
   createCouponRecord: vi.fn(),
   deleteCouponRecord: vi.fn(),
+  duplicateProductAsDraft: vi.fn(),
   retryDeliveryRecord: vi.fn(),
   setAdminRole: vi.fn(),
   writeAdminAuditLog: vi.fn(),
@@ -20,9 +21,14 @@ vi.mock("../db/admin", () => ({
   cancelOrderRecord: mocks.cancelOrderRecord,
   createCouponRecord: mocks.createCouponRecord,
   deleteCouponRecord: mocks.deleteCouponRecord,
+  duplicateProductAsDraft: mocks.duplicateProductAsDraft,
   createServerRecord: vi.fn(),
+  getAdminDeliveryDetail: vi.fn(),
   getAdminOrderDetail: vi.fn(),
   getAdminOverview: vi.fn(),
+  getAdminOperationsCenter: vi.fn(),
+  getAdminPerformanceReport: vi.fn(),
+  getAdminPlayerProfile: vi.fn(),
   listAdminCoupons: vi.fn(),
   listAdminDeliveries: vi.fn(),
   listAdminLogs: vi.fn(),
@@ -78,6 +84,15 @@ describe("operações administrativas críticas", () => {
     await expect(adminRouter.createCaller(adminContext()).retryDelivery({ id: deliveryId })).resolves.toEqual({ success: true });
     expect(mocks.retryDeliveryRecord).toHaveBeenCalledWith(deliveryId);
     expect(mocks.writeAdminAuditLog).toHaveBeenCalledWith("admin-42", "delivery.retried", "delivery", deliveryId, undefined);
+  });
+
+  it("duplica um produto como rascunho e registra a origem sem publicar o benefício", async () => {
+    mocks.duplicateProductAsDraft.mockResolvedValue({ id: 88, name: "VIP Mestre (rascunho)", slug: "vip-mestre-draft-a1b2c3" });
+    mocks.writeAdminAuditLog.mockResolvedValue(undefined);
+
+    await expect(adminRouter.createCaller(adminContext()).duplicateProduct({ id: 7 })).resolves.toEqual({ id: 88, name: "VIP Mestre (rascunho)", slug: "vip-mestre-draft-a1b2c3" });
+    expect(mocks.duplicateProductAsDraft).toHaveBeenCalledWith(7);
+    expect(mocks.writeAdminAuditLog).toHaveBeenCalledWith("admin-42", "product.duplicated_as_draft", "product", "88", { sourceProductId: 7, slug: "vip-mestre-draft-a1b2c3" });
   });
 
   it("cria um cupom e registra a auditoria", async () => {

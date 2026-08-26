@@ -13,6 +13,7 @@ const mocks = vi.hoisted(() => ({
   coupons: vi.fn(),
   updateCategory: vi.fn(),
   updateProduct: vi.fn(),
+  duplicateProduct: vi.fn(),
   uploadProductImage: vi.fn(),
   updateServer: vi.fn(),
   updateCoupon: vi.fn(),
@@ -31,6 +32,7 @@ vi.mock("@/lib/trpc", () => ({
       coupons: { useQuery: mocks.coupons },
       updateCategory: { useMutation: mocks.updateCategory },
       updateProduct: { useMutation: mocks.updateProduct },
+      duplicateProduct: { useMutation: mocks.duplicateProduct },
       uploadProductImage: { useMutation: mocks.uploadProductImage },
       updateServer: { useMutation: mocks.updateServer },
       updateCoupon: { useMutation: mocks.updateCoupon },
@@ -54,7 +56,7 @@ describe("catálogo administrativo de cupons", () => {
     mocks.products.mockReturnValue(query([]));
     mocks.servers.mockReturnValue(query([]));
     mocks.coupons.mockReturnValue(query([{ id: 41, code: "TEMPO10", type: "PERCENTAGE", percentageBasisPoints: 1000, fixedDiscountCents: null, productIds: [], active: true, archivedAt: null, maxUses: 5, usedCount: 2, endsAt: "2099-08-31T18:00:00.000Z" }]));
-    [mocks.updateCategory, mocks.updateProduct, mocks.uploadProductImage, mocks.updateServer, mocks.updateCoupon, mocks.deleteCoupon].forEach(mock => mock.mockReturnValue(mutation));
+    [mocks.updateCategory, mocks.updateProduct, mocks.duplicateProduct, mocks.uploadProductImage, mocks.updateServer, mocks.updateCoupon, mocks.deleteCoupon].forEach(mock => mock.mockReturnValue(mutation));
   });
 
   it("mantém hooks estáveis após o carregamento e confirma a exclusão", () => {
