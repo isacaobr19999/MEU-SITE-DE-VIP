@@ -4,6 +4,28 @@ A **PlayStorCraft** é uma loja Minecraft auto-hospedada. O projeto reúne catá
 
 > **Segurança primeiro:** este repositório nunca contém senhas, tokens, chaves do Paper, backups de produção ou arquivos de runtime. Use os modelos versionados apenas como referência e crie os valores reais exclusivamente na VPS.
 
+## Integração Site ↔ Minecraft Paper
+
+Este repositório é o núcleo da integração entre a loja PlayStorCraft e o servidor Minecraft. A aplicação recebe a confirmação de pagamento pelo backend, cria entregas idempotentes e disponibiliza uma API autenticada para que o plugin Paper consulte, reivindique e confirme cada entrega sem repetir comandos. O bot Discord complementa a operação com status comunitário e eventos assinados, sem colocar tokens no frontend.
+
+```mermaid
+flowchart LR
+  Cliente[Jogador] --> Loja[Loja PlayStorCraft]
+  Loja -->|pagamento confirmado| Pedidos[Pedidos e fila de entregas]
+  Paper[Plugin Paper] -->|consulta e conclusão autenticadas| Pedidos
+  Paper -->|status e telemetria| Loja
+  Discord[Bot Discord] -->|eventos assinados| Loja
+```
+
+| Camada | Responsabilidade | Proteção aplicada |
+| --- | --- | --- |
+| Loja e API | Catálogo, pedidos, pagamento, cupons e fila de entregas | Validações no backend, auditoria e confirmação de webhook |
+| Plugin Paper | Coleta e conclusão de entregas no servidor | Chave individual, reivindicação e conclusão idempotente |
+| Bot Discord | Status comunitário, operações e vínculo Discord–Minecraft | Segredos no runtime e comunicação assinada |
+| VPS | Aplicação, MySQL, Nginx e rotinas operacionais | HTTPS, rede interna Docker e backup verificável |
+
+As instruções completas de instalação e operação estão em [docs/VPS_INSTALLATION_AND_OPERATIONS.md](docs/VPS_INSTALLATION_AND_OPERATIONS.md). Para a configuração do plugin e da API de entregas, consulte [docs/minecraft-plugin.md](docs/minecraft-plugin.md) e [docs/minecraft-api.md](docs/minecraft-api.md).
+
 | Componente | Responsabilidade | Persistência |
 | --- | --- | --- |
 | Aplicação web | Loja, painel, pedidos, webhook e API de entregas | MySQL 8.4 |
