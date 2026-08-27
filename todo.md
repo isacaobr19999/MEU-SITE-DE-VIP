@@ -541,6 +541,7 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Adiado pelo administrador: validar manualmente no cliente Minecraft que o código de vínculo Discord pode ser copiado ao clicar e que a confirmação do vínculo chega ao jogador; retomar somente quando houver acesso ao Minecraft.
 - [x] Auditar permissões administrativas, VIPs e jogadores normais no Paper/LuckPerms, documentar riscos e propor uma matriz sem alterar o servidor; relatório salvo em `docs/MINECRAFT_PERMISSIONS_AUDIT.md`.
 - [x] Corrigir o relatório de permissões para registrar que os cargos de equipe já existem no LuckPerms e não devem ser recriados.
+- [x] Confirmar em leitura as heranças e membros dos cargos LuckPerms e validar os limites de jogador normal e VIP sem alterar permissões; 12 grupos, cadeia completa, nós diretos e limites críticos de VIPs documentados.
 - [x] Auditar as rotas, dados e componentes atuais do painel administrativo antes da modernização completa.
 - [x] Criar uma central operacional com indicadores de pedidos, pagamentos, entregas, Paper, Discord e alertas de operação.
 - [x] Criar uma central de entregas com filtros, histórico, falhas, tentativas e reenvio seguro sem duplicação.

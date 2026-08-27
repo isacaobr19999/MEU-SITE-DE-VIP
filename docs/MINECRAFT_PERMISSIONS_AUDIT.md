@@ -18,7 +18,47 @@ LuckPerms foi projetado para agrupar permissões e aplicar herança entre os gru
 
 ## Grupos e permissões efetivamente observados
 
-Os grupos identificados diretamente na auditoria foram `default`, `ferro`, `ouro`, `diamante`, `esmeralda`, `obsidian`, `administrador` e `diretor`. O administrador confirmou que os cargos de equipe — incluindo o perfil de moderação — já existem no LuckPerms; portanto, **não há recomendação de criar nenhum grupo novo**. A revisão deve apenas confirmar seus nós e suas heranças atuais. Não foi detectado curinga simples (`*`), curinga de namespace nem nós vanilla/Paper sensíveis na varredura somente-leitura do armazenamento LuckPerms. Essa varredura reduz o risco aparente, mas a confirmação autoritativa de heranças exige os comandos de consulta do LuckPerms listados ao final do documento.
+Os grupos identificados diretamente na auditoria foram `default`, `ferro`, `ouro`, `esmeralda`, `diamante`, `obsidian`, `ajudante`, `moderador`, `administrador`, `gerente`, `dono` e `diretor`. O administrador confirmou que esses cargos de equipe já existem no LuckPerms; portanto, **não há recomendação de criar nenhum grupo novo**. A consulta completa ao console revelou que `dono` possui o curinga global `*`; esse é o único caso de acesso total confirmado e deve permanecer estritamente reservado ao proprietário.
+
+### Hierarquia efetivamente consultada
+
+A consulta em console confirmou 12 grupos. O peso foi registrado apenas como referência de ordenação e metadados; a permissão efetiva segue os pais de cada grupo. [1]
+
+| Grupo | Peso configurado | Pai direto confirmado | Leitura operacional |
+| --- | ---: | --- | --- |
+| `default` | 1 | Nenhum | Base de jogador comum. |
+| `ferro` | 100 | Nenhum | VIP sem pai de grupo explícito. Validar no jogo se recebe todos os comandos esperados de jogador comum. |
+| `ouro` | 200 | `default` | VIP com base de jogador comum. |
+| `esmeralda` | 300 | `ouro` | VIP em cadeia, recebe Ouro e Default. |
+| `diamante` | 400 | `esmeralda` | VIP em cadeia, recebe Esmeralda, Ouro e Default. |
+| `obsidian` | 500 | `default` | VIP com base de jogador comum. |
+| `ajudante` | 700 | `obsidian` | Equipe herda os benefícios de Obsidian. |
+| `moderador` | 800 | `ajudante` | Equipe herda Ajudante e Obsidian. |
+| `administrador` | 900 | `moderador` | Equipe herda Moderador, Ajudante e Obsidian. |
+| `gerente` | 0 | `administrador` | Equipe herda toda a cadeia administrativa abaixo. |
+| `dono` | 0 | `gerente` | Equipe herda toda a cadeia de Gerente e Administrador. |
+| `diretor` | 1000 | Nenhum | Cargo isolado; seus nós explícitos devem ser revisados de forma independente. |
+
+> **Achado importante:** A cadeia `ajudante → obsidian`, `moderador → ajudante` e `administrador → moderador` faz com que a equipe receba os benefícios do VIP Obsidian. Isso pode ser uma decisão comercial válida, mas não deve conceder aos VIPs o caminho inverso para a equipe. O VIP `ferro` não possui pai explícito, ao contrário dos demais VIPs; essa é uma prioridade de teste funcional.
+
+### Nós diretos confirmados e associação de cargos sensíveis
+
+Os nós de jogador e VIP foram revisados diretamente no console. `default` possui somente comandos e recursos de sobrevivência, chat e economia comum; `ferro`, `ouro`, `esmeralda`, `diamante` e `obsidian` possuem kits e benefícios próprios. Para a amostra inferior e superior de VIPs (`ferro` e `obsidian`), as verificações de `minecraft.command.op`, `luckperms.*`, `playeconomy.admin.cash`, `discordbooster.admin.grant`, `coreprotect.restore` e `worldguard.region.define` retornaram `undefined`, isto é, não concedidas nem herdadas. Esse resultado confirma a fronteira administrativa para os VIPs testados. [1]
+
+| Grupo | Nós diretos confirmados relevantes | Membros diretos ou herdeiros consultados | Avaliação |
+| --- | --- | --- | --- |
+| `default` | comandos Essentials de uso próprio, proteção de terrenos, chat, leilão e economia comum | Base padrão | Não há nó administrativo crítico listado diretamente. |
+| `ferro` | `essentials.kit.ferro`, `shop.kit.premium` | Não consultado individualmente | VIP limitado; não herda grupo adicional. |
+| `ouro` | `essentials.kit.ouro`, `shop.kit.premium` | Não consultado individualmente | Herda `default`. |
+| `esmeralda` | `essentials.kit.esmeralda`, `shop.kit.premium` | Não consultado individualmente | Herda Ouro e Default. |
+| `diamante` | `essentials.kit.diamante`, `essentials.hat`, `shop.kit.premium` | Não consultado individualmente | Herda Esmeralda, Ouro e Default. |
+| `obsidian` | `essentials.kit.obsidian`, `essentials.enderchest`, `shop.kit.premium` | Herdado pela cadeia de equipe | VIP limitado, porém é a base herdada pela equipe. |
+| `ajudante` | `essentials.help`, `essentials.mute` | 0 usuários diretos; herdado por Moderador | Acesso de apoio e moderação básica. |
+| `moderador` | `essentials.kick`, `essentials.mute`, `playanuncios.stats`, `playchat.admin.mute` | 0 usuários diretos; herdado por Administrador | Moderação delimitada, sem economia, mundo ou LuckPerms confirmado. |
+| `administrador` | banimento, inventário de consulta, restauração CoreProtect, região WorldGuard e gestão de Booster | 0 usuários diretos; herdado por Gerente | Alto privilégio operacional, mas sem curinga próprio confirmado. |
+| `gerente` | `essentials.teleport`, `essentials.unban` | 0 usuários diretos; herdado por Dono | Recebe toda a cadeia administrativa. |
+| `dono` | `*` | 1 usuário direto, não identificado neste documento | **Acesso total.** Deve ficar em uma única conta protegida e nunca ser vendido, atribuído a VIP ou usado para operação diária. |
+| `diretor` | Booster administrativo, backup de anúncios, bypass de filtro, SocialSpy, Cash administrativo e reload de loja | 0 usuários diretos | Alto privilégio isolado; nenhuma herança direta confirmada. |
 
 | Perfil | Nós observados ou padrão declarado | Leitura de privilégio |
 | --- | --- | --- |
@@ -48,7 +88,7 @@ A matriz a seguir não foi aplicada. Ela separa **benefício de jogador** de **p
 | `playchat.bypass.*` | Negar | Negar | Negar | Apenas em incidentes | Permitido excepcionalmente | Bypass de filtro, mute ou lock não deve ser um benefício permanente comum. |
 | `worldedit.*`, `worldguard.*` | Negar | Negar | Negar | Nós mínimos por tarefa | Permitido por função | Evitar curingas; conceder construção/região somente a quem administra mapa. |
 | `coreprotect.restore` | Negar | Negar | Negar | Apenas equipe de restauração | Permitido por função | A restauração pode desfazer construções; toda ação deve ser registrada. |
-| `luckperms.*` e `minecraft.command.op` | Negar | Negar | Negar | Negar em jogo por padrão | Console ou proprietário restrito | O controle de permissões não deve ser distribuído por conveniência. |
+| `luckperms.*` e `minecraft.command.op` | Negar | Negar | Negar | Negar em jogo por padrão | Console ou `dono` estritamente protegido | O controle de permissões não deve ser distribuído por conveniência. |
 | Vanilla/Paper administrativo | Negar | Negar | Apenas o estritamente necessário | Apenas o estritamente necessário | Preferir console | Paper lista ban, op, reload, stop, give e comandos de mundo como não concedidos por padrão. [3] |
 
 ## Pontos positivos confirmados
@@ -62,11 +102,13 @@ O perfil padrão possui comandos comuns de sobrevivência, chat e economia. Isso
 | Prioridade | Risco ou lacuna | Ação recomendada | Alteração aplicada nesta auditoria |
 | --- | --- | --- | --- |
 | Alta | `op-permission-level=4` concede privilégios máximos a qualquer OP futuro | Manter `ops.json` vazio; usar grupos LuckPerms para equipe e console somente para recuperação. | Não aplicada. |
+| Alta | `dono` possui `*` e há 1 membro direto | Manter somente a conta do proprietário neste grupo, protegida por conta Microsoft e senha exclusiva; não usar para tarefas de moderação cotidiana. | Não aplicada. |
 | Alta | Diretor possui `playeconomy.admin.cash`, SocialSpy e bypass de filtro | Limitar o grupo a responsáveis nomeados, revisar mensalmente membros e registrar o uso de nós sensíveis. | Não aplicada. |
 | Alta | Administrador possui `coreprotect.restore` e `worldguard.region.define` | Revisar o cargo de moderação já existente para garantir que ele não herde construção ou restauração; manter esses nós somente em cargos existentes de administração/mundo. | Não aplicada. |
 | Média | `playchat.format.color` está concedido ao `default`, apesar de o manifesto declarar padrão de OP | Confirmar se cores no chat são um benefício intencional. Se não forem, remover somente esse nó do grupo padrão após backup e homologação. | Não aplicada. |
 | Média | `customenchants.enchant` está presente no `default` | Verificar se o nó permite apenas encantamentos previstos pelo gameplay. Se ele permitir criar itens fora da economia, restringi-lo a uma função específica. | Não aplicada. |
-| Média | Não foi possível consultar a árvore completa de heranças pelo console do Pterodactyl nesta leitura | Executar as consultas abaixo em uma janela administrativa e anexar apenas a saída sem dados de jogadores ao registro operacional. | Não aplicada. |
+| Média | A cadeia de equipe herda `obsidian` e o VIP `ferro` não possui pai explícito | Confirmar em contas de teste que Ferro recebe somente os comandos de jogador esperados e que Ajudante/Moderador/Admin recebem benefícios VIP apenas se isso for desejado. | Não aplicada. |
+| Média | Diretor não possui pai explícito | Revisar os nós próprios desse cargo para garantir que ele tenha apenas os acessos necessários e continue separado da cadeia geral. | Não aplicada. |
 
 ## Verificação segura antes de qualquer mudança
 
@@ -81,6 +123,10 @@ Os seguintes comandos são de consulta e não editam permissões. Execute-os pel
 /lp group obsidian permission info
 /lp group administrador permission info
 /lp group diretor permission info
+/lp group ajudante parent info
+/lp group moderador parent info
+/lp group gerente parent info
+/lp group dono parent info
 
 /lp group <grupo> parent info
 /lp user <jogador-de-teste> permission check <no-de-permissao>
@@ -90,7 +136,7 @@ Para confirmar qual nó um comando realmente exige, LuckPerms recomenda registra
 
 ## Limites desta auditoria
 
-Esta análise confirma plugins, políticas Paper, nós registrados em logs e uma varredura de nós críticos no armazenamento local. Ela não substitui uma revisão da árvore completa de heranças nem avalia permissões individuais atribuídas a jogadores, pois isso exigiria acesso administrativo à consulta do LuckPerms. Também não altera economia, VIPs, mundos, integrações da loja, RCON ou o painel web.
+Esta análise confirma plugins, políticas Paper, grupos, pesos, heranças, nós diretos e contagens de associação dos cargos sensíveis por meio do console LuckPerms. Para preservar a privacidade, nenhum nome de membro foi incluído neste documento. A validação de `permission check` confirmou a ausência dos nós administrativos críticos nas amostras VIP Ferro e VIP Obsidian; o teste completo de comandos dentro do cliente Minecraft continua sendo uma etapa opcional, pois exige contas conectadas. Esta auditoria não altera economia, VIPs, mundos, integrações da loja, RCON ou o painel web.
 
 ## Referências
 
