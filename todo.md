@@ -539,6 +539,7 @@ Warning: the previous candidate response was rejected because it contained repea
 - [x] Fixar no perfil do GitHub o repositório `MEU-SITE-DE-VIP` como destaque da integração segura entre a loja e o servidor Minecraft Paper; confirmação visual recebida no perfil.
 - [x] Adicionar descrição, tópicos de descoberta e seção de README para evidenciar no GitHub a integração PlayStorCraft ↔ Minecraft Paper; descrição, 11 tópicos e diagrama Mermaid validados no repositório público.
 - [ ] Validar manualmente no cliente Minecraft que o código de vínculo Discord pode ser copiado ao clicar e que a confirmação do vínculo chega ao jogador.
+- [x] Auditar permissões administrativas, VIPs e jogadores normais no Paper/LuckPerms, documentar riscos e propor uma matriz sem alterar o servidor; relatório salvo em `docs/MINECRAFT_PERMISSIONS_AUDIT.md`.
 - [x] Auditar as rotas, dados e componentes atuais do painel administrativo antes da modernização completa.
 - [x] Criar uma central operacional com indicadores de pedidos, pagamentos, entregas, Paper, Discord e alertas de operação.
 - [x] Criar uma central de entregas com filtros, histórico, falhas, tentativas e reenvio seguro sem duplicação.
