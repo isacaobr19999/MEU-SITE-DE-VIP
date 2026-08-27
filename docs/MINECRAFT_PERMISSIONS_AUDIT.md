@@ -18,7 +18,7 @@ LuckPerms foi projetado para agrupar permissões e aplicar herança entre os gru
 
 ## Grupos e permissões efetivamente observados
 
-Os grupos identificados foram `default`, `ferro`, `ouro`, `diamante`, `esmeralda`, `obsidian`, `administrador` e `diretor`. Não foi detectado curinga simples (`*`), curinga de namespace nem nós vanilla/Paper sensíveis na varredura somente-leitura do armazenamento LuckPerms. Essa varredura reduz o risco aparente, mas a confirmação autoritativa de heranças exige os comandos de consulta do LuckPerms listados ao final do documento.
+Os grupos identificados diretamente na auditoria foram `default`, `ferro`, `ouro`, `diamante`, `esmeralda`, `obsidian`, `administrador` e `diretor`. O administrador confirmou que os cargos de equipe — incluindo o perfil de moderação — já existem no LuckPerms; portanto, **não há recomendação de criar nenhum grupo novo**. A revisão deve apenas confirmar seus nós e suas heranças atuais. Não foi detectado curinga simples (`*`), curinga de namespace nem nós vanilla/Paper sensíveis na varredura somente-leitura do armazenamento LuckPerms. Essa varredura reduz o risco aparente, mas a confirmação autoritativa de heranças exige os comandos de consulta do LuckPerms listados ao final do documento.
 
 | Perfil | Nós observados ou padrão declarado | Leitura de privilégio |
 | --- | --- | --- |
@@ -28,6 +28,7 @@ Os grupos identificados foram `default`, `ferro`, `ouro`, `diamante`, `esmeralda
 | VIP Diamante | `shop.kit.premium`, `essentials.hat` | Acrescenta apenas benefício cosmético/qualidade de vida. |
 | VIP Esmeralda | `shop.kit.premium` | Benefício comercial limitado. |
 | VIP Obsidian | `shop.kit.premium`, `essentials.enderchest` | Acrescenta acesso pessoal ao próprio ender chest; não concede gestão de outros jogadores. |
+| Moderador existente | Existência confirmada pelo administrador; nós efetivos não foram retornados pela consulta somente-leitura | Deve manter apenas moderação de chat e atendimento, sem economia, restauração, gestão de mundo ou permissões LuckPerms. |
 | Administrador | restauração CoreProtect, definição WorldGuard, concessão/revogação/consulta/sincronização/reload de Booster, configuração de TAB/loja e administração imobiliária | Alto privilégio operacional. Pode alterar regiões, recuperar blocos e administrar benefícios Booster; deve ser restrito a equipe muito confiável. |
 | Diretor | administração de Cash, backup de anúncios, SocialSpy, bypass de filtro do chat, reload de loja e administração de Booster | Perfil mais sensível para economia e privacidade. Deve ser exclusivo do proprietário ou de responsável operacional formalmente definido. |
 
@@ -35,7 +36,7 @@ Os grupos identificados foram `default`, `ferro`, `ouro`, `diamante`, `esmeralda
 
 A matriz a seguir não foi aplicada. Ela separa **benefício de jogador** de **poder de gestão**, evitando que uma compra VIP dê acesso a dados, economia ou moderação.
 
-| Permissão ou família | Jogador | VIP | Moderador recomendado | Administrador | Diretor/Proprietário | Observação |
+| Permissão ou família | Jogador | VIP | Moderador existente | Administrador | Diretor/Proprietário | Observação |
 | --- | --- | --- | --- | --- | --- | --- |
 | `playeconomy.*` de uso normal | Permitido conforme o plugin | Herdado | Herdado | Herdado | Herdado | Os nós padrão do PlayEconomy são de jogador; manter limites econômicos no próprio plugin. |
 | `playeconomy.admin.*` | Negar | Negar | Negar | Apenas nós necessários | Permitido por função | `playeconomy.admin.cash` deve ficar somente na função financeira responsável. |
@@ -62,7 +63,7 @@ O perfil padrão possui comandos comuns de sobrevivência, chat e economia. Isso
 | --- | --- | --- | --- |
 | Alta | `op-permission-level=4` concede privilégios máximos a qualquer OP futuro | Manter `ops.json` vazio; usar grupos LuckPerms para equipe e console somente para recuperação. | Não aplicada. |
 | Alta | Diretor possui `playeconomy.admin.cash`, SocialSpy e bypass de filtro | Limitar o grupo a responsáveis nomeados, revisar mensalmente membros e registrar o uso de nós sensíveis. | Não aplicada. |
-| Alta | Administrador possui `coreprotect.restore` e `worldguard.region.define` | Criar ou usar um papel separado de construção/restauração se mais pessoas precisarem moderar sem alterar mundos. | Não aplicada. |
+| Alta | Administrador possui `coreprotect.restore` e `worldguard.region.define` | Revisar o cargo de moderação já existente para garantir que ele não herde construção ou restauração; manter esses nós somente em cargos existentes de administração/mundo. | Não aplicada. |
 | Média | `playchat.format.color` está concedido ao `default`, apesar de o manifesto declarar padrão de OP | Confirmar se cores no chat são um benefício intencional. Se não forem, remover somente esse nó do grupo padrão após backup e homologação. | Não aplicada. |
 | Média | `customenchants.enchant` está presente no `default` | Verificar se o nó permite apenas encantamentos previstos pelo gameplay. Se ele permitir criar itens fora da economia, restringi-lo a uma função específica. | Não aplicada. |
 | Média | Não foi possível consultar a árvore completa de heranças pelo console do Pterodactyl nesta leitura | Executar as consultas abaixo em uma janela administrativa e anexar apenas a saída sem dados de jogadores ao registro operacional. | Não aplicada. |
