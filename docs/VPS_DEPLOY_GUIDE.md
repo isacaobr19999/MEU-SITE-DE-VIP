@@ -97,9 +97,9 @@ A ficha pública de `VIP Ferro` também foi verificada em 21 de agosto de 2026: 
 Quando houver alteração em `discord-bot/index.mjs`, recrie também o serviço do bot para que os comandos slash sejam registrados:
 
 ```bash
-docker compose --env-file /root/playstorcraft-runtime/.env -f /opt/playstorcraft/deployment/vps/docker-compose.yml up -d --build --force-recreate discord-bot
+docker compose --env-file /root/playstorcraft-runtime -f /opt/playstorcraft/deployment/vps/docker-compose.yml up -d --build --force-recreate discord-bot
 
-docker compose --env-file /root/playstorcraft-runtime/.env -f /opt/playstorcraft/deployment/vps/docker-compose.yml logs --tail=80 discord-bot
+docker compose --env-file /root/playstorcraft-runtime -f /opt/playstorcraft/deployment/vps/docker-compose.yml logs --tail=80 discord-bot
 ```
 
 O bot precisa receber `DISCORD_BOT_TOKEN`, `DISCORD_APPLICATION_ID`, `DISCORD_GUILD_ID`, `DISCORD_BOT_BRIDGE_SECRET` e `INTEGRATION_API_KEY` somente pelo runtime protegido. A URL interna pode ser ajustada por `PLAYSTORCRAFT_BACKEND_URL`; quando o Compose usa o serviço `app`, o padrão é `http://app:3000`.
@@ -109,6 +109,20 @@ O fluxo de homologação é: no Paper, o jogador executa `/discord link`; em seg
 A validação mínima deve confirmar os logs de registro dos comandos, a resposta de sucesso ou erro explícito no Discord, a criação ou atualização do vínculo no banco e a rejeição de código expirado, já utilizado ou inválido. Essa homologação não deve criar pedidos, pagamentos ou entregas reais.
 
 > O endpoint legacy exige o cabeçalho `x-integration-key`. Uma resposta HTTP 401 indica chave ausente, incorreta ou não propagada para o contêiner; não substitua a chave por valores no código-fonte.
+
+## Rotação da server-api-key de um servidor existente
+
+A chave pode ser renovada pelo painel sem recriar a loja e sem alterar produtos, pedidos ou vínculos. Acesse **Catálogo → Servidores → PlayStorCraft → Editar** e clique em **Gerar nova chave**. Confirme a operação e copie a chave exibida imediatamente; por segurança, ela é mostrada somente nessa operação.
+
+A rotação invalida a chave anterior. Atualize somente o campo correspondente no Paper:
+
+```yaml
+server-api-key: "NOVA_CHAVE_GERADA_NO_PAINEL"
+```
+
+O arquivo normalmente fica em `plugins/PlayStorCraft/config.yml`. Preserve os demais campos, não publique a chave em repositórios ou mensagens e reinicie o Paper depois de salvar. Valide nos logs do plugin que a conexão com a API foi autenticada e confirme que o monitoramento voltou a reportar o servidor como online.
+
+Se o botão não aparecer, atualize o serviço `app` com o código mais recente antes de tentar a rotação. A variável `MINECRAFT_API_KEY_PEPPER` deve existir no runtime protegido; nunca coloque seu valor no código ou na documentação.
 
 ## Rollback do bot
 
