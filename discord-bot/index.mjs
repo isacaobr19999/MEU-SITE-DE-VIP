@@ -38,6 +38,7 @@ if (!token || !bridgeSecret || !integrationKey) {
   let lastPublishedAt = 0;
   let managedInviteUrl;
   let lastMinecraftMessage = "";
+  let lastInviteWarningAt = 0;
   const slashCommands = [
     new SlashCommandBuilder().setName("link").setDescription("Vincula sua conta Discord ao Minecraft.").toJSON(),
     new SlashCommandBuilder().setName("unlink").setDescription("Desvincula sua conta Discord do Minecraft.").toJSON(),
@@ -95,7 +96,10 @@ if (!token || !bridgeSecret || !integrationKey) {
         onlineCount: Number.isInteger(invite.approximate_presence_count) ? invite.approximate_presence_count : undefined,
       };
     } catch (error) {
-      console.warn("[Discord bot] Não foi possível obter contagens públicas do convite; usando dados do servidor.", error instanceof Error ? error.message : error);
+      if (Date.now() - lastInviteWarningAt > 15 * 60 * 1000) {
+        lastInviteWarningAt = Date.now();
+        console.warn("[Discord bot] Convite Discord inválido ou indisponível; usando dados do servidor. Configure DISCORD_INVITE_URL ou ative DISCORD_MANAGED_INVITE.", error instanceof Error ? error.message : error);
+      }
       return {};
     }
   }
@@ -272,7 +276,7 @@ if (!token || !bridgeSecret || !integrationKey) {
     }
   });
 
-  client.once("ready", async () => {
+  client.once("clientReady", async () => {
     console.info(`[Discord bot] Conectado como ${client.user?.tag ?? "bot"}.`);
     await registerLinkCommands().catch(error => console.error("[Discord bot] Falha ao registrar comandos de vínculo.", error instanceof Error ? error.message : error));
     await safelyPublish();
