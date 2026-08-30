@@ -3,7 +3,7 @@ import { z } from "zod";
 import { parse as parseCookie } from "cookie";
 import { COOKIE_NAME } from "@shared/const";
 import { createCategoryRecord, createProductRecord, listAdminCategories } from "../db/adminCatalog";
-import { cancelOrderRecord, createCouponRecord, createServerRecord, deleteCouponRecord, duplicateProductAsDraft, getAdminDeliveryDetail, getAdminMetricsByPeriod, getAdminMonthlySales, getAdminOperationsCenter, getAdminOrderDetail, getAdminOverview, getAdminPerformanceReport, getAdminPlayerProfile, getAdminProductPriceCents, listAdminCoupons, listAdminDeliveries, listAdminLogs, listAdminOrderExport, listAdminOrders, listAdminPlayers, listAdminProducts, listAdminServers, listAdminUsers, listPlayerHistory, retryDeliveryRecord, searchAdminRecords, setAdminRole, setProductStatus, updateCategoryRecord, updateCouponRecord, updateProductRecord, updateServerRecord, writeAdminAuditLog } from "../db/admin";
+import { cancelOrderRecord, createCouponRecord, createServerRecord, deleteCouponRecord, duplicateProductAsDraft, getAdminDeliveryDetail, getAdminMetricsByPeriod, getAdminMonthlySales, getAdminOperationsCenter, getAdminOrderDetail, getAdminOverview, getAdminPerformanceReport, getAdminPlayerProfile, getAdminProductPriceCents, listAdminCoupons, listAdminDeliveries, listAdminLogs, listAdminOrderExport, listAdminOrders, listAdminPlayers, listAdminProducts, listAdminServers, listAdminUsers, listPlayerHistory, retryDeliveryRecord, searchAdminRecords, setAdminRole, setProductStatus, updateCategoryRecord, updateCouponRecord, updateProductRecord, updateServerRecord, writeAdminAuditLog, deleteServerRecord } from "../db/admin";
 import { cancelMaintenanceSchedule, enqueueMaintenanceNotificationTest, getMaintenanceControl, getStoreAvailability, listMaintenanceEventExport, scheduleMaintenance, setMaintenanceDiscordChannel, setMaintenanceScheduleTask, setManualMaintenance, setStoreAvailability } from "../db/storeSettings";
 import { listActiveLoginLockouts, listRecentLoginAttempts, releaseLoginLockout } from "../db/loginAttempts";
 import { getMonthlyClosedTicketMetrics } from "../db/ticketTranscripts";
@@ -214,6 +214,15 @@ export const adminRouter = router({
     await updateServerRecord(input.id, input);
     await audit(ctx, "server.updated", "server", String(input.id));
     return { success: true };
+  }),
+  deleteServer: adminProcedure.input(z.object({ id: z.number().int().positive() })).mutation(async ({ ctx, input }) => {
+    try {
+      const result = await deleteServerRecord(input.id);
+      await audit(ctx, "server.deleted", "server", String(input.id), { name: result.name });
+      return { success: true, ...result };
+    } catch (error) {
+      throw new TRPCError({ code: "BAD_REQUEST", message: error instanceof Error ? error.message : "Não foi possível excluir o servidor." });
+    }
   }),
   setUserRole: adminProcedure.input(z.object({ userId: z.number().int().positive(), role: z.enum(["admin", "user"]) })).mutation(async ({ ctx, input }) => {
     if (ctx.user.id === input.userId && input.role !== "admin") throw new TRPCError({ code: "BAD_REQUEST", message: "Você não pode remover seu próprio acesso administrativo." });

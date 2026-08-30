@@ -198,6 +198,21 @@ export async function createServerRecord(input: { name: string; slug: string; ki
   return { id: result[0].insertId, apiKey };
 }
 
+export async function deleteServerRecord(id: number) {
+  const db = await requireDb();
+  const [server] = await db.select({ id: servers.id, name: servers.name }).from(servers).where(eq(servers.id, id)).limit(1);
+  if (!server) throw new Error("Servidor não localizado.");
+  const [productLinks, deliveryLinks] = await Promise.all([
+    db.select({ value: count() }).from(productServers).where(eq(productServers.serverId, id)),
+    db.select({ value: count() }).from(deliveries).where(eq(deliveries.serverId, id)),
+  ]);
+  const productsCount = Number(productLinks[0]?.value ?? 0);
+  const deliveriesCount = Number(deliveryLinks[0]?.value ?? 0);
+  if (productsCount || deliveriesCount) throw new Error(`Não é possível excluir ${server.name}: existem ${productsCount} produto(s) e ${deliveriesCount} entrega(s) vinculados. Desative o servidor em vez de excluí-lo.`);
+  await db.delete(servers).where(eq(servers.id, id));
+  return { id, name: server.name };
+}
+
 export async function listAdminCoupons() {
   const db = await requireDb();
   const [rows, assignments, usages] = await Promise.all([
