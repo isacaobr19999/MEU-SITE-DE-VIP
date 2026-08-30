@@ -3,7 +3,7 @@ import { z } from "zod";
 import { parse as parseCookie } from "cookie";
 import { COOKIE_NAME } from "@shared/const";
 import { createCategoryRecord, createProductRecord, listAdminCategories } from "../db/adminCatalog";
-import { cancelOrderRecord, createCouponRecord, createServerRecord, deleteCouponRecord, duplicateProductAsDraft, getAdminDeliveryDetail, getAdminMetricsByPeriod, getAdminMonthlySales, getAdminOperationsCenter, getAdminOrderDetail, getAdminOverview, getAdminPerformanceReport, getAdminPlayerProfile, getAdminProductPriceCents, listAdminCoupons, listAdminDeliveries, listAdminLogs, listAdminOrderExport, listAdminOrders, listAdminPlayers, listAdminProducts, listAdminServers, listAdminUsers, listPlayerHistory, retryDeliveryRecord, searchAdminRecords, setAdminRole, setProductStatus, updateCategoryRecord, updateCouponRecord, updateProductRecord, updateServerRecord, writeAdminAuditLog, deleteServerRecord } from "../db/admin";
+import { cancelOrderRecord, createCouponRecord, createServerRecord, rotateServerApiKey, deleteCouponRecord, duplicateProductAsDraft, getAdminDeliveryDetail, getAdminMetricsByPeriod, getAdminMonthlySales, getAdminOperationsCenter, getAdminOrderDetail, getAdminOverview, getAdminPerformanceReport, getAdminPlayerProfile, getAdminProductPriceCents, listAdminCoupons, listAdminDeliveries, listAdminLogs, listAdminOrderExport, listAdminOrders, listAdminPlayers, listAdminProducts, listAdminServers, listAdminUsers, listPlayerHistory, retryDeliveryRecord, searchAdminRecords, setAdminRole, setProductStatus, updateCategoryRecord, updateCouponRecord, updateProductRecord, updateServerRecord, writeAdminAuditLog, deleteServerRecord } from "../db/admin";
 import { cancelMaintenanceSchedule, enqueueMaintenanceNotificationTest, getMaintenanceControl, getStoreAvailability, listMaintenanceEventExport, scheduleMaintenance, setMaintenanceDiscordChannel, setMaintenanceScheduleTask, setManualMaintenance, setStoreAvailability } from "../db/storeSettings";
 import { listActiveLoginLockouts, listRecentLoginAttempts, releaseLoginLockout } from "../db/loginAttempts";
 import { getMonthlyClosedTicketMetrics } from "../db/ticketTranscripts";
@@ -208,6 +208,13 @@ export const adminRouter = router({
     if (!pepper) throw new TRPCError({ code: "PRECONDITION_FAILED", message: "A chave de proteção dos servidores ainda não foi configurada." });
     const result = await createServerRecord(input, pepper);
     await audit(ctx, "server.created", "server", String(result.id), { name: input.name });
+    return result;
+  }),
+  rotateServerKey: adminProcedure.input(z.object({ id: z.number().int().positive() })).mutation(async ({ ctx, input }) => {
+    const pepper = process.env.MINECRAFT_API_KEY_PEPPER;
+    if (!pepper) throw new TRPCError({ code: "PRECONDITION_FAILED", message: "A chave de proteção dos servidores ainda não foi configurada." });
+    const result = await rotateServerApiKey(input.id, pepper);
+    await audit(ctx, "server.api_key_rotated", "server", String(input.id), { name: result.name, lastFour: result.apiKey.slice(-4) });
     return result;
   }),
   updateServer: adminProcedure.input(z.object({ id: z.number().int().positive(), name: z.string().trim().min(2).max(96), slug: slug.max(48), kind: z.enum(["SURVIVAL", "SKYBLOCK", "BEDWARS", "GLOBAL"]), active: z.boolean() })).mutation(async ({ ctx, input }) => {

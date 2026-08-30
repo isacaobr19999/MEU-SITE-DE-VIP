@@ -198,6 +198,16 @@ export async function createServerRecord(input: { name: string; slug: string; ki
   return { id: result[0].insertId, apiKey };
 }
 
+export async function rotateServerApiKey(id: number, pepper: string) {
+  const db = await requireDb();
+  const [server] = await db.select({ id: servers.id, name: servers.name }).from(servers).where(eq(servers.id, id)).limit(1);
+  if (!server) throw new Error("Servidor não localizado.");
+  const apiKey = `psc_${randomBytes(24).toString("base64url")}`;
+  const apiKeyHash = await hashSecret(apiKey, pepper);
+  await db.update(servers).set({ apiKeyHash, apiKeyLastFour: apiKey.slice(-4) }).where(eq(servers.id, id));
+  return { id: server.id, name: server.name, apiKey };
+}
+
 export async function deleteServerRecord(id: number) {
   const db = await requireDb();
   const [server] = await db.select({ id: servers.id, name: servers.name }).from(servers).where(eq(servers.id, id)).limit(1);
