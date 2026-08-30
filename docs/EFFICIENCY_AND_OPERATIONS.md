@@ -23,3 +23,7 @@ A manutenção deve sempre ser agendada com horário de início e término. Ao t
 A publicação do código no GitHub não altera a aplicação já executada na VPS. É necessário fazer o deploy do commit correspondente, reiniciar somente os serviços necessários e verificar os logs. A situação do Paper também exige acesso ao servidor Minecraft ou ao painel de hospedagem para iniciar o processo e confirmar a conexão do plugin.
 
 Backups devem ser copiados para uma localização externa e a restauração deve ser testada periodicamente. Nunca versionar `.env`, `config.yml` preenchido, chaves de servidor, tokens, dumps ou dados pessoais.
+
+## Avisos de manutenção no Discord
+
+O bot publica notificações de manutenção no canal configurado no painel administrativo. O canal operacional padrão continua sendo usado para os demais eventos; para o teste ou aviso de manutenção, o canal específico salvo na configuração tem prioridade. O bot precisa estar ativo, participar do servidor correto e possuir as permissões `View Channel` e `Send Messages` no canal de destino.

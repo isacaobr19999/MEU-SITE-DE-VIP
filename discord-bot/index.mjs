@@ -139,9 +139,8 @@ if (!token || !bridgeSecret || !integrationKey) {
   }
 
   async function publishOperationsNotifications(guild) {
-    if (!operationsChannelId) return;
-    const channel = await guild.channels.fetch(operationsChannelId).catch(() => null);
-    if (!channel || !channel.isTextBased() || typeof channel.send !== "function") return;
+    const channel = operationsChannelId ? await guild.channels.fetch(operationsChannelId).catch(() => null) : null;
+    if (operationsChannelId && (!channel || !channel.isTextBased() || typeof channel.send !== "function")) return;
     const response = await fetch(`${operationsBridgeUrl}?limit=10`, { headers: { "x-playstor-discord-secret": bridgeSecret } });
     if (!response.ok) throw new Error(`A fila de operações respondeu HTTP ${response.status}`);
     const { notifications = [] } = await response.json();
@@ -150,6 +149,10 @@ if (!token || !bridgeSecret || !integrationKey) {
       const requestedChannelId = ["STORE_MAINTENANCE_STARTED", "STORE_MAINTENANCE_ENDED"].includes(notification.eventType) && /^\d{17,20}$/.test(String(notification.payload?.channelId || "")) ? String(notification.payload.channelId) : operationsChannelId;
       const requestedChannel = requestedChannelId === operationsChannelId ? channel : await guild.channels.fetch(requestedChannelId).catch(() => null);
       const targetChannel = requestedChannel && requestedChannel.guildId === guild.id && requestedChannel.isTextBased() && typeof requestedChannel.send === "function" ? requestedChannel : channel;
+      if (!targetChannel || !targetChannel.isTextBased() || typeof targetChannel.send !== "function") {
+        console.warn(`[Discord bot] Nenhum canal válido para a notificação ${notification.id}. Configure DISCORD_OPERATIONS_CHANNEL_ID ou o canal de manutenção.`);
+        continue;
+      }
       await targetChannel.send({ content: operationMessage(notification) });
       sentIds.push(notification.id);
     }
