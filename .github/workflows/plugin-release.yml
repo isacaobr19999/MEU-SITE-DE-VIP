@@ -1,0 +1,47 @@
+name: Plugin release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-plugin:
+    name: Build PlayStorCraft plugin
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: minecraft-plugin
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: gradle
+
+      - name: Build and test plugin
+        run: ./gradlew clean build --no-daemon
+
+      - name: Validate artifact metadata
+        run: |
+          test -f build/libs/PlayStorCraftPlugin-*.jar
+          unzip -p build/libs/PlayStorCraftPlugin-*.jar plugin.yml | grep -q '^name: PlayStorCraft$'
+          unzip -p build/libs/PlayStorCraftPlugin-*.jar plugin.yml | grep -q '^version: '
+          sha256sum build/libs/PlayStorCraftPlugin-*.jar > build/libs/SHA256SUMS
+
+      - name: Publish GitHub release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: |
+            minecraft-plugin/build/libs/PlayStorCraftPlugin-*.jar
+            minecraft-plugin/build/libs/SHA256SUMS

@@ -10,11 +10,11 @@ REPORT_URL="$APP_URL/api/internal/monitoring"
 check_url() {
   key="$1"
   url="$2"
-  started="$(date +%s)"
+  started="$(date +%s%3N 2>/dev/null || date +%s000)"
   body_file="/tmp/monitor-${key}.json"
   code="$(curl --silent --show-error --max-time 20 --output "$body_file" --write-out '%{http_code}' "$url" 2>/dev/null || printf '000')"
-  finished="$(date +%s)"
-  latency_ms=$(( (finished - started) * 1000 ))
+  finished="$(date +%s%3N 2>/dev/null || date +%s000)"
+  latency_ms=$(( finished - started ))
   if [ "$code" = "200" ]; then
     printf '{"serviceKey":"%s","status":"ONLINE","latencyMs":%s,"message":"HTTP 200"}' "$key" "$latency_ms"
   else
@@ -35,7 +35,7 @@ while true; do
   if grep -q '"minecraftStatus":"ONLINE"' /tmp/monitor-api.json 2>/dev/null; then
     minecraft_report='{"serviceKey":"minecraft","status":"ONLINE","latencyMs":0,"message":"Paper reportado online"}'
   else
-    minecraft_report='{"serviceKey":"minecraft","status":"DEGRADED","latencyMs":0,"message":"Paper sem confirmação online"}'
+    minecraft_report='{"serviceKey":"minecraft","status":"OFFLINE","latencyMs":0,"message":"Paper sem confirmação online"}'
   fi
   payload="{\"reports\":[${store_report},${api_report},${discord_report},${minecraft_report}]}"
   curl --silent --show-error --max-time 20 -X POST "$REPORT_URL" -H "content-type: application/json" -H "x-maintenance-secret: $SECRET" --data "$payload" >/dev/null 2>&1 || true
