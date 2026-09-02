@@ -8,7 +8,7 @@ const mocks = vi.hoisted(() => ({
   auth: vi.fn(),
   useUtils: vi.fn(),
   orders: vi.fn(), deliveries: vi.fn(), players: vi.fn(), logs: vi.fn(), servers: vi.fn(), coupons: vi.fn(), categories: vi.fn(), orderDetail: vi.fn(), playerHistory: vi.fn(),
-  cancelOrder: vi.fn(), retryDelivery: vi.fn(), updateServer: vi.fn(), updateCoupon: vi.fn(), updateCategory: vi.fn(),
+  cancelOrder: vi.fn(), retryDelivery: vi.fn(), updateServer: vi.fn(), deleteServer: vi.fn(), updateCoupon: vi.fn(), updateCategory: vi.fn(),
 }));
 
 vi.mock("@/_core/hooks/useAuth", () => ({ useAuth: mocks.auth }));
@@ -16,7 +16,7 @@ vi.mock("@/components/DashboardLayout", () => ({ default: ({ children }: { child
 vi.mock("@/lib/trpc", () => ({
   trpc: { useUtils: mocks.useUtils, admin: {
     orders: { useQuery: mocks.orders }, deliveries: { useQuery: mocks.deliveries }, players: { useQuery: mocks.players }, logs: { useQuery: mocks.logs }, servers: { useQuery: mocks.servers }, coupons: { useQuery: mocks.coupons }, categories: { useQuery: mocks.categories }, orderDetail: { useQuery: mocks.orderDetail }, playerHistory: { useQuery: mocks.playerHistory },
-    cancelOrder: { useMutation: mocks.cancelOrder }, retryDelivery: { useMutation: mocks.retryDelivery }, updateServer: { useMutation: mocks.updateServer }, updateCoupon: { useMutation: mocks.updateCoupon }, updateCategory: { useMutation: mocks.updateCategory },
+    cancelOrder: { useMutation: mocks.cancelOrder }, retryDelivery: { useMutation: mocks.retryDelivery }, updateServer: { useMutation: mocks.updateServer }, deleteServer: { useMutation: mocks.deleteServer }, updateCoupon: { useMutation: mocks.updateCoupon }, updateCategory: { useMutation: mocks.updateCategory },
   } },
 }));
 
@@ -38,7 +38,7 @@ beforeEach(() => {
   [mocks.players, mocks.logs, mocks.servers, mocks.coupons, mocks.categories].forEach(mock => mock.mockReturnValue(query([])));
   mocks.orderDetail.mockReturnValue(query(undefined));
   mocks.playerHistory.mockReturnValue(query([]));
-  [mocks.cancelOrder, mocks.retryDelivery, mocks.updateServer, mocks.updateCoupon, mocks.updateCategory].forEach(mock => mock.mockReturnValue(mutation));
+  [mocks.cancelOrder, mocks.retryDelivery, mocks.updateServer, mocks.deleteServer, mocks.updateCoupon, mocks.updateCategory].forEach(mock => mock.mockReturnValue(mutation));
 });
 
 describe("filtros da fila de entregas", () => {

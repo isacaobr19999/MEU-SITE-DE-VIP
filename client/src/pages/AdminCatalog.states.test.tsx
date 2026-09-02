@@ -16,6 +16,7 @@ const mocks = vi.hoisted(() => ({
   duplicateProduct: vi.fn(),
   uploadProductImage: vi.fn(),
   updateServer: vi.fn(),
+  rotateServerKey: vi.fn(),
   updateCoupon: vi.fn(),
   deleteCoupon: vi.fn(),
 }));
@@ -35,6 +36,7 @@ vi.mock("@/lib/trpc", () => ({
       duplicateProduct: { useMutation: mocks.duplicateProduct },
       uploadProductImage: { useMutation: mocks.uploadProductImage },
       updateServer: { useMutation: mocks.updateServer },
+      rotateServerKey: { useMutation: mocks.rotateServerKey },
       updateCoupon: { useMutation: mocks.updateCoupon },
       deleteCoupon: { useMutation: mocks.deleteCoupon },
     },
@@ -59,6 +61,7 @@ beforeEach(() => {
   mocks.duplicateProduct.mockReturnValue(mutation);
   mocks.uploadProductImage.mockReturnValue(mutation);
   mocks.updateServer.mockReturnValue(mutation);
+  mocks.rotateServerKey.mockReturnValue(mutation);
   mocks.updateCoupon.mockReturnValue(mutation);
   mocks.deleteCoupon.mockReturnValue(mutation);
   mocks.useUtils.mockReturnValue({
